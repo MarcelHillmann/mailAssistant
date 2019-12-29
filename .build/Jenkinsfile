@@ -57,10 +57,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'GITEA_TOKEN', usernameVariable: '')]) {
                     script {
                         if ( currentBuild.result=="SUCCESS" ){
-                            pullRequest.SetLabel("Marcel","mailAssistant","SonarQubeFailed")
+                            pullRequest.SetLabel("Marcel","mailAssistant","SonarQubePassed")
                             pullRequest.Merge("Marcel","mailAssistant", "accepted")
                         }else{
-                            pullRequest.SetLabel("Marcel","mailAssistant","SonarQubePassed")
+                            pullRequest.SetLabel("Marcel","mailAssistant","SonarQuebeFailed")
                         }
                     }
                 }
