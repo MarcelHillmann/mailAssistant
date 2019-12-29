@@ -28,22 +28,13 @@ pipeline {
                 withSonarQubeEnv('sonar'){
                     withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
                         sh 'bash .build/sonar-datacollector.sh'
-<<<<<<< HEAD
-                        sh "sonar-scanner -Dproject.settings=sonar-project.properties"
-=======
                         sh "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistent#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistent_${BRANCH_NAME}'"
->>>>>>> PR-4
                     } // withEnv
                 } // withSonarQubeEnv
                 timeout(5) { // Just in case something goes wrong, pipeline will be killed after a timeout
                     script {
                         def qg = waitForQualityGate(false)
-<<<<<<< HEAD
-                        echo "${qg.status}"
-                        if (qg.status != 'SUCCESS') {
-=======
                         if (qg.status != 'OK') {
->>>>>>> PR-4
                             echo "Pipeline aborted due to quality gate failure: ${qg.status}"
                             currentBuild.result="UNSTABLE"
                         } else{
@@ -54,10 +45,7 @@ pipeline {
             } // steps
         } // stage
         stage('publish'){
-<<<<<<< HEAD
-=======
             when {  not { branch 'PR-*' } }
->>>>>>> PR-4
             steps{
                 withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'pass', usernameVariable: 'user')]) {
                     script {

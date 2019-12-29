@@ -16,13 +16,8 @@ function header() {
 
 function go_meta_linter() {
     reset
-<<<<<<< HEAD
-    header "golangci-lint" 4
-    golangci-lint run --out-format checkstyle ./... > .sonarqube/linter-report.xml
-=======
     header "run golangci-lint" 4
     golangci-lint run --out-format checkstyle ./... > .sonarqube/linter-report.xml 2>&1
->>>>>>> PR-4
     showState $?
     reset
 }
@@ -30,9 +25,6 @@ function go_meta_linter() {
 function go_lint(){
     reset
     header "run golint" 5
-<<<<<<< HEAD
-    golint ./... > .sonarqube/golint-report.out
-=======
     golint ./... > .sonarqube/golint-report.out 2>&1
     showState $?
     reset
@@ -42,7 +34,6 @@ function go_vet(){
     reset
     header "run golint" 5
     go vet ./... > .sonarqube/govet-report.out 2>&1
->>>>>>> PR-4
     showState $?
     reset
 }
@@ -80,10 +71,7 @@ function showState(){
 go clean -testcache
 go_meta_linter
 go_lint
-<<<<<<< HEAD
-=======
 go_vet
->>>>>>> PR-4
 go_test_json
 go_junit
 exit 0
