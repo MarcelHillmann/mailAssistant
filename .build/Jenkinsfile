@@ -13,6 +13,11 @@ pipeline {
     stages {
         stage('build'){
             steps {
+                withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    sh "echo ${user} | base64"
+                    sh "echo ${pass} | base64"
+                }
+                error "test"
                 sh 'mkdir upload'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]) {
                     sh "go build -o upload/mailAssistent.amd64_linux"
@@ -43,6 +48,15 @@ pipeline {
                     } // script
                 } // timeout
             } // steps
+        } // stage
+        stage('accept PR') {
+            when {  branch 'PR-*'  }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    sh "echo ${user} | base64"
+                    sh "echo ${pass} | base64"
+                }
+            }
         } // stage
         stage('publish'){
             when {  not { branch 'PR-*' } }
