@@ -1,0 +1,10 @@
+---
+name: "DS918 Inbox to Synology"
+schedule: "every 5 minutes"
+action: "imap_mv"
+disabled: true
+args:
+  - mail_account: "mahillmannde-0001"
+  - mail_from: "DS412@mahillmann.de"
+  - path: "INBOX"
+  - moveTo: "Inbox/Archiv/Synology/DS918"

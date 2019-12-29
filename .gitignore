@@ -1,3 +1,3 @@
 .scannerwork
-resources/config/accounts/*.yml
 .sonarqube/*
+resources/config/accounts/*.yml

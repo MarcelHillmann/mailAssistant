@@ -1,0 +1,10 @@
+---
+name: "testcase"
+schedule: "every minute"
+action: "dummy"
+disabled: true
+notWellFormed
+args:
+  - mail_account: "foo.bar"
+  - mail_from: "foo@bar.local"
+  - path: "INBOX"

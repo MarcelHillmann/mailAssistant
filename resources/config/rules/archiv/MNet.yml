@@ -1,0 +1,9 @@
+---
+name: "M-Net Inbox to MNet"
+schedule: "every 5 minutes"
+action: "imap_mv"
+disabled: true
+args:
+  - mail_account: "mahillmannde-0001"
+  - mail_from: "newsletter@mail.m-net.de"
+  - moveTo: "Inbox/Archiv/m-net"
