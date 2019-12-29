@@ -32,7 +32,7 @@ function go_lint(){
 
 function go_vet(){
     reset
-    header "run golint" 5
+    header "run go vet" 5
     go vet ./... > .sonarqube/govet-report.out 2>&1
     showState $?
     reset
