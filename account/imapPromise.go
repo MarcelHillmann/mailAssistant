@@ -61,8 +61,6 @@ func (promise ImapPromise) AppendPromise(saveTo string, flags []string, date tim
 	if saveTo == "" {
 		saveTo = "INBOX"
 	}
-	return promise.client.Append(saveTo, flags, date, msg)
-
 	if err = promise.client.Append(saveTo, flags, date, msg); err == nil {
 		successfully()
 	}
