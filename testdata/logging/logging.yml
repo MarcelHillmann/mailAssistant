@@ -1,0 +1,17 @@
+---
+level: "severe"
+children:
+  - name: "mailAssistant"
+    level: "warn"
+    children:
+      - name: "account"
+        level: "all"
+      - name: "rules"
+        level: "SEVERE"
+      - name: "actions"
+        level: "WARN"
+        children:
+          - name: "newImapMove"
+            level: "debug"
+          - name: "newImapBackup"
+            level: "info"

@@ -1,0 +1,9 @@
+---
+name: ""
+schedule: "every minute"
+action: "dummy"
+disabled: true
+args:
+  - mail_account: "foo.bar"
+  - mail_from: "foo@bar.local"
+  - path: "INBOX"

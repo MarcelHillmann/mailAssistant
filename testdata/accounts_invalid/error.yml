@@ -1,0 +1,7 @@
+---
+name: "error"
+username: "error"
+password: "error"
+hostname: "localhost"
+port: 1000
+hugo

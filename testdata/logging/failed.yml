@@ -1,0 +1,25 @@
+---
+notWellFormed
+level: "severe"
+children:
+  - name: "mailAssistant"
+    level: "warn"
+    children:
+      - name: "account"
+        level: "all"
+      - name: "rules"
+        level: "SEVERE"
+      - name: "actions"
+        level: "WARN"
+        children:
+          #          - name: "newJob"
+          #            level: "debug"
+          #          - name: "newArchiveAttachment"
+          #            level: "severe"
+          #          - name: "dummy"
+          #            level: "severe"
+          - name: "newImapMove"
+            level: "debug"
+          - name: "newImapBackup"
+            level: "debug"
+# mailAssistant.actions.newImapMove
