@@ -37,10 +37,8 @@ pipeline {
                         if (qg.status != 'OK') {
                             echo "Pipeline aborted due to quality gate failure: ${qg.status}"
                             currentBuild.result="UNSTABLE"
-                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubeFailed")
                         } else{
                             currentBuild.result="SUCCESS"
-                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubePassed")
                         }
                     } // script
                 } // timeout
@@ -51,7 +49,12 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'GITEA_TOKEN', usernameVariable: '')]) {
                     script {
-                        pullRequest.Merge("Marcel","mailAssistant", "accepted")
+                        if ( currentBuild.result=="SUCCESS" ){
+                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubeFailed")
+                            pullRequest.Merge("Marcel","mailAssistant", "accepted")
+                        }else{
+                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubePassed")
+                        }
                     }
                 }
             }
