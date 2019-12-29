@@ -27,8 +27,8 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonar'){
                     withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
-                        sh 'bash .build/sonar-datacollector.sh'
-                        sh "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistent#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistent_${BRANCH_NAME}'"
+                        sh'bash .build/sonar-datacollector.sh'
+                        sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistent#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistent_${BRANCH_NAME}'"
                     } // withEnv
                 } // withSonarQubeEnv
                 timeout(5) { // Just in case something goes wrong, pipeline will be killed after a timeout
