@@ -1,6 +1,8 @@
 # mailAssistant
 automation for my Mail Accounts, like Outlook rules
 
+das ist ein test
+
 ## SonarQube
 
 ### Development
