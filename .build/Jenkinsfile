@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-// The above line is used to trigger correct syntax highlighting.
+@Library(["gitea-lib"]) _
 
 pipeline {
     agent { label "linux" }
@@ -13,11 +13,6 @@ pipeline {
     stages {
         stage('build'){
             steps {
-                withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                    sh "echo ${user} | base64"
-                    sh "echo ${pass} | base64"
-                }
-                error "test"
                 sh 'mkdir upload'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]) {
                     sh "go build -o upload/mailAssistent.amd64_linux"
@@ -42,8 +37,10 @@ pipeline {
                         if (qg.status != 'OK') {
                             echo "Pipeline aborted due to quality gate failure: ${qg.status}"
                             currentBuild.result="UNSTABLE"
+                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubeFailed")
                         } else{
                             currentBuild.result="SUCCESS"
+                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubePassed")
                         }
                     } // script
                 } // timeout
@@ -52,9 +49,8 @@ pipeline {
         stage('accept PR') {
             when {  branch 'PR-*'  }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                    sh "echo ${user} | base64"
-                    sh "echo ${pass} | base64"
+                withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'GITEA_TOKEN', usernameVariable: '')]) {
+                    pullRequest.Merge("Marcel","mailAssistant", "accepted")
                 }
             }
         } // stage
