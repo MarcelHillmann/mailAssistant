@@ -30,9 +30,9 @@ pipeline {
                         withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
                             sh'bash .build/sonar-datacollector.sh'
                             if ( BRANCH_NAME.startsWith('PR-')){
-                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistent#PR' '-Dsonar.projectName=jenkins_mailAssistent_PR'"
+                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#PR' '-Dsonar.projectName=jenkins_mailAssistent_PR'"
                             }else{
-                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistent#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistent_${BRANCH_NAME}'"
+                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistent_${BRANCH_NAME}'"
                             }
                         } // withEnv
                     } // script
@@ -57,10 +57,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'GITEA_TOKEN', usernameVariable: '')]) {
                     script {
                         if ( currentBuild.result=="SUCCESS" ){
-                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubeFailed")
+                            pullRequest.SetLabel("Marcel","mailAssistant","SonarQubeFailed")
                             pullRequest.Merge("Marcel","mailAssistant", "accepted")
                         }else{
-                            pullRequest.SetLabel("Marcel","mailAssistent","SonarQubePassed")
+                            pullRequest.SetLabel("Marcel","mailAssistant","SonarQubePassed")
                         }
                     }
                 }
@@ -71,8 +71,8 @@ pipeline {
             steps{
                 withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'pass', usernameVariable: 'user')]) {
                     script {
-                        ["mailAssistent.amd64_linux","mailAssistent.amd64_windows.exe"].each{
-                            sh "curl -s --user '${user}:${pass}' --upload-file ./upload/${it} https://nexus.mahillmann.de/repository/everything-else/mailAssistent/${BRANCH_NAME}_${BUILD_NUMBER}/${it}"
+                        ["mailAssistant.amd64_linux","mailAssistant.amd64_windows.exe"].each{
+                            sh "curl -s --user '${user}:${pass}' --upload-file ./upload/${it} https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}"
                         } // each
                     } // script
                 } // withCredentials
