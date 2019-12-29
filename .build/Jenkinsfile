@@ -42,6 +42,7 @@ pipeline {
                         }
                     } // script
                 } // timeout
+                junit allowEmptyResults: true, testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '.sonarqube/test.xml'
             } // steps
         } // stage
         stage('accept PR') {
