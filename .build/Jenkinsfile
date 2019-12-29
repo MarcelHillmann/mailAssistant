@@ -50,7 +50,9 @@ pipeline {
             when {  branch 'PR-*'  }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'GITEA_TOKEN', usernameVariable: '')]) {
-                    pullRequest.Merge("Marcel","mailAssistant", "accepted")
+                    script {
+                        pullRequest.Merge("Marcel","mailAssistant", "accepted")
+                    }
                 }
             }
         } // stage
