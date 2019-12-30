@@ -78,13 +78,6 @@ pipeline {
 
                     } // each
                 } // script
-                /* withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'pass', usernameVariable: 'user')]) {
-                    script {
-                        ["mailAssistant.amd64_linux","mailAssistant.amd64_windows.exe"].each{
-                            sh "curl -s --user '${user}:${pass}' --upload-file ./upload/${it} https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}"
-                        } // each
-                    } // script
-                } // withCredentials*/
             } // steps
         } // stage
     } // stages
