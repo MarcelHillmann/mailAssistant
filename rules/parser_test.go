@@ -36,7 +36,7 @@ func rulesParserFailOpen(t *testing.T) {
 		require.NotNil(t, err)
 		sErr := err.(error).Error()
 		require.Condition(t, func() bool {
-			return strings.HasSuffix(sErr, "SEVERE  [mailAssistant.rules.parseYaml#lambda] open ../testdata/rules/notExists.yml:")
+			return strings.HasPrefix(sErr, "SEVERE  [mailAssistant.rules.parseYaml#lambda] open ../testdata/rules/notExists.yml:")
 		}, sErr)
 	}()
 
