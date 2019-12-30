@@ -83,7 +83,7 @@ pipeline {
     } // stages
     post {
         always {
-            sh 'find . -type d | grep -v ".sonarqube" | xargs -i rm -rf {}; exit 0'
+            sh 'rm -rf upload >/dev/null; exit 0'
         } // always
     } //post
 } // pipeline
