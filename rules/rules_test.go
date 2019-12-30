@@ -191,12 +191,12 @@ func rulesStartWatcherOk(t *testing.T) {
 	}()
 
 	time.Sleep(100 * time.Millisecond)
-	require.Equal(t, 1, cntl.ToNotify())
+	require.Equal(t, 1, cntl.ToNotify(),"ToNotify 1")
 	cntl.Notify()
 	time.Sleep(100 * time.Millisecond)
-	require.Equal(t, 0, cntl.ToNotify())
-	require.True(t, started)
-	require.True(t, stopped)
+	require.Equal(t, 0, cntl.ToNotify(), "ToNotify 0")
+	require.True(t, started, "started?")
+	require.True(t, stopped, "stopped?")
 }
 
 func rulesStartWatcherError(t *testing.T) {
