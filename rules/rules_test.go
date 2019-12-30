@@ -7,12 +7,16 @@ import (
 	"mailAssistant/cntl"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 	"time"
 )
 
 const fileName = "..\\testdata\\rules\\foobar.yml"
+const fileNameUx = "../testdata/rules/foobar.yml"
 const fileNameSub = "..\\testdata\\rules\\subdir\\barfoo.yml"
+const fileNameSubUx = "../testdata/rules/subdir/barfoo.yml"
 
 func TestRules(t *testing.T) {
 	t.Run("startWatcher", func(t *testing.T) {
@@ -65,14 +69,16 @@ func TestRules_GetLogger_ReReInit(t *testing.T) {
 
 func rulesImportRuleCreate(t *testing.T) {
 	r := newRules(nil)
-	require.Len(t, r.Rules, 0)
-	require.Len(t, r.files, 0)
+	require.Len(t, r.Rules, 0, "rules pre")
+	require.Len(t, r.files, 0, "files pre")
 
 	r.importRule("..", "testdata/rules/fooBar.yml", fsnotify.Create)
-	require.Len(t, r.Rules, 1)
-	require.Len(t, r.files, 1)
+	require.Len(t, r.Rules, 1, "rules post")
+	require.Len(t, r.files, 1, "files post")
 
-	require.Equal(t, "testcase", r.files[fileName])
+	require.Condition(t, func() bool{
+		return r.files[fileName] == "testcase" || r.files[fileNameUx] == "testcase"
+	}, "r.[filename] == testcase")
 	tc := r.Rules["testcase"]
 	require.NotNil(t, tc)
 	require.Equal(t, "foo.bar", tc.GetString("mail_account"))
@@ -117,21 +123,30 @@ func rulesImportRuleCreateAgain(t *testing.T) {
 	defer func() {
 		err := recover()
 		require.NotNil(t, err)
-		require.EqualError(t, err.(error), fileName)
+		sErr := err.(error).Error()
+		require.Condition(t, func() bool {
+			return sErr == fileName || sErr == fileNameUx
+		}, sErr)
 	}()
 	r := newRules(nil)
 	r.files[fileName] = ""
-	r.importRule("..", "testdata/rules/fooBar.yml", fsnotify.Create)
+	r.files[fileNameUx] = ""
+	r.importRule("", "../testdata/rules/fooBar.yml", fsnotify.Create)
 }
 
 func rulesImportRuleCreateNotExisting(t *testing.T) {
 	defer func() {
 		err := recover()
 		require.NotNil(t, err)
-		require.EqualError(t, err.(error), "open ..\\testdata\\rules\\dont_exist.yml: The system cannot find the file specified.")
+		sErr := err.(error).Error()
+		require.Condition(t, func() bool {
+			return sErr == "open ..\\testdata\\rules\\dont_exist.yml: The system cannot find the file specified." ||
+				sErr == "open ../testdata/rules/dont_exist.yml: no such file or directory"
+		}, sErr)
 	}()
 	r := newRules(nil)
 	r.files[fileName] = ""
+	r.files[fileNameUx] = ""
 	r.importRule("..", "testdata/rules/dont_exist.yml", fsnotify.Create)
 }
 
@@ -146,7 +161,11 @@ func rulesImportRuleModify(t *testing.T) {
 
 func rulesImportRuleDelete(t *testing.T) {
 	r := newRules(nil)
-	r.files[fileName] = "testcase"
+	if strings.ToLower(runtime.GOOS) == "windows" {
+		r.files[fileName] = "testcase"
+	}else{
+		r.files[fileNameUx] = "testcase"
+	}
 	r.Rules["testcase"] = Rule{}
 
 	require.Len(t, r.Rules, 1)
@@ -161,8 +180,13 @@ func rulesLoadFromDisk(t *testing.T) {
 	r.loadFromDisk("../testdata/rules/")
 	require.Len(t, r.Rules, 2)
 	require.Len(t, r.files, 2)
-	require.Equal(t, "testcase", r.files[fileName])
-	require.Equal(t, "sub testcase", r.files[fileNameSub])
+	require.Condition(t, func()bool {
+		return r.files[fileName] == "testcase" ||r.files[fileNameUx] == "testcase"
+
+	}, "r.files == testcase")
+	require.Condition(t, func() bool {
+		return r.files[fileNameSub] == "sub testcase" ||r.files[fileNameSubUx] == "sub testcase"
+	}, "sub testcase")
 	require.NotNil(t, r.Rules["testcase"])
 	require.NotNil(t, r.Rules["sub testcase"])
 }
@@ -187,12 +211,12 @@ func rulesStartWatcherOk(t *testing.T) {
 	}()
 
 	time.Sleep(100 * time.Millisecond)
-	require.Equal(t, 1, cntl.ToNotify())
+	require.Equal(t, 1, cntl.ToNotify(),"ToNotify 1")
 	cntl.Notify()
 	time.Sleep(100 * time.Millisecond)
-	require.Equal(t, 0, cntl.ToNotify())
-	require.True(t, started)
-	require.True(t, stopped)
+	require.Equal(t, 0, cntl.ToNotify(), "ToNotify 0")
+	require.True(t, started, "started?")
+	require.True(t, stopped, "stopped?")
 }
 
 func rulesStartWatcherError(t *testing.T) {

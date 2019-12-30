@@ -49,7 +49,11 @@ func accountsImportAccountsError(t *testing.T) {
 	SetAccountImportPath("")
 	_,err := ImportAccounts()
 	require.NotNil(t,err)
-	require.Equal(t, "open resources\\config\\accounts: The system cannot find the path specified.",err.Error())
+	sErr := err.Error()
+	require.Condition(t, func() bool {
+		return sErr == "open resources\\config\\accounts: The system cannot find the path specified." ||
+			sErr == "open resources/config/accounts: no such file or directory"
+	}, sErr)
 }
 
 func accountsImportAccountsImportError(t *testing.T) {
@@ -126,7 +130,11 @@ func accountsStartWatcherPanic(t *testing.T) {
 	defer func(){
 		err := recover()
 		require.NotNil(t, err, "must panic")
-		require.EqualError(t, err.(error), "startWalker - ERROR Lstat : The system cannot find the path specified.")
+		sErr := err.(error).Error()
+		require.Condition(t, func() bool {
+			return sErr == "startWalker - ERROR lstat : no such file or directory" ||
+				sErr == "startWalker - ERROR Lstat : The system cannot find the path specified."
+		},sErr)
 		require.Equal(t, 0, cntl.ToNotify())
 	}()
 	acc := newAccounts()
