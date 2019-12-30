@@ -83,7 +83,7 @@ pipeline {
     } // stages
     post {
         always {
-            sh 'find . -type d | grep -v ".sonarqube | xargs -i rm -rf {}'
+            sh 'find . -type d | grep -v ".sonarqube" | xargs -i rm -rf {}'
         } // always
     } //post
 } // pipeline
