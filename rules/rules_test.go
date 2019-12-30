@@ -7,6 +7,8 @@ import (
 	"mailAssistant/cntl"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 	"time"
 )
@@ -159,8 +161,11 @@ func rulesImportRuleModify(t *testing.T) {
 
 func rulesImportRuleDelete(t *testing.T) {
 	r := newRules(nil)
-	r.files[fileName] = "testcase"
-	r.files[fileNameUx] = "testcase"
+	if strings.ToLower(runtime.GOOS) == "windows" {
+		r.files[fileName] = "testcase"
+	}else{
+		r.files[fileNameUx] = "testcase"
+	}
 	r.Rules["testcase"] = Rule{}
 
 	require.Len(t, r.Rules, 1)
