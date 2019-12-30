@@ -85,9 +85,11 @@ pipeline {
         stage('docker me'){
             steps {
                 withRegistry('https://registry.mahillmann.de:5000', 'nexus') {
-                    def image =dockerBuild(".build/Dockerfile", false)
-                    image.push("${BRANCH_NAME}-${BUILD_NUMBER}")
-                }
+                    script {
+                        def image =dockerBuild(".build/Dockerfile", false)
+                            image.push("${BRANCH_NAME}-${BUILD_NUMBER}")
+                    } // script
+                } // withRegistry
             } // steps
         } // stage
     } // stages
