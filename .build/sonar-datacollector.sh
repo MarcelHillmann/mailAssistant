@@ -50,7 +50,7 @@ function go_junit() {
     reset
     if [[ -f .sonarqube/test-report.json ]]; then
         header "run go-junit-report" 6
-        go test -v 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
+        go test -v ./... 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
         showState $?
     fi
     reset

@@ -13,14 +13,12 @@ pipeline {
     stages {
         stage('build'){
             steps {
-                sh 'mkdir upload'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]) {
-                    sh "go build -o upload/mailAssistent.amd64_linux"
+                    sh "mkdir upload; go build -o upload/mailAssistent.amd64_linux"
                     withEnv(["GOOS=windows"]){
                         sh "go build -o upload/mailAssistent.amd64_windows.exe"
                     }
                 } // withEnv
-                sh 'ls -l upload/*'
             } // steps
         } // stage
         stage('Test and analasys') {
@@ -29,6 +27,7 @@ pipeline {
                     script {
                         withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
                             sh'bash .build/sonar-datacollector.sh'
+                            sh 'ls -l upload/*'
                             if ( BRANCH_NAME.startsWith('PR-')){
                                 sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#PR' '-Dsonar.projectName=jenkins_mailAssistent_PR'"
                             }else{
