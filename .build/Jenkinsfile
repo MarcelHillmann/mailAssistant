@@ -69,15 +69,22 @@ pipeline {
             when {  not { branch 'PR-*' } }
             steps{
                 script{
-                    ["mailAssistant.amd64_linux"
-                    ,"mailAssistant.amd64_windows.exe"].each{
-                        nexusUpload("nexus",
-                                "https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}",
-                                "./upload/${it}")
+                    if ( currentBuild.result=="SUCCESS" ){
+                        ["mailAssistant.amd64_linux"
+                        ,"mailAssistant.amd64_windows.exe"].each{
+                            nexusUpload("nexus",
+                                        "https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}",
+                                        "./upload/${it}")
 
 
-                    } // each
+                        } // each
+                    } // != SUCCESS
                 } // script
+            } // steps
+        } // stage
+        stage('docker me'){
+            steps {
+                dockerBuild("", false)
             } // steps
         } // stage
     } // stages
