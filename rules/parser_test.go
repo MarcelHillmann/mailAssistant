@@ -9,6 +9,7 @@ import (
 	"log"
 	"mailAssistant/logging"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -28,10 +29,15 @@ func rulesParserFailOpen(t *testing.T) {
 		log.SetFlags(log.LstdFlags)
 		logging.SetLevel("mailAssistant.rules.parseYaml", "OFF")
 
-		require.Equal(t, "SEVERE  [mailAssistant.rules.parseYaml#lambda] open ../testdata/rules/notExists.yml: The system cannot find the file specified.\n", buffer.String())
+		require.Condition(t, func() bool {
+			return strings.HasPrefix(buffer.String(), "SEVERE  [mailAssistant.rules.parseYaml#lambda] open ../testdata/rules/notExists.yml:")
+		}, buffer.String())
 		err := recover()
 		require.NotNil(t, err)
-		require.EqualError(t, err.(error), "open ../testdata/rules/notExists.yml: The system cannot find the file specified.")
+		sErr := err.(error).Error()
+		require.Condition(t, func() bool {
+			return strings.HasPrefix(sErr, "SEVERE  [mailAssistant.rules.parseYaml#lambda] open ../testdata/rules/notExists.yml:")
+		}, sErr)
 	}()
 
 	_, _ = parseYaml("../testdata/rules", "", "../testdata/rules/notExists.yml")

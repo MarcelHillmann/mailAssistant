@@ -65,12 +65,12 @@ func TestRules_GetLogger_ReReInit(t *testing.T) {
 
 func rulesImportRuleCreate(t *testing.T) {
 	r := newRules(nil)
-	require.Len(t, r.Rules, 0)
-	require.Len(t, r.files, 0)
+	require.Len(t, r.Rules, 0, "rules pre")
+	require.Len(t, r.files, 0, "files pre")
 
-	r.importRule("..", "../testdata/rules/fooBar.yml", fsnotify.Create)
-	require.Len(t, r.Rules, 1)
-	require.Len(t, r.files, 1)
+	r.importRule("..", "testdata/rules/fooBar.yml", fsnotify.Create)
+	require.Len(t, r.Rules, 1, "rules post")
+	require.Len(t, r.files, 1, "files post")
 
 	require.Equal(t, "testcase", r.files[fileName])
 	tc := r.Rules["testcase"]
