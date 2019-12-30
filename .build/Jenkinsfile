@@ -14,9 +14,9 @@ pipeline {
         stage('build'){
             steps {
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]) {
-                    sh "mkdir upload; go build -o upload/mailAssistent.amd64_linux"
+                    sh "mkdir upload; go build -o upload/mailAssistant.amd64_linux"
                     withEnv(["GOOS=windows"]){
-                        sh "go build -o upload/mailAssistent.amd64_windows.exe"
+                        sh "go build -o upload/mailAssistant.amd64_windows.exe"
                     }
                 } // withEnv
             } // steps
@@ -27,11 +27,10 @@ pipeline {
                     script {
                         withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
                             sh'bash .build/sonar-datacollector.sh'
-                            sh 'ls -l upload/*'
                             if ( BRANCH_NAME.startsWith('PR-')){
-                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#PR' '-Dsonar.projectName=jenkins_mailAssistent_PR'"
+                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#PR' '-Dsonar.projectName=jenkins_mailAssistant_PR'"
                             }else{
-                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistent_${BRANCH_NAME}'"
+                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistant_${BRANCH_NAME}'"
                             }
                         } // withEnv
                     } // script
