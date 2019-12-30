@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-@Library(["gitea-lib"]) _
+@Library(["gitea-lib", "nexus-lib"]) _
 
 pipeline {
     agent { label "linux" }
@@ -68,13 +68,21 @@ pipeline {
         stage('publish'){
             when {  not { branch 'PR-*' } }
             steps{
-                withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                ["mailAssistant.amd64_linux","mailAssistant.amd64_windows.exe"].each{
+                    nexusUpload("nexus",
+                            "https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}",
+                            "./upload/${it}")
+
+
+                }
+                /* withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'pass', usernameVariable: 'user')]) {
                     script {
                         ["mailAssistant.amd64_linux","mailAssistant.amd64_windows.exe"].each{
                             sh "curl -s --user '${user}:${pass}' --upload-file ./upload/${it} https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}"
                         } // each
                     } // script
                 } // withCredentials
+                */
                 // junit(testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '.sonarqube/test.xml')
             } // steps
         } // stage
