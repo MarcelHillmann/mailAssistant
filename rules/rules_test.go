@@ -68,7 +68,7 @@ func rulesImportRuleCreate(t *testing.T) {
 	require.Len(t, r.Rules, 0)
 	require.Len(t, r.files, 0)
 
-	r.importRule("..", "testdata/rules/fooBar.yml", fsnotify.Create)
+	r.importRule("..", "../testdata/rules/fooBar.yml", fsnotify.Create)
 	require.Len(t, r.Rules, 1)
 	require.Len(t, r.files, 1)
 
@@ -121,14 +121,18 @@ func rulesImportRuleCreateAgain(t *testing.T) {
 	}()
 	r := newRules(nil)
 	r.files[fileName] = ""
-	r.importRule("..", "testdata/rules/fooBar.yml", fsnotify.Create)
+	r.importRule("", "../testdata/rules/fooBar.yml", fsnotify.Create)
 }
 
 func rulesImportRuleCreateNotExisting(t *testing.T) {
 	defer func() {
 		err := recover()
 		require.NotNil(t, err)
-		require.EqualError(t, err.(error), "open ..\\testdata\\rules\\dont_exist.yml: The system cannot find the file specified.")
+		sErr := err.(error).Error()
+		require.Condition(t, func() bool {
+			return sErr == "open ..\\testdata\\rules\\dont_exist.yml: The system cannot find the file specified." ||
+				sErr == "open ../testdata/rules/dont_exist.yml: no such file or directory"
+		}, sErr)
 	}()
 	r := newRules(nil)
 	r.files[fileName] = ""

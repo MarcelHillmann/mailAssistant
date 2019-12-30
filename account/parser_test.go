@@ -32,11 +32,11 @@ func accountParserFailOpen(t *testing.T){
 	require.NotNil(t, err)
 	require.Nil(t, aux)
 
+	str := buffer.String()
 	require.Condition(t, func()bool {
-		str := buffer.String()
 		return str == "SEVERE  [mailAssistant.account.parseYaml#lambda] open notExists.yml: The system cannot find the file specified.\n" ||
 			str == "SEVERE  [mailAssistant.account.parseYaml#lambda] open notExists.yml: no such file or directory\n"
-	}, buffer.String())
+	}, str)
 }
 
 func accountParserFailNotYaml(t *testing.T){
