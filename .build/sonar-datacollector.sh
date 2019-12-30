@@ -64,7 +64,7 @@ function showState(){
     then
         echo -e "\e[32m PASSED\e[0m"
     else
-        echo -e "\e[91m Failed\e[0m"
+        echo -e "\e[91m FAILED\e[0m"
     fi # failed
 }
 
