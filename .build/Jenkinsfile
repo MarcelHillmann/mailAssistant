@@ -90,7 +90,7 @@ pipeline {
                         if ( BRANCH_NAME.startsWith('PR-')){
                             tag="pull_request"
                         }
-                        def img = docker.build("mailassistant:${tag}", "-f .build/Dockerfile")
+                        def img = docker.build("mailassistant:${tag}", ".build/Dockerfile")
                             img.push("${tag}")
                     } // script
                 } // withDockerRegistry
