@@ -84,10 +84,12 @@ pipeline {
         } // stage
         stage('docker me'){
             steps {
-                docker.withRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
-                    def img = docker.build("mailAssistant:${BRANCH_NAME}", "-f .build/Dockerfile")
-                        img.push("${BRANCH_NAME}")
-                } // withDockerRegistry
+                script {
+                    docker.withRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
+                        def img = docker.build("mailAssistant:${BRANCH_NAME}", "-f .build/Dockerfile")
+                            img.push("${BRANCH_NAME}")
+                    } // withDockerRegistry
+                }
             } // steps
         } // stage
     } // stages
