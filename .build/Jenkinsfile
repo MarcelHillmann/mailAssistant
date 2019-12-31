@@ -84,17 +84,19 @@ pipeline {
         } // stage
         stage('docker me'){
             steps {
-                script {
-                    sh 'id; whoami; who'
-                    def tag = BRANCH_NAME
-                    if ( BRANCH_NAME.startsWith('PR-')){
-                        tag="pull_request"
-                    }
-                    def img = docker.build("mailassistant:${tag}", ".build")
-                    withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
+                dir('.build'){
+                    script {
+                        def tag = BRANCH_NAME
+                        if ( BRANCH_NAME.startsWith('PR-')){
+                            tag="pull_request"
+                        }
+                        sh 'mv ../upload/mailAssistant.amd64_linux mailAssistant.amd64_linux'
+                        def img = docker.build("mailassistant:${tag}", ".build")
+                        withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
                             img.push("${tag}")
-                    } // withDockerRegistry
-                } // script
+                        } // withDockerRegistry
+                    } // script
+                } // dir
             } // steps
         } // stage
     } // stages
