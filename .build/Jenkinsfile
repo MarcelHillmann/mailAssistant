@@ -91,7 +91,7 @@ pipeline {
                             tag="pull_request"
                         }
                         sh 'mv ../upload/mailAssistant.amd64_linux mailAssistant.amd64_linux'
-                        def img = docker.build("https://registry.mahillmann.de:5000/mailassistant:${tag}")
+                        def img = docker.build("registry.mahillmann.de:5000/mailassistant:${tag}")
                         withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
                             img.push("${tag}-${BUILD_NUMBER}")
                         } // withDockerRegistry
