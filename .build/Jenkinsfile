@@ -86,8 +86,12 @@ pipeline {
             steps {
                 withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
                     script {
-                        def img = docker.build("mailAssistant:${BRANCH_NAME}", "-f .build/Dockerfile")
-                            img.push("${BRANCH_NAME}")
+                        def tag = BRANCH_NAME
+                        if ( BRANCH_NAME.startsWith('PR-')){
+                            tag="pull_request"
+                        }
+                        def img = docker.build("mailassistant:${tag}", "-f .build/Dockerfile")
+                            img.push("${tag}")
                     } // script
                 } // withDockerRegistry
             } // steps
