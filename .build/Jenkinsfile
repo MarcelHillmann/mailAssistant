@@ -75,8 +75,6 @@ pipeline {
                             nexusUpload("nexus",
                                         "https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}",
                                         "./upload/${it}")
-
-
                         } // each
                     } // != SUCCESS
                 } // script
@@ -91,8 +89,8 @@ pipeline {
                             tag="pull_request"
                         }
                         sh 'mv ../upload/mailAssistant.amd64_linux mailAssistant.amd64_linux'
-                        def img = docker.build("registry.mahillmann.de:5000/mailassistant:${tag}")
-                        withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
+                        def img = docker.build("registry.mahillmann.de/mailassistant:${tag}")
+                        withDockerRegistry (url: 'https://registry.mahillmann.de', credentialsId: 'nexus') {
                             img.push("${tag}")
                         } // withDockerRegistry
                     } // script
