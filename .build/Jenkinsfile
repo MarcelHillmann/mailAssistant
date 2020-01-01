@@ -89,7 +89,7 @@ pipeline {
                             tag="pull_request"
                         }
                         sh 'mv ../upload/mailAssistant.amd64_linux mailAssistant.amd64_linux'
-                        def img = docker.build("--squash --compress -t registry.mahillmann.de/mailassistant:${tag}")
+                        def img = docker.build("registry.mahillmann.de/mailassistant:${tag} --squash --compress")
                         withDockerRegistry (url: 'https://registry.mahillmann.de', credentialsId: 'nexus') {
                             img.push("${tag}")
                         } // withDockerRegistry
