@@ -75,6 +75,8 @@ func (j *Job) getSaveTo() string {
 	return j.saveTo
 }
 
+const mailPrefix = "mail_"
+
 func (j Job) getSearchParameter() [][]interface{} {
 	result := make([][]interface{}, 0, 0)
 	for _, key := range j.GetArgKeys() {
@@ -88,13 +90,13 @@ func (j Job) getSearchParameter() [][]interface{} {
 				before := time.Now().Unix() - int64(duration.Seconds())
 				arg := append(make([]interface{}, 0), "before", time.Unix(before, 0).Format(imap.DateLayout))
 				result = append(result, arg)
-			case lKey == "mail_or":
+			case lKey == "mail_or" ||lKey == "mail_not":
 				orList := j.GetList(key)
-				arg := append(make([]interface{}, 0), "or")
+				arg := append(make([]interface{}, 0), strings.TrimPrefix(lKey, mailPrefix))
 				arg = parseRecursive(arg, orList)
 				result = append(result, arg)
-			case strings.HasPrefix(lKey, "mail_"):
-				arg := append(make([]interface{}, 0), strings.Replace(lKey, "mail_", "", 1), j.GetArg(key))
+			case strings.HasPrefix(lKey, mailPrefix):
+				arg := append(make([]interface{}, 0), strings.TrimPrefix(lKey, mailPrefix), j.GetArg(key))
 				result = append(result, arg)
 			default:
 				//
