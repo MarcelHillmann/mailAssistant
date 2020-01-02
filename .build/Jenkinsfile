@@ -16,7 +16,7 @@ pipeline {
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
                     sh "go build -o upload/mailAssistant.amd64_linux"
                 }
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux","GOARCH=amd64]) {
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]) {
                     sh "go build -ldflags='-w -s' -o upload/mailAssistant.alpine"
                 }
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=windows"]) {
