@@ -1,9 +1,8 @@
 FROM alpine:3.11
 LABEL maintainer="Marcel Hillmann"
-COPY mailAssistant /usr/bin/mailAssistant
-COPY entrypoint.sh /usr/bin/entrypoint.sh
+COPY mailAssistant entrypoint.sh /usr/bin/
 RUN apk add --no-cache bash libc-dev inotify-tools
-VOLUME ["/opt/mailAssistant/resources"]
 WORKDIR /opt/mailAssistant
+VOLUME ["/opt/mailAssistant/resources"]
 USER nobody:nogroup
 ENTRYPOINT /opt/mailAssistant/entrypoint.sh
