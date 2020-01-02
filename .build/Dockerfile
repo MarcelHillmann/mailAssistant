@@ -5,4 +5,4 @@ RUN apk add --no-cache bash libc-dev inotify-tools && chmod +x /usr/bin/entrypoi
 WORKDIR /opt/mailAssistant
 VOLUME ["/opt/mailAssistant/resources"]
 USER nobody:nogroup
-ENTRYPOINT /opt/mailAssistant/entrypoint.sh
+ENTRYPOINT entrypoint.sh
