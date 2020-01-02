@@ -134,7 +134,7 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 		}
 		rules.getLogger().Debug("Remove ", path,"=>", file,"->", fileName)
 		ruleFileName := strings.TrimPrefix(fileName, strings.ToLower(rules.rulesDir))
-		rules.getLogger().Debug("Remove 111 ", ruleFileName)
+		rules.getLogger().Debug("Remove <<<", ruleFileName)
 		ruleName := rules.files[ruleFileName]
 		rules.Rules[ruleName].Stop()
 		delete(rules.Rules, ruleName)
