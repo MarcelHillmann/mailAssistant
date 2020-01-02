@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-if [ "$1" == "" ]
-then
-   mailAssistant run
+if [[ "$1" == "" ]]; then
+   /usr/bin/mailAssistant run
 else
-   mailAssitant $@
+   /usr/bin/mailAssistant $@
 fi
