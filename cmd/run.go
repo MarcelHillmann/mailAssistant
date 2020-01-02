@@ -9,7 +9,10 @@ import (
 	"syscall"
 )
 
+// RunAssistant is execute the main logic
 func RunAssistant(c *cli.Context) error {
+	_ = c.String("config")
+
 	if accounts, err := account.ImportAccounts(); err != nil {
 		return err
 	} else if err := rules.ImportAndLaunch(accounts); err != nil {
