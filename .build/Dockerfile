@@ -5,4 +5,4 @@ RUN apk add --no-cache bash libc-dev inotify-tools
 VOLUME ["/opt/mailAssistant/resources"]
 WORKDIR /opt/mailAssistant
 USER nobody:nogroup
-ENTRYPOINT ["/usr/bin/mailAssistant"]
+ENTRYPOINT /usr/bin/mailAssistant run
