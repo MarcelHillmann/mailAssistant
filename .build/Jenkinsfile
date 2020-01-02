@@ -92,7 +92,7 @@ pipeline {
                         if ( BRANCH_NAME.startsWith('PR-')){
                             tag="pull_request"
                         }
-                        sh 'cp ../upload/mailAssistant.amd64_linux mailAssistant.amd64_linux'
+                        sh 'cp ../upload/mailAssistant.alpine mailAssistant'
                         def img = docker.build("registry.mahillmann.de:5000/mailassistant:${tag}-latest", "--compress .")
                         withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
                             img.push("${tag}")
