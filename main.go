@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"mailAssistant/appCmd"
 	"os"
 )
@@ -10,22 +10,27 @@ var version string
 
 func main() {
 	app := cli.NewApp()
-	app.Author = "Marcel Hillmann"
+	app.Authors = []*cli.Author {
+		{
+			Name: "Marcel Hillmann",
+		},
+	}
 	app.Name = "mailAssistant"
 	app.Version = version
 	app.Copyright = "(c) 2020 mahillmann.de"
 	app.Usage = "automation for my Mail Accounts, like Outlook rules"
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:   "configs",
 			Value:  "",
 			Usage:  "where to find the configs",
-			EnvVar: "CONFIG_PATH",
+			EnvVars: []string{ "CONFIG_PATH" },
+			Required: false,
 		},
 	}
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:    "run",
 			Aliases: []string{"r"},

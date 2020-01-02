@@ -13,6 +13,7 @@ require (
 	github.com/onatm/clockwerk v0.0.0-20190910145222-354c9bd6cf28
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli v1.22.2
+	github.com/urfave/cli/v2 v2.1.1
 	golang.org/x/sys v0.0.0-20191128015809-6d18c012aee9 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
 )
