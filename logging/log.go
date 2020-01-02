@@ -157,7 +157,7 @@ func normalize(name string) string {
 		func(ugly string) string {
 			return strings.Replace(ugly, "/", ".", -1)
 		}, func(ugly string) string {
-			return strings.Replace(ugly, "mailassistant.logging.testlogger.", "", -1)
+			return strings.TrimPrefix(ugly, "mailassistant.logging.testlogger.")
 		}, func(ugly string) string {
 			return strings.Replace(ugly, "(", "", -1)
 		}, func(ugly string) string {
@@ -170,7 +170,12 @@ func normalize(name string) string {
 			return strings.TrimSuffix(ugly, ".logger")
 		}, func(ugly string) string {
 			return strings.Replace(ugly, "${project}", "mailAssistant", -1)
+		},func(ugly string ) string {
+			return strings.TrimSuffix(ugly,"mailassistant.actions.")
+		},func(ugly string ) string {
+			return strings.TrimSuffix(ugly,"mailAssistant.actions.")
 		},
+
 	}
 
 	makeItNicer := name
