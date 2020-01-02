@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/urfave/cli/v2"
-	"mailAssistant/appCmd"
+	cmd "mailAssistant/appCmd"
 	"os"
 )
 
@@ -35,7 +35,7 @@ func main() {
 			Name:    "run",
 			Aliases: []string{"r"},
 			Usage:   "execute the mailAssistant",
-			Action:  appCmd.RunAssistant,
+			Action:  cmd.RunAssistant,
 		},
 	}
 
