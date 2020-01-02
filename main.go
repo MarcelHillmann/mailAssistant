@@ -1,22 +1,38 @@
 package main
 
 import (
-	"mailAssistant/account"
-	"mailAssistant/cntl"
-	"mailAssistant/logging"
-	"mailAssistant/rules"
+	"github.com/urfave/cli"
+	"mailAssistant/cmd"
 	"os"
-	"syscall"
 )
 
+var version string
+
 func main() {
-	if accounts, err := account.ImportAccounts(); err != nil {
-		logging.NewGlobalLogger().Panic(err)
-	} else if err := rules.ImportAndLaunch(accounts); err != nil {
-		logging.NewGlobalLogger().Panic(err)
-	} else {
-		cntl.WaitForOsNotify(os.Interrupt, syscall.SIGTERM)
-		cntl.WaitForNotify()
-		cntl.StopAllClocks()
+	app := cli.NewApp()
+	app.Author = "Marcel Hillmann"
+	app.Name = "mailAssistant"
+	app.Version = version
+	app.Copyright = "(c) 2020 mahillmann.de"
+	app.Usage = "automation for my Mail Accounts, like Outlook rules"
+	app.EnableBashCompletion = true
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name: "configs",
+			Value: "",
+			Usage: "where to find the configs",
+			EnvVar: "CONFIG_PATH",
+		},
 	}
+
+	app.Commands =[]cli.Command {
+		{	Name: "run",
+			Aliases: []string{"r"},
+			Usage: "execute the mailAssistant",
+			Action: cmd.RunAssistant,
+		},
+	}
+
+	app.Run(os.Args)
+
 }
