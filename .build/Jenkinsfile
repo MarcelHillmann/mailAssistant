@@ -13,11 +13,11 @@ pipeline {
     stages {
         stage('build'){
             steps {
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]) {
-                    sh "mkdir upload; go build -o upload/mailAssistant.amd64_linux"
-                    withEnv(["GOOS=windows"]){
-                        sh "go build -o upload/mailAssistant.amd64_windows.exe"
-                    }
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
+                    sh "go build -o upload/mailAssistant.amd64_linux"
+                }
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=windows"]) {
+                    sh "go build -o upload/mailAssistant.amd64_windows.exe"
                 } // withEnv
             } // steps
         } // stage
@@ -88,7 +88,7 @@ pipeline {
                         if ( BRANCH_NAME.startsWith('PR-')){
                             tag="pull_request"
                         }
-                        sh 'mv ../upload/mailAssistant.amd64_linux mailAssistant.amd64_linux'
+                        sh 'cp ../upload/mailAssistant.amd64_linux mailAssistant.amd64_linux'
                         def img = docker.build("registry.mahillmann.de:5000/mailassistant:${tag}-latest", "--compress .")
                         withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
                             img.push("${tag}")
