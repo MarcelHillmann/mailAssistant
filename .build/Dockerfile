@@ -1,4 +1,4 @@
-FROM alpine:3.11.2
+FROM ubuntu:18.10
 LABEL maintainer="Marcel Hillmann"
 COPY --chown=nobody:nobody mailAssistant.amd64_linux /usr/bin/mailAssistant
 RUN apk --no-cache add ca-certificates bash; \
