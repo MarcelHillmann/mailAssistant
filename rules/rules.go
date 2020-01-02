@@ -123,7 +123,7 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 		rules.importRule(path, file, fsnotify.Remove)
 		rules.importRule(path, file, fsnotify.Create)
 	} else if op == fsnotify.Remove {
-		rules.getLogger().Debug("Remove ", file)
+		rules.getLogger().Debug("Remove ", path,"=>", file)
 		fileName := strings.ToLower(filepath.Join(path, file))
 		ruleFileName := strings.Replace(fileName, strings.ToLower(rules.rulesDir), "", -1)
 		ruleName := rules.files[ruleFileName]
