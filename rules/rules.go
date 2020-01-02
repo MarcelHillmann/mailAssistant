@@ -55,6 +55,7 @@ func newRules(accounts *account.Accounts) Rules {
 type Rules struct {
 	files    map[string]string
 	Rules    map[string]Rule
+	removed  map[string] bool
 	accounts *account.Accounts
 	rulesDir string
 }
@@ -116,9 +117,10 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 
 			log.Print(">>> ",rule.fileName)
 
-			if _, found := rules.files[rule.fileName]; found {
+			if _, found := rules.files[rule.fileName]; found && ! rules.removed[rule.fileName]{
 				rules.getLogger().Panic(rule.fileName)
 			}
+			delete(rules.removed, rule.fileName)
 			rules.files[rule.fileName] = rule.Name
 			r.Schedule(rules.accounts)
 		}
@@ -135,6 +137,7 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 		rules.getLogger().Debug("Remove ", path,"=>", file,"->", fileName)
 		ruleFileName := strings.TrimPrefix(fileName, strings.ToLower(rules.rulesDir))
 		rules.getLogger().Debug("Remove <<<", ruleFileName)
+		rules.removed[ruleFileName] = true
 		ruleName := rules.files[ruleFileName]
 		rules.Rules[ruleName].Stop()
 		delete(rules.Rules, ruleName)
