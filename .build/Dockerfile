@@ -1,7 +1,8 @@
-FROM golang:1.13-alpine3.11
+FROM alpine:3.12
 LABEL maintainer="Marcel Hillmann"
-COPY --chown=nobody:nobody mailAssistant.amd64_linux /usr/local/bin/
-RUN mv /usr/local/bin/mailAssistant.amd64_linux /usr/local/bin/mailAssistant; chmod 0555 /usr/local/bin/mailAssistant
+COPY --chown=nobody:nobody mailAssistant.amd64_linux /usr/bin/mailAssistant
+RUN apk --no-cache add ca-certificates bash; \
+    chmod 0555 /usr/bin/mailAssistant
 USER nobody:nobody
 VOLUME ["/opt/mailAssistant/resources"]
 WORKDIR /opt/mailAssistant
