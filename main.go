@@ -18,15 +18,16 @@ func main() {
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name: "configs",
-			Value: "",
-			Usage: "where to find the configs",
+			Name:   "configs",
+			Value:  "",
+			Usage:  "where to find the configs",
 			EnvVar: "CONFIG_PATH",
 		},
 	}
 
-	app.Commands =[]cli.Command {
-		{	Name: "run",
+	app.Commands = []cli.Command{
+		{
+			Name:    "run",
 			Aliases: []string{"r"},
 			Usage:   "execute the mailAssistant",
 			Action:  appCmd.RunAssistant,
