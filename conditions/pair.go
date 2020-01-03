@@ -14,7 +14,7 @@ func(p pair) ParseYaml(interface{}) {
 	panic(fmt.Errorf("not yet implemented"))
 }
 
-func (p pair) Add(Condition){
+func (p pair) Add(condition){
 	panic(fmt.Errorf("not yet implemented"))
 }
 
