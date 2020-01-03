@@ -27,7 +27,7 @@ func ParseYaml(item interface{}) Condition {
 
 
 func emptyConditions() *[]Condition {
-	n := make([]condition, 0)
+	n := make([]Condition, 0)
 	return &n
 }
 
