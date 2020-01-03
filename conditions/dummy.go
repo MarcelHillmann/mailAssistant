@@ -6,7 +6,7 @@ type dummy struct {
 
 }
 
-func (d dummy) Add(c condition) {
+func (d dummy) Add(c Condition) {
 	_ = c
 }
 
