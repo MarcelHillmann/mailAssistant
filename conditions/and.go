@@ -3,14 +3,14 @@ package conditions
 import "fmt"
 
 type and struct {
-	conditions *[]condition
+	conditions *[]Condition
 }
 
 func (a and) ParseYaml(item interface{}) {
 	parseYaml(item, a)
 }
 
-func (a and) Add(c condition) {
+func (a and) Add(c Condition) {
 	*a.conditions = append(*a.conditions, c)
 }
 
