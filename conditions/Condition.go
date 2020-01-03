@@ -9,15 +9,15 @@ import (
 	"time"
 )
 
-type condition interface {
-	Add(condition)
+type Condition interface {
+	Add(Condition)
 	Get() []interface{}
 	String() string
 	ParseYaml(interface{})
 }
 
 // ParseYaml is reading a yaml stream and convert it to a Condition
-func ParseYaml(item interface{}) condition {
+func ParseYaml(item interface{}) Condition {
 	cond := and{emptyConditions()}
 	if item != nil {
 		cond.ParseYaml(item)
@@ -26,12 +26,12 @@ func ParseYaml(item interface{}) condition {
 }
 
 
-func emptyConditions() *[]condition {
+func emptyConditions() *[]Condition {
 	n := make([]condition, 0)
 	return &n
 }
 
-func parseYaml(item interface{}, condition condition) {
+func parseYaml(item interface{}, condition Condition) {
 	if v2, ok := item.(map[string]interface{}); ok {
 		notAllowedKey(v2)
 		field := strings.ToLower(v2["field"].(string))
