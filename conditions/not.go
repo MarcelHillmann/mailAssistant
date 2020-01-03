@@ -1,13 +1,13 @@
 package conditions
 
 type not struct {
-	conditions *[]condition
+	conditions *[]Condition
 }
 
 func (n not) ParseYaml(item interface{}){
 	parseYaml(item, n)
 }
-func (n not) Add(c condition) {
+func (n not) Add(c Condition) {
 	*n.conditions = append(*n.conditions, c)
 }
 
