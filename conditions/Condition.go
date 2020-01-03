@@ -17,7 +17,7 @@ type condition interface {
 }
 
 // ParseYaml is reading a yaml stream and convert it to a Condition
-func ParseYaml(item interface{}) and {
+func ParseYaml(item interface{}) condition {
 	cond := and{emptyConditions()}
 	if item != nil {
 		cond.ParseYaml(item)
