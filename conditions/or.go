@@ -1,14 +1,14 @@
 package conditions
 
 type or struct {
-	conditions *[]condition
+	conditions *[]Condition
 }
 
 func (o or) ParseYaml(item interface{}){
 	parseYaml(item, o)
 }
 
-func (o or) Add(c condition) {
+func (o or) Add(c Condition) {
 	*o.conditions = append(*o.conditions, c)
 }
 
