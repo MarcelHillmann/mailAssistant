@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Condition represents a parsed YAML stream, for search on the IMAP server
 type Condition interface {
 	Add(Condition)
 	Get() []interface{}
