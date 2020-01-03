@@ -10,7 +10,7 @@ var version string
 
 func main() {
 	app := cli.NewApp()
-	app.Authors = []*cli.Author {
+	app.Authors = []*cli.Author{
 		{
 			Name: "Marcel Hillmann",
 		},
@@ -22,10 +22,10 @@ func main() {
 	app.EnableBashCompletion = true
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
-			Name:   "configs",
-			Value:  "",
-			Usage:  "where to find the configs",
-			EnvVars: []string{ "CONFIG_PATH" },
+			Name:     "configs",
+			Value:    "",
+			Usage:    "where to find the configs",
+			EnvVars:  []string{"CONFIG_PATH"},
 			Required: false,
 		},
 	}
@@ -40,5 +40,4 @@ func main() {
 	}
 
 	app.Run(os.Args)
-
 }

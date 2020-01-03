@@ -12,15 +12,15 @@ import (
 )
 
 func TestNewJob(t *testing.T) {
-	j := NewJob("dummy", "foo_bar",make(map[string]interface{}),nil)
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil)
 	require.NotNil(t, j)
 }
 
 func TestJob_Run(t *testing.T) {
-	j := NewJob("dummy", "foo_bar",make(map[string]interface{}),nil)
-	logging.SetLevel(j.log.Name(),"all")
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil)
+	logging.SetLevel(j.log.Name(), "all")
 	defer func() {
-		logging.SetLevel(j.log.Name(),"none")
+		logging.SetLevel(j.log.Name(), "none")
 		log.SetFlags(log.LstdFlags)
 		log.SetOutput(os.Stderr)
 	}()
@@ -29,19 +29,19 @@ func TestJob_Run(t *testing.T) {
 	log.SetOutput(buffer)
 	j.Run()
 	require.NotEmpty(t, buffer.String())
-	require.Equal(t, "DEBUG   [mailAssistant.actions.newDummy#mailassistant.actions.job.run] >>\n" +
-		"DEBUG   [mailAssistant.actions.newDummy#lambda] map[]\n" +
+	require.Equal(t, "DEBUG   [mailAssistant.actions.newDummy#mailassistant.actions.job.run] >>\n"+
+		"DEBUG   [mailAssistant.actions.newDummy#lambda] map[]\n"+
 		"DEBUG   [mailAssistant.actions.newDummy#mailassistant.actions.job.run] <<\n", buffer.String())
 }
 
 func TestJob_GetAccount(t *testing.T) {
 	acc := account.Accounts{}
 	acc.Account = make(map[string]account.Account)
-	acc.Account["test"] = account.NewAccountForTest(t,"test","foo","bar","l",false)
-	j := NewJob("dummy", "foo_bar",make(map[string]interface{}),&acc)
-	logging.SetLevel(j.log.Name(),"all")
+	acc.Account["test"] = account.NewAccountForTest(t, "test", "foo", "bar", "l", false)
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), &acc)
+	logging.SetLevel(j.log.Name(), "all")
 	defer func() {
-		logging.SetLevel(j.log.Name(),"none")
+		logging.SetLevel(j.log.Name(), "none")
 		log.SetFlags(log.LstdFlags)
 		log.SetOutput(os.Stderr)
 	}()
@@ -51,17 +51,17 @@ func TestJob_GetAccount(t *testing.T) {
 	require.NotNil(t, j.GetAccount("test"))
 	require.Nil(t, j.GetAccount("test22"))
 	require.NotEmpty(t, buffer.String())
-	require.Equal(t, "SEVERE  [mailAssistant.actions.newDummy#mailassistant.actions.job.getaccount] test22 is not defined\n",buffer.String())
+	require.Equal(t, "SEVERE  [mailAssistant.actions.newDummy#mailassistant.actions.job.getaccount] test22 is not defined\n", buffer.String())
 }
 
 func TestJob_GetLogger(t *testing.T) {
-	j := NewJob("dummy", "foo_bar",make(map[string]interface{}),nil)
-	log := j.GetLogger()
-	require.NotNil(t,log)
-	require.Equal(t, "mailAssistant.actions.newDummy", log.Name())
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil)
+	logger := j.GetLogger()
+	require.NotNil(t, logger)
+	require.Equal(t, "mailAssistant.actions.newDummy", logger.Name())
 }
 
-func TestJob_getSaveTo(t *testing.T){
+func TestJob_getSaveTo(t *testing.T) {
 	const (
 		w = "bar\\foo"
 		l = "foo/bar"
@@ -70,53 +70,45 @@ func TestJob_getSaveTo(t *testing.T){
 	args["saveToWin"] = w
 	args["saveTo"] = l
 
-	j := NewJob("","",args,nil)
+	j := NewJob("", "", args, nil)
 	saveToV := j.getSaveTo()
 	if runtime.GOOS == "windows" {
 		require.Equal(t, w, saveToV)
 		require.Equal(t, w, j.getSaveTo())
-	}else{
+	} else {
 		require.Equal(t, l, saveToV)
 		require.Equal(t, l, j.getSaveTo())
 	}
 
-	j.saveTo=""
+	j.saveTo = ""
 	delete(args, "saveToWin")
 	saveToV = j.getSaveTo()
 	require.Equal(t, l, saveToV)
 }
 
-func TestJobParseRecursive(t *testing.T){
-	list := make([]interface{},0)
-	list = append(list, map[string]interface{}{"field":"foo", "value":"bar"})
-	assertMe := make([]interface{},0)
-	result := parseRecursive(assertMe,list)
-	require.Len(t, result,2)
-	require.Equal(t, "foo", result[0])
-	require.Equal(t, "bar", result[1])
-
-	list[0].(map[string]interface{})["value"] = []interface{}{map[string]interface{}{"field":"bar","value":"b"}}
-	result2 := parseRecursive(assertMe,list)
-	require.Len(t, result2,3)
-	require.Equal(t, "foo", result2[0])
-	require.Equal(t, "bar", result2[1])
-	require.Equal(t, "b", result2[2])
-}
-
-func TestJobGetSearchParameter(t *testing.T){
+func TestJobGetSearchParameter(t *testing.T) {
 	args := make(map[string]interface{})
-	args["mail_account"] ="ignore"
-	args["mail_foo"] ="bar"
-	args["mail_ying"] ="yang"
-	args["mail_or"] = []interface{}{map[string]interface{}{"field":"foo", "value": "bar"}}
-	args["mail_older"]= "every 5 seconds"
-	j := NewJob("dummy", "foo_bar",args,nil)
+	args["mail_account"] = "ignore"
+
+
+
+	searchArg := make([]interface{},4)
+	searchArg[0] = map[string] interface{} {"field":"ALL"}
+	searchArg[1] = map[string] interface{} {"field":"CC", "value": "yang"}
+	searchArg[2] = map[string] interface{} {"field":"older", "value": "every 5 seconds"}
+	searchArg[3] = map[string] interface{} {"field":"or", "value": []interface{}{map[string]interface{}{"field": "from", "value": "foo@bar.org"}}}
+	args["search"] = searchArg
+	j := NewJob("dummy", "foo_bar", args, nil)
 	search := j.getSearchParameter()
 
 	require.NotNil(t, search)
-	require.Len(t, search,4)
-	require.Equal(t, []interface{}{"foo","bar"}, search[0])
-	require.Equal(t, "before", search[1][0])
-	require.Equal(t, []interface{}{"or","foo","bar"}, search[2])
-	require.Equal(t, []interface{}{"ying","yang"}, search[3])
+	require.Len(t, search, 8)
+	require.Equal(t, "all", search[0])
+	require.Equal(t, "cc", search[1])
+	require.Equal(t, "yang", search[2])
+	require.Equal(t, "since", search[3])
+	// require.Equal(t, "older time", search[4])
+	require.Equal(t, "or", search[5])
+	require.Equal(t, "from", search[6])
+	require.Equal(t, "foo@bar.org", search[7])
 }

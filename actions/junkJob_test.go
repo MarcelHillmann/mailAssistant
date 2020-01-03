@@ -77,8 +77,9 @@ func TestJunkJobSuccess(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 
 	var wg  int32
 	newJunkJob(job, &wg)
@@ -235,8 +236,9 @@ func TestJunkJobFailedStoreEmpty(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 
 	var wg int32
 	newJunkJob(job, &wg)

@@ -53,18 +53,16 @@ func TestArchiveAttachmentSuccess(t *testing.T) {
 	})
 
 	logging.SetLevel("unit", "all")
-	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
+	job := Job{Args: arguments.NewEmptyArgs(),log: logging.NewNamedLogger("unit.tests"), accounts: new(account.Accounts)}
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
 	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
-	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
-	job.Args.SetArg("readonly", true)
-	job.Args.SetArg("saveTo", "../../foo/bar")
-	job.Args.SetArg("attachment_type", "foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("readonly", true)
+	job.SetArg("saveTo", "../../foo/bar")
+	job.SetArg("attachment_type", "foo/bar")
+	job.SetArg("search", []interface{}{})
 
 	var wg int32
 	newArchiveAttachment(job, &wg)

@@ -165,10 +165,9 @@ func imapPromiseSearchPromiseOk(t *testing.T) {
 		return nil
 	}
 
-	searchFor := make([][]interface{}, 0)
-	searchFor = append(searchFor, make([]interface{}, 2))
-	searchFor[0][0] = "KEYWORD"
-	searchFor[0][1] = imap.SeenFlag
+	searchFor := make([]interface{}, 2)
+	searchFor[0] = "KEYWORD"
+	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
 	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {
@@ -195,10 +194,9 @@ func imapPromiseSearchPromiseNothing(t *testing.T) {
 		return
 	}
 
-	searchFor := make([][]interface{}, 0)
-	searchFor = append(searchFor, make([]interface{}, 2))
-	searchFor[0][0] = "KEYWORD"
-	searchFor[0][1] = imap.SeenFlag
+	searchFor := make([]interface{}, 2)
+	searchFor[0] = "KEYWORD"
+	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
 	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {
@@ -226,10 +224,9 @@ func imapPromiseSearchPromiseFailedSearch(t *testing.T) {
 		return
 	}
 
-	searchFor := make([][]interface{}, 0)
-	searchFor = append(searchFor, make([]interface{}, 2))
-	searchFor[0][0] = "KEYWORD"
-	searchFor[0][1] = imap.SeenFlag
+	searchFor := make([]interface{}, 2)
+	searchFor[0] = "KEYWORD"
+	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
 	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {
@@ -268,10 +265,9 @@ func imapPromiseSearchPromiseFailedFetch(t *testing.T) {
 		return errors.New("fetch must fail")
 	}
 
-	searchFor := make([][]interface{}, 0)
-	searchFor = append(searchFor, make([]interface{}, 2))
-	searchFor[0][0] = "KEYWORD"
-	searchFor[0][1] = imap.SeenFlag
+	searchFor := make([]interface{}, 2)
+	searchFor[0] = "KEYWORD"
+	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
 	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {

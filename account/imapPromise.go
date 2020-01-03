@@ -18,6 +18,7 @@ var fetchFullMessage = []imap.FetchItem{
 	imap.FetchRFC822Size,
 	imap.FetchRFC822Text,
 }
+var fetchFast = imap.FetchFast.Expand()
 
 // ImapPromise is a promise obj to cover all client lib activities
 type ImapPromise struct {
@@ -90,11 +91,15 @@ func (promise ImapPromise) SelectPromise(path string, readOnly bool, callback fu
 }
 
 // SearchPromise is searching on the IMAP server, if successfully it calls a callback
-func (promise ImapPromise) SearchPromise(args [][]interface{}, fetchContent bool, callback func(promise *MsgPromises)) {
+/*func (promise ImapPromise) SearchPromise(args [][]interface{}, fetchContent bool, callback func(promise *MsgPromises)) {
+searchCfg := imap.NewSearchCriteria()
+for _, arg := range args {
+	_ = searchCfg.ParseWithCharset(arg, nil)
+}
+*/
+func (promise ImapPromise) SearchPromise(args []interface{}, fetchContent bool, callback func(promise *MsgPromises)) {
 	searchCfg := imap.NewSearchCriteria()
-	for _, arg := range args {
-		_ = searchCfg.ParseWithCharset(arg, nil)
-	}
+	_ = searchCfg.ParseWithCharset(args, nil)
 
 	if seqNums, err := promise.client.Search(searchCfg); err != nil {
 		panic(err)
@@ -104,7 +109,7 @@ func (promise ImapPromise) SearchPromise(args [][]interface{}, fetchContent bool
 		seqSet := new(imap.SeqSet)
 		seqSet.AddNum(seqNums...)
 
-		fetchItems := imap.FetchFast.Expand()
+		fetchItems := fetchFast
 		if fetchContent {
 			fetchItems = fetchFullMessage
 		}
