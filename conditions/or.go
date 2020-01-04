@@ -2,6 +2,24 @@ package conditions
 
 type or struct {
 	conditions *[]Condition
+	locked *bool
+	parent *Condition
+}
+
+func(o *or) init(){
+	o.conditions = emptyConditions()
+	o.locked = conditionUnLocked
+}
+
+func (o or) SetCursor(){
+	if o.parent != nil {
+		(*o.parent).SetCursor()
+	}else{
+		o.init()
+		var x Condition = o
+		o.Add(pair{"cursor", nil, &x})
+		o.locked = conditionLocked
+	}
 }
 
 func (o or) ParseYaml(item interface{}){
@@ -9,6 +27,9 @@ func (o or) ParseYaml(item interface{}){
 }
 
 func (o or) Add(c Condition) {
+	if *o.locked {
+		return
+	}
 	*o.conditions = append(*o.conditions, c)
 }
 

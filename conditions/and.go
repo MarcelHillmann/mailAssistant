@@ -4,13 +4,33 @@ import "fmt"
 
 type and struct {
 	conditions *[]Condition
+	locked *bool
+	parent *Condition
+}
+
+func(a *and) init(){
+	a.conditions = emptyConditions()
+	a.locked = conditionUnLocked
 }
 
 func (a and) ParseYaml(item interface{}) {
 	parseYaml(item, a)
 }
 
+func (a and) SetCursor() {
+	if a.parent != nil {
+		(*a.parent).SetCursor()
+	}else{
+		*a.conditions = *emptyConditions()
+		var x Condition = a
+		a.Add(pair{"cursor", nil, &x})
+		a.locked = conditionLocked
+	}
+}
 func (a and) Add(c Condition) {
+	if *a.locked {
+		return
+	}
 	*a.conditions = append(*a.conditions, c)
 }
 

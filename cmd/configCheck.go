@@ -23,7 +23,7 @@ func RunConfigCheck(c *cli.Context) error {
 func runRecursive(base , dir string) error {
 	files, err := ioutil.ReadDir(dir)
 	if os.IsNotExist(err) {
-		return fmt.Errorf("directory not exists %s\n\t", dir, err)
+		return fmt.Errorf("directory not exists %s\n\t%s", dir, err)
 	} else if err != nil {
 		return err
 	}

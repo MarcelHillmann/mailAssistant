@@ -6,6 +6,10 @@ type dummy struct {
 
 }
 
+func (d dummy) SetCursor(){
+	// do nothing
+}
+
 func (d dummy) Add(c Condition) {
 	_ = c
 }

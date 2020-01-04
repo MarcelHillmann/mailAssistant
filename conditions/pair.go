@@ -6,27 +6,37 @@ import (
 )
 
 type pair struct {
-	field string
-	value interface{}
+	field  string
+	value  interface{}
+	parent *Condition
 }
 
-func(p pair) ParseYaml(interface{}) {
+func (p pair) SetCursor() {
+	if p.parent != nil {
+		(*p.parent).SetCursor()
+	} else {
+		p.field = "cursor"
+		p.value = nil
+	}
+}
+
+func (p pair) ParseYaml(interface{}) {
 	panic(fmt.Errorf("not yet implemented"))
 }
 
-func (p pair) Add(Condition){
+func (p pair) Add(Condition) {
 	panic(fmt.Errorf("not yet implemented"))
 }
 
 func (p pair) Get() []interface{} {
 	if p.value == nil {
 		return []interface{}{p.field}
-	} else if v, ok:= p.value.(int); ok {
+	} else if v, ok := p.value.(int); ok {
 		return []interface{}{p.field, uint32(v)}
 	}
 	return []interface{}{p.field, p.value}
 }
 
 func (p pair) String() string {
-	return fmt.Sprintf("%s=%v",strings.ToUpper(p.field),p.value)
+	return fmt.Sprintf("%s='%v'", strings.ToUpper(p.field), p.value)
 }
