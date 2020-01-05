@@ -103,12 +103,11 @@ func TestJobGetSearchParameter(t *testing.T) {
 
 	require.NotNil(t, search)
 	require.Len(t, search, 8)
-	require.Equal(t, "all", search[0])
-	require.Equal(t, "cc", search[1])
+	require.Equal(t, "ALL", search[0])
+	require.Equal(t, "CC", search[1])
 	require.Equal(t, "yang", search[2])
-	require.Equal(t, "since", search[3])
-	// require.Equal(t, "older time", search[4])
+	require.Equal(t, "BEFORE", search[3])
 	require.Equal(t, "or", search[5])
-	require.Equal(t, "from", search[6])
+	require.Equal(t, "FROM", search[6])
 	require.Equal(t, "foo@bar.org", search[7])
 }

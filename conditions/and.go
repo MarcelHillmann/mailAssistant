@@ -2,15 +2,21 @@ package conditions
 
 import "fmt"
 
-type and struct {
-	conditions *[]Condition
-	locked *bool
-	parent *Condition
+func newAnd() (res and) {
+	res = and{parent: &headParent{}}
+	res.init()
+	return
 }
 
-func(a *and) init(){
+type and struct {
+	parent     *headParent
+	conditions *[]Condition
+	locked     *bool
+}
+
+func (a *and) init() {
 	a.conditions = emptyConditions()
-	a.locked = conditionUnLocked
+	a.locked = conditionUnLocked()
 }
 
 func (a and) ParseYaml(item interface{}) {
@@ -18,19 +24,25 @@ func (a and) ParseYaml(item interface{}) {
 }
 
 func (a and) SetCursor() {
-	if a.parent != nil {
-		(*a.parent).SetCursor()
-	}else{
+	if a.parent != nil && a.parent.HasParent() {
+		a.parent.SetCursor()
+	} else {
 		*a.conditions = *emptyConditions()
-		var x Condition = a
-		a.Add(pair{"cursor", nil, &x})
-		a.locked = conditionLocked
+		a.Add(newCursor())
+		*a.locked = true
 	}
 }
+
+func (a and) Parent(c Condition) {
+	a.parent.Parent(c)
+}
+
 func (a and) Add(c Condition) {
 	if *a.locked {
 		return
 	}
+
+	c.Parent(a)
 	*a.conditions = append(*a.conditions, c)
 }
 
@@ -50,14 +62,14 @@ func (a and) String() (str string) {
 	case 1:
 		str = (*a.conditions)[0].String()
 	default:
-		builder := ""
+		builder := stringEmpty
 		for _, c := range *a.conditions {
-			if builder != "" {
-				builder += " and "
+			if builder != stringEmpty {
+				builder += stringAnd
 			}
-			builder += " " + c.String() + " "
+			builder += c.String()
 		}
-		str = fmt.Sprintf("( %s )", builder)
+		str = fmt.Sprintf(stringFormat, builder)
 	}
 	return
 }

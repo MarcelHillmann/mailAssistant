@@ -9,15 +9,17 @@ import (
 	"time"
 )
 
-var (
-	conditionLocked   *bool
-	conditionUnLocked *bool
+const (
+	stringEmpty = ""
+	stringOr = " or "
+	stringAnd = " and "
+	stringNot = "not "
+	stringFormat = "( %s )"
 )
 
-func init() {
-	locked, unlocked := true, false
-	conditionLocked = &locked
-	conditionUnLocked = &unlocked
+func conditionUnLocked() *bool {
+	res := false
+	return &res
 }
 
 // Condition represents a parsed YAML stream, for search on the IMAP server
@@ -26,12 +28,13 @@ type Condition interface {
 	Get() []interface{}
 	String() string
 	ParseYaml(interface{})
+	Parent(c Condition)
 	SetCursor()
 }
 
 // ParseYaml is reading a yaml stream and convert it to a Condition
 func ParseYaml(item interface{}) Condition {
-	cond := and{ parent: nil}
+	cond := newAnd()
 	cond.init()
 	if item != nil {
 		cond.ParseYaml(item)
@@ -45,49 +48,53 @@ func emptyConditions() *[]Condition {
 }
 
 func parseYaml(item interface{}, condition Condition) {
-	_, mapString := item.(map[string]interface{})
-	_, mapInterface := item.(map[interface{}]interface{})
+	mapString, isMapString := item.(map[string]interface{})
+	_, isMapInterface := item.(map[interface{}]interface{})
 
-	if mapString || mapInterface {
+	if isMapString {
+		mapIntf := make(map[interface{}]interface{})
+		for key, val := range mapString {
+			mapIntf[key] = val
+		}
+		item = mapIntf
+		isMapInterface = true
+	}
+
+	if isMapInterface {
 		v2 := item.(map[interface{}]interface{})
-		notAllowedKey(v2)
+		allowedYamlKey(v2)
 		field := strings.ToLower(v2["field"].(string))
 		switch field {
 		case "cursor":
 			condition.SetCursor()
 			return
 		case "or":
-			nCondition := or{parent: &condition}
-			nCondition.init()
+			nCondition := newOr()
 			nCondition.ParseYaml(v2["value"])
 			condition.Add(nCondition)
 		case "and":
-			nCondition := and{parent: &condition}
-			nCondition.init()
+			nCondition := newAnd()
 			nCondition.ParseYaml(v2["value"])
 			condition.Add(nCondition)
 		case "not":
-			nCondition := not{parent: &condition}
-			nCondition.init()
+			nCondition := newNot()
 			nCondition.ParseYaml(v2["value"])
 			condition.Add(nCondition)
 		case "older":
-			nCondition := pair{field: "since", parent: &condition}
 			duration := planning.ParseSchedule(v2["value"].(string))
 			durSec := time.Now().Unix() - int64(duration.Seconds())
-			nCondition.value = time.Unix(durSec, 0).Format(imap.DateLayout)
-			condition.Add(nCondition)
+			value := time.Unix(durSec, 0).Format(imap.DateLayout)
+			condition.Add(newPair("before", value))
 		case "younger":
-			nCondition := pair{field: "before", parent: &condition}
 			duration := planning.ParseSchedule(v2["value"].(string))
 			durSec := time.Now().Unix() - int64(duration.Seconds())
-			nCondition.value = time.Unix(durSec, 0).Format(imap.DateLayout)
-			condition.Add(nCondition)
+			value := time.Unix(durSec, 0).Format(imap.DateLayout)
+			condition.Add(newPair("since", value))
 		default:
-			if valid(field) {
-				condition.Add(pair{field: field, value: v2["value"], parent: &condition})
+			if validImapKeyword(field) {
+				condition.Add(newPair(field, v2["value"]))
 			} else {
-				log.Panicf("invalid Field: %s", field)
+				log.Panicf("invalid condition: %s", field)
 			}
 		}
 	} else if v2, ok := item.([]interface{}); ok {
@@ -105,7 +112,7 @@ var keywords = []string{
 	"since", "smaller", "text", "uid", "unanswered", "undeleted", "undraft", "unflagged", "unseen", "unkeyword",
 }
 
-func valid(field string) bool {
+func validImapKeyword(field string) bool {
 	for _, k := range keywords {
 		if k == field {
 			return true
@@ -114,12 +121,12 @@ func valid(field string) bool {
 	return false
 }
 
-func notAllowedKey(m map[interface{}]interface{}) {
+func allowedYamlKey(m map[interface{}]interface{}) {
 	for key := range m {
 		if key == "field" || key == "value" {
 			continue
 		} else {
-			panic(fmt.Errorf("invalid key '%s'", key))
+			panic(fmt.Errorf("invalid yaml field: '%s'", key))
 		}
 	}
 }

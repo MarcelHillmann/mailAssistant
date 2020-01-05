@@ -6,12 +6,16 @@ type dummy struct {
 
 }
 
-func (d dummy) SetCursor(){
-	// do nothing
+func (d dummy) Parent(*Condition) {
+	panic(fmt.Errorf("not yet implemented"))
 }
 
-func (d dummy) Add(c Condition) {
-	_ = c
+func (d dummy) SetCursor(){
+	panic(fmt.Errorf("not yet implemented"))
+}
+
+func (d dummy) Add(Condition) {
+	panic(fmt.Errorf("not yet implemented"))
 }
 
 func (d dummy) Get() []interface{} {
