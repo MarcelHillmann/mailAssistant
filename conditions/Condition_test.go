@@ -41,14 +41,14 @@ func conditionParseYaml(t *testing.T) {
 func conditionInternalParseYamlCursor(t *testing.T) {
 	cond := newAnd()
 	item := make(map[string]interface{})
-	item["field"] = "cursor"
+	item["field"] = CURSOR
 	require.NotPanics(t, func() {
 		parseYaml(item, cond)
 	})
 	require.True(t, *cond.locked)
 	require.Len(t, *cond.conditions, 1)
-	require.Equal(t, []interface{}{"CURSOR"}, cond.Get())
-	require.Equal(t, "CURSOR='<nil>'", cond.String())
+	require.Equal(t, []interface{}{CURSOR}, cond.Get())
+	require.Equal(t, CURSOR+"='<nil>'", cond.String())
 }
 
 func conditionInternalParseYamlOr(t *testing.T) {

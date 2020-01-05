@@ -15,6 +15,7 @@ const (
 	stringAnd = " and "
 	stringNot = "not "
 	stringFormat = "( %s )"
+	CURSOR = "CURSOR"
 )
 
 func conditionUnLocked() *bool {

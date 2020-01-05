@@ -56,7 +56,7 @@ func pairSetCursorNoParent(t *testing.T) {
 	a := newPair("a","b")
 	require.Equal(t, []interface{}{"A", "b"}, a.Get())
 	a.SetCursor()
-	require.Equal(t, []interface{}{"CURSOR"}, a.Get())
+	require.Equal(t, []interface{}{CURSOR}, a.Get())
 }
 
 func pairSetCursorWithParent(t *testing.T) {
@@ -72,7 +72,7 @@ func pairSetCursorWithParent(t *testing.T) {
 	require.Equal(t, []interface{}{"A", "b"}, a.Get())
 	require.Len(t, *parent.conditions, 1)
 	require.NotEqual(t, (*parent.conditions)[0], a)
-	require.Equal(t, []interface{}{"CURSOR"}, parent.Get())
+	require.Equal(t, []interface{}{CURSOR}, parent.Get())
 	require.True(t, *parent.locked)
 }
 

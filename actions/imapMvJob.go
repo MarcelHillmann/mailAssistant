@@ -24,7 +24,7 @@ func newImapMove(job Job, waitGroup *int32) {
 	job.GetAccount(job.GetString("mail_account")).
 		DialAndLoginPromise(func(promise *account.ImapPromise) {
 			promise.SelectPromise(job.GetString("path"), false, func(promise *account.ImapPromise) {
-				promise.SearchPromise(job.getSearchParameter(), false, func(promise *account.MsgPromises) {
+				promise.FetchPromise(job.getSearchParameter(), false, func(promise *account.MsgPromises) {
 					if num, err := promise.Move(job.GetString(moveTo)); errors.IsEmpty(err) {
 						logger.Debug(moveTo, job.GetString(moveTo), "nothing to do")
 					} else if err == nil {
@@ -34,7 +34,7 @@ func newImapMove(job Job, waitGroup *int32) {
 					} else {
 						panic(err)
 					}
-				}) // SearchPromise
+				}) // FetchPromise
 			}) // SelectPromise
 		}) // DialAndLoginPromise
 	// GetAccount

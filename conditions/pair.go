@@ -6,7 +6,7 @@ import (
 )
 
 func newCursor() pair {
-	return pair{parent: &headParent{}, keyval: &keyVal{field: "CURSOR"}}
+	return pair{parent: &headParent{}, keyval: &keyVal{field: CURSOR}}
 }
 
 func newPair(field string, value interface{}) pair {
@@ -38,7 +38,7 @@ func (p pair) SetCursor() {
 	if p.parent != nil && p.parent.HasParent() {
 		p.parent.SetCursor()
 	} else {
-		p.keyval.Field("CURSOR")
+		p.keyval.Field(CURSOR)
 		p.keyval.Value(nil)
 	}
 }

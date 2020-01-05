@@ -71,7 +71,7 @@ func notAddLocked(t *testing.T) {
 	require.Len(t, *a.conditions, 1)
 	pair := (*a.conditions)[0].(pair)
 	require.NotNil(t, pair.parent)
-	require.Equal(t, "CURSOR", pair.keyval.field)
+	require.Equal(t, CURSOR, pair.keyval.field)
 	require.Nil(t,  pair.keyval.value)
 }
 
@@ -102,7 +102,7 @@ func notSetCursorNoParent(t *testing.T) {
 	a.Add(newPair("a", "b"))
 	require.Equal(t, []interface{}{"not","A", "b"}, a.Get())
 	a.SetCursor()
-	require.Equal(t, []interface{}{"CURSOR"}, a.Get())
+	require.Equal(t, []interface{}{CURSOR}, a.Get())
 }
 
 func notSetCursorWithParent(t *testing.T) {
@@ -121,7 +121,7 @@ func notSetCursorWithParent(t *testing.T) {
 
 	require.Len(t, *parent.conditions, 1)
 	require.NotEqual(t, (*parent.conditions)[0], a)
-	require.Equal(t, []interface{}{"CURSOR"}, parent.Get())
+	require.Equal(t, []interface{}{CURSOR}, parent.Get())
 	require.True(t, *parent.locked)
 }
 

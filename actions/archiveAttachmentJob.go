@@ -25,7 +25,7 @@ func newArchiveAttachment(job Job, waitGroup *int32) {
 	job.GetAccount(job.GetString("mail_account")).
 		DialAndLoginPromise(func(promise *account.ImapPromise) {
 			promise.SelectPromise(job.GetString("path"), job.GetBool("readonly"), func(promise *account.ImapPromise) {
-				promise.SearchPromise(job.getSearchParameter(), true, func(msgPromises *account.MsgPromises) {
+				promise.FetchPromise(job.getSearchParameter(), true, func(msgPromises *account.MsgPromises) {
 					attachType := job.GetString("attachment_type")
 					attachmentPromises := msgPromises.GetAttachments(attachType)
 					for _, attachmentPromise := range attachmentPromises {
@@ -38,7 +38,7 @@ func newArchiveAttachment(job Job, waitGroup *int32) {
 							logger.Debug("saved ", saveTo)
 						}
 					}
-				}) // SearchPromise
+				}) // FetchPromise
 			}) // SelectPromise
 		}) // DialAndLoginPromise
 	// GetAccount

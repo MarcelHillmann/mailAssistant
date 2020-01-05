@@ -25,7 +25,7 @@ func TestImapPromise(t *testing.T) {
 		t.Run("Failed", imapPromiseListMailboxesFailed)
 	})
 	t.Run("Logout", imapPromiseLogout)
-	t.Run("SearchPromise", func(t *testing.T) {
+	t.Run("FetchPromise", func(t *testing.T) {
 		t.Run("Ok", imapPromiseSearchPromiseOk)
 		t.Run("Nothing", imapPromiseSearchPromiseNothing)
 		t.Run("Failed", func(t *testing.T) {
@@ -170,7 +170,7 @@ func imapPromiseSearchPromiseOk(t *testing.T) {
 	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
-	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {
+	promise.FetchPromise(searchFor, true, func(promise *MsgPromises) {
 		injectPromise++
 		require.NotNil(t, promise)
 	})
@@ -199,7 +199,7 @@ func imapPromiseSearchPromiseNothing(t *testing.T) {
 	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
-	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {
+	promise.FetchPromise(searchFor, true, func(promise *MsgPromises) {
 		injectPromise++
 		require.NotNil(t, promise)
 	})
@@ -229,7 +229,7 @@ func imapPromiseSearchPromiseFailedSearch(t *testing.T) {
 	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
-	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {
+	promise.FetchPromise(searchFor, true, func(promise *MsgPromises) {
 		injectPromise++
 		require.Nil(t, promise)
 	})
@@ -270,7 +270,7 @@ func imapPromiseSearchPromiseFailedFetch(t *testing.T) {
 	searchFor[1] = imap.SeenFlag
 
 	promise := newImapPromise(mock)
-	promise.SearchPromise(searchFor, true, func(promise *MsgPromises) {
+	promise.FetchPromise(searchFor, true, func(promise *MsgPromises) {
 		injectPromise++
 		require.NotNil(t, promise)
 	})
