@@ -29,7 +29,9 @@ pipeline {
                 withSonarQubeEnv('sonar'){
                     script {
                         withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
-                            sh'bash .build/sonar-datacollector.sh'
+                            timeout(1) {
+                                sh'bash .build/sonar-datacollector.sh'
+                            }
                             archiveArtifacts( allowEmptyArchive: true, artifacts: '.sonarqube/*', excludes: '.gitempty', fingerprint: true)
                             if ( BRANCH_NAME.startsWith('PR-')){
                                 sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#PR' '-Dsonar.projectName=jenkins_mailAssistant_PR'"
