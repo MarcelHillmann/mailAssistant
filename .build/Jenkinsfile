@@ -2,7 +2,7 @@
 @Library(["gitea-lib", "nexus-lib"]) _
 
 pipeline {
-    agent { label "linux" }
+    agent { label "windows" }
     options {
         ansiColor('xterm')
         buildDiscarder(logRotator(artifactDaysToKeepStr: '10', artifactNumToKeepStr: '10', daysToKeepStr: '1', numToKeepStr: '7')) // buildDiscarder
