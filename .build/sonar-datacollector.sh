@@ -72,6 +72,6 @@ go clean -testcache
 go_meta_linter
 go_lint
 go_vet
-# go_test_json
-go_junit
+go_test_json
+# go_junit
 exit 0
