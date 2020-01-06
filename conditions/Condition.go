@@ -15,7 +15,7 @@ const (
 	stringAnd = " and "
 	stringNot = "not "
 	stringFormat = "( %s )"
-    nitYetImplemented = "not yet implemented"
+    notYetImplemented = "not yet implemented"
     // CURSOR defines a not query request
 	CURSOR = "CURSOR"
 )
