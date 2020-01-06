@@ -348,9 +348,9 @@ func imapPromiseAppendOkWithPath(t *testing.T) {
 	}
 	exec := 0
 	promise := newImapPromise(mock)
-	require.Nil(t, promise.AppendPromise("INBOX/test/hugo", nil, now, nil, func() {
+	promise.AppendPromise("INBOX/test/hugo", nil, now, nil, func() {
 		exec++
-	}))
+	})
 	require.NotEmpty(t, exec)
 }
 
@@ -367,9 +367,9 @@ func imapPromiseAppendOkWithoutPath(t *testing.T) {
 
 	exec := 0
 	promise := newImapPromise(mock)
-	require.Nil(t, promise.AppendPromise("", nil, now, nil, func() {
+	promise.AppendPromise("", nil, now, nil, func() {
 		exec++
-	}))
+	})
 	require.NotEmpty(t, exec)
 }
 
@@ -384,9 +384,9 @@ func imapPromiseAppendFailed(t *testing.T) {
 		return errors.New("append must fail")
 	}
 	promise := newImapPromise(mock)
-	require.EqualError(t, promise.AppendPromise("", nil, now, nil, func() {
+	promise.AppendPromise("", nil, now, nil, func() {
 		require.Fail(t, "never call this")
-	}), "append must fail")
+	})
 }
 
 func imapPromiseStoreOk(t *testing.T) {
