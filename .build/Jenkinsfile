@@ -11,15 +11,9 @@ pipeline {
     }
     stages {
         stage('pre build'){
-            when {
-                not { branch 'master' }
-                beforeOptions true
-                beforeInput true
-                beforeAgent true
-            }
             steps{
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]){
-                    sh 'go clean -cache -testcache'
+                    sh ".build/goClean.sh ${BRANCH_NAME}"
                 } // go clean
             } // steps
         } // stage - pre build
