@@ -33,8 +33,9 @@ pipeline {
                         sh """
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
-                            echo 'echo \$githubPass' > ./.git-askpass
+                            echo '#!/bin/bash\nexec echo "$githubPass"' > ./.git-askpass
                             chmod +x ./.git-askpass
+                            ./.git-askpass | base64
                             export GIT_ASKPASS=./.git-askpass
                             pwd
                             ls -AlhX
