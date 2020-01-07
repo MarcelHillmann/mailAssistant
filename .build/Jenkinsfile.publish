@@ -33,14 +33,14 @@ pipeline {
                         sh """
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
-                            echo '#!/bin/bash\nexec echo "$githubPass"' > ./.git-askpass
-                            chmod +x ./.git-askpass
-                            ./.git-askpass | base64
                             export GIT_ASKPASS=./.git-askpass
+                            echo '#!/bin/bash\nexec echo "\$githubPass"' > ./.git-askpass
+                            chmod +x ./.git-askpass
+                            cat ./.git-askpass
                             pwd
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
-                            export GIT_TRACE_CURL=true GIT_TRACE_CURL_NO_DATA=true GIT_TRACE=true GIT_TRACE2=true
+                            export GIT_TRACE_CURL=true # GIT_TRACE_CURL_NO_DATA=true GIT_TRACE=true GIT_TRACE2=true
                             echo ${githubUser}:${githubPass} | base64
                             git push --mirror https://github.com/MarcelHillmann/mailAssistant
                            """
