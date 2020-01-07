@@ -36,6 +36,9 @@ pipeline {
                             echo 'exec echo \$githubPass' > ./.git-askpass
                             chmod +x ./.git-askpass
                             export GIT_ASKPASS=./.git-askpass
+                            export GIT_TRACE_CURL=true
+                            export GIT_TRACE=true
+                            export GIT_TRACE2=true
                             pwd
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
