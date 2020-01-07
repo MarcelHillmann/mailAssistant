@@ -30,9 +30,11 @@ pipeline {
                     sh 'find . -delete'
                     withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
                                    , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
-                        sh "git init --bare 'https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant'"
-                        sh 'ls -AlhX'
-                        sh "git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant.git"
+                        sh """
+                            git init --bare 'https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant'
+                            ls -AlhX
+                            git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant.git
+                           """
                     } // withCredentials
                 } // script
             } // steps
