@@ -33,7 +33,7 @@ pipeline {
                         sh """
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
-                            echo 'exec echo \$githubPass' > ./.git-askpass
+                            echo 'echo \$githubPass' > ./.git-askpass
                             chmod +x ./.git-askpass
                             export GIT_ASKPASS=./.git-askpass
                             export GIT_TRACE_CURL=true
