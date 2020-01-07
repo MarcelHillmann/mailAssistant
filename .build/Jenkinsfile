@@ -116,7 +116,7 @@ pipeline {
     post {
         always {
             sh 'rm -rf upload >/dev/null; exit 0'
-            sh 'docker images prune'
+            sh 'docker images prune; exit 0'
         } // always
     } //post
 } // pipeline
