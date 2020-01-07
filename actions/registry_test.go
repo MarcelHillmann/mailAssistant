@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 const (
-	registered = "DEBUG   [mailAssistant.actions.registry#mailassistant.actions.register] register  foo.bar\n"
-	dublicate = "SEVERE  [mailAssistant.actions.registry#mailassistant.actions.register] duplicate action name foo.bar  =>  mailAssistant/actions.glob..func1\n"
+	registered = "DEBUG   [mailAssistant.actions.registry#register] register  foo.bar\n"
+	dublicate = "SEVERE  [mailAssistant.actions.registry#register] duplicate action name foo.bar  =>  mailAssistant/actions.glob..func1\n"
 )
 
 var dummyJob = func(job Job, waitGroup *int32) {}
