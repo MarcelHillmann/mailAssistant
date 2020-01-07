@@ -57,19 +57,7 @@ func (j Job) GetAccount(name string) *account.Account {
 }
 
 func (j *Job) getSaveTo() string {
-	if j.saveTo != "" {
-		return j.saveTo
-	}
-	saveTo := ""
-	if runtime.GOOS == "windows" {
-		saveTo = j.GetString("saveToWin")
-	}
-	if saveTo == "" {
-		saveTo = j.GetString("saveTo")
-	}
-
-	j.saveTo = saveTo
-	return j.saveTo
+	return saveTo(j)
 }
 
 func (j Job) getSearchParameter() []interface{} {
