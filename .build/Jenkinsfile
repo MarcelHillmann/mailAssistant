@@ -19,12 +19,12 @@ pipeline {
             steps {
                 sh 'rm -rf .cache; mkdir .cache; exit 0'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux","GOCACHE=${WORKSPACE}/.cache"]) {
-                    sh "go build -w -o upload/mailAssistant.amd64_linux"
+                    sh "go build -o upload/mailAssistant.amd64_linux -v -x"
                     withEnv(["CGO_ENABLED=0","CGO_LDFLAGS=-w -s"]) {
-                        sh "go build -w -o upload/mailAssistant.alpine"
+                        sh "go build -o upload/mailAssistant.alpine -v -x"
                     }
                     withEnv(["GOOS=windows"]) {
-                        sh "go build -w -o upload/mailAssistant.amd64_windows.exe"
+                        sh "go build -o upload/mailAssistant.amd64_windows.exe -v -x"
                     } // withEnv
                 }
             } // steps
