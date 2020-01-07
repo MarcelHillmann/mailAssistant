@@ -18,8 +18,8 @@ pipeline {
                     sh 'go clean -cache -testcache'
                     withEnv(["GOOS=linux"]){
                         sh "go build -o upload/mailAssistant.amd64_linux"
-                        withEnv(["CGO_ENABLED=0","CGO_LDFLAGS=-w -s"]) {
-                            sh "go build -o upload/mailAssistant.alpine"
+                        withEnv(["CGO_ENABLED=0"]) {
+                            sh "go build -ldflags="-w -s" -o upload/mailAssistant.alpine"
                         } // alpine
                     } // withEnv linux
                     withEnv(["GOOS=windows"]) {
