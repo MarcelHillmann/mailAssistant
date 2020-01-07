@@ -1,7 +1,5 @@
 #!/bin/bash
-branch=$1
-
-if [[ "$branch" = "develop" ]]
+if [[ "${1}" = "develop" ]]
 then
     go clean -cache -testcache
 fi
