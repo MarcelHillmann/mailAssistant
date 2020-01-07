@@ -1,0 +1,9 @@
+---
+name: "clean JUNK box"
+schedule: "every 5 minutes"
+action: "junk"
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "cursor"
+  - path: "INBOX/Junk"

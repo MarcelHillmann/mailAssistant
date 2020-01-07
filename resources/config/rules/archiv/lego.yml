@@ -1,0 +1,11 @@
+---
+name: "Lego Inbox to Archiv"
+schedule: "every 5 minutes"
+action: "imap_mv"
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "from"
+      value: "vip@e.LEGO.com"
+  - path: "INBOX"
+  - moveTo: "Inbox/Archiv/Lego"

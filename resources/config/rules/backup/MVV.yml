@@ -1,0 +1,14 @@
+---
+name: "MVV Input to Backup MVV"
+schedule: "@daily"
+action: "imap_backup"
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "from"
+      value: "service-dialog@mailing.bahn.de"
+    - field: "older"
+      value: "P10D"
+  - path: "Inbox/Archiv/MVV"
+  - target_account: "marcel@ds918.local"
+  - saveTo: "Inbox/MVV"

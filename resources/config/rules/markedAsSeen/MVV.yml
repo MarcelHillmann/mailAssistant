@@ -1,0 +1,13 @@
+---
+name: "MVV mark at seen"
+schedule: "every 1 hours"
+action: "seen"
+args:
+  - mail_account: "mahillmannde-0001"
+  - path: "Inbox/Archiv/MVV"
+  - search:
+    - field: "from"
+      value: "service-dialog@mailing.bahn.de"
+    - field: "older"
+      value: "24h"
+    - field: "unseen"

@@ -1,0 +1,15 @@
+---
+name: "M-Net attachments"
+schedule: "every minute"
+# schedule: "every second"
+action: "archiveAttachment"
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "from"
+      value: "noreply@rechnung.m-net.de"
+    - field: "subject"
+      value: "M-net-Info - Rechnung PDF zu Ihrer Debitorennummer m501460137"
+  - readonly: true
+  - attachment_type: "application/pdf"
+  - saveTo: "/opt/homes/Marcel/M-Net/"

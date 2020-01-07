@@ -1,0 +1,10 @@
+---
+name: "DZone Inbox to Archiv"
+schedule: "every 5 minutes"
+action: "imap_mv"
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "older"
+      value: "P10D"
+  - moveTo: "Inbox/Archiv/DZone"

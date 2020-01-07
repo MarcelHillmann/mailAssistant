@@ -1,0 +1,14 @@
+---
+name: "DZone Inbox to Backup MNet"
+schedule: "every 5 minutes"
+action: "imap_backup"
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "from"
+      value: "mailer@dzone.com"
+    - field: "older"
+      value: "P10D"
+  - path: "Inbox/Archiv/DZone"
+  - target_account: "marcel@ds918.local"
+  - saveTo: "Inbox/DZone"
