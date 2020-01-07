@@ -40,7 +40,7 @@ pipeline {
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
                             export GIT_TRACE_CURL=true GIT_TRACE_CURL_NO_DATA=true GIT_TRACE=true GIT_TRACE2=true
-                            echo ${githubUser}:${githubPass} | base64
+                            echo ${githubUser}:${githubPass} | base64 | base64 -d
                             git push --mirror https://github.com/MarcelHillmann/mailAssistant
                            """
                     } // withCredentials
