@@ -33,6 +33,7 @@ pipeline {
                         sh """
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
+                            ls -AlhX
                             git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant.git
                            """
                     } // withCredentials
