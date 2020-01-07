@@ -1,14 +1,14 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent any
+    agent { label "linux" }
     stages {
         stage('hub.docker.com'){
-//            when {
-//                branch 'master'
-//                beforeOptions true
-//                beforeAgent true
-//            } // when
+            when {
+                branch 'master'
+                beforeOptions true
+                beforeAgent true
+            } // when
             steps {
                 script {
                     sh "docker pull registry.mahillmann.de/mailassistant:${BRANCH_NAME}"
@@ -27,13 +27,24 @@ pipeline {
             } // when
             steps {
                 script {
+                    sh 'find . -delete'
                     withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
                                    , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
-                        sh "git clone --mirror https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant"
-                        sh "git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant"
+                        sh """
+                            git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
+                            cd mailAssistant.git/
+                            # git remote set-url origin 'https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant'
+                            # git config --list
+                            git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant
+                           """
                     } // withCredentials
                 } // script
             } // steps
         } // stage - github.com
     } // stages
+//    post{
+//        always {
+//            sh 'find . -delete'
+//        } // always
+//    } // post
 } // pipeline
