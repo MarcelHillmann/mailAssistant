@@ -17,15 +17,16 @@ pipeline {
     stages {
         stage('build'){
             steps {
+                sh 'rm -rf .cache; mkdir .cache exit 0'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux","GOCACHE=\$PWD/.cache"]) {
-                    sh "mkdir .cache; go build -o upload/mailAssistant.amd64_linux; rm -rf .cache"
+                    sh "go build -o upload/mailAssistant.amd64_linux"
+                    withEnv(["CGO_ENABLED=0"]) {
+                        sh "go build -ldflags='-w -s' -o upload/mailAssistant.alpine"
+                    }
+                    withEnv(["GOOS=windows"]) {
+                        sh "go build -o upload/mailAssistant.amd64_windows.exe"
+                    } // withEnv
                 }
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","CGO_ENABLED=0","GOCACHE=\$PWD/.cache"]) {
-                    sh "mkdir .cache;go build -ldflags='-w -s' -o upload/mailAssistant.alpine; rm -rf .cache"
-                }
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=windows","GOCACHE=\$PWD/.cache"]) {
-                    sh "mkdir .cache;go build -o upload/mailAssistant.amd64_windows.exe; rm -rf .cache"
-                } // withEnv
             } // steps
         } // stage
         stage('Test and analasys') {
