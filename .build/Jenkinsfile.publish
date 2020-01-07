@@ -36,12 +36,8 @@ pipeline {
                             echo "machine github.com" > $HOME/.netrc
                             echo "        login ${githubUser}" >> $HOME/.netrc
                             echo "        password ${githubPass}" >> $HOME/.netrc
-                            ls -AlhX $HOME/
-                            export GIT_TRACE_CURL=true
-                            # GIT_TRACE_CURL_NO_DATA=true
-                            #################################
-                            # GIT_TRACE=true GIT_TRACE2=true
-                            #################################
+                            git remote set-url origin 'https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant'
+                            git config --list
                             git push --mirror https://github.com/MarcelHillmann/mailAssistant
                            """
                     } // withCredentials
