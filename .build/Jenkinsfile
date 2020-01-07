@@ -1,6 +1,5 @@
 #!/usr/bin/env groovy
 @Library(["gitea-lib", "nexus-lib"]) _
-
 pipeline {
     agent { label "linux" }
     options {
