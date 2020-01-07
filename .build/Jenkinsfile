@@ -11,22 +11,26 @@ pipeline {
         timestamps()
     }
     environment {
-        GOPROXY="https://nexus.mahillmann.de/repository/goproxy"
+
         // GOPRIVATE="*.mahillmann.de"
     } // environment
     stages {
         stage('build'){
             steps {
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin",
+                         "GOPROXY=https://nexus.mahillmann.de/repository/goproxy"]) {
                     sh 'go clean -cache -testcache'
-                    sh "go build -o upload/mailAssistant.amd64_linux -v"
-                }
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux","CGO_ENABLED=0","CGO_LDFLAGS=-w -s"]) {
-                    sh "go build -o upload/mailAssistant.alpine -v"
-                }
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=windows"]) {
-                    sh "go build -o upload/mailAssistant.amd64_windows.exe -v"
-                } // withEnv
+                    withEnv(["GOOS=linux"}){
+                        sh "go build -o upload/mailAssistant.amd64_linux"
+                        withEnv(["CGO_ENABLED=0","CGO_LDFLAGS=-w -s"]) {
+                            sh "go build -o upload/mailAssistant.alpine -v"
+                        } // alpine
+                    } // withEnv linux
+                    withEnv(["GOOS=windows"]) {
+                        sh "go build -o upload/mailAssistant.amd64_windows.exe -v"
+                    } // withEnv windows
+                } // withEnv PATH+GO
+
             } // steps
         } // stage
         stage('Test and analasys') {
