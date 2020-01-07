@@ -3,12 +3,12 @@
 pipeline {
     agent any
     stages {
-        when {
-            branch 'master'
-            beforeOptions true
-            beforeAgent true
-        }
         stage('hub.docker.com'){
+            when {
+                branch 'master'
+                beforeOptions true
+                beforeAgent true
+            }
             steps {
                 script {
                     def master = docker.image("registry.mahillmann.de/mailassistant:master")
