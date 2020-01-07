@@ -171,9 +171,9 @@ func normalize(name string) string {
 		}, func(ugly string) string {
 			return strings.Replace(ugly, "${project}", "mailAssistant", -1)
 		},func(ugly string ) string {
-			return strings.TrimSuffix(ugly,"mailassistant.actions.")
+			return strings.TrimPrefix(ugly,"mailassistant.actions.")
 		},func(ugly string ) string {
-			return strings.TrimSuffix(ugly,"mailAssistant.actions.")
+			return strings.TrimPrefix(ugly,"mailAssistant.actions.")
 		},
 
 	}
