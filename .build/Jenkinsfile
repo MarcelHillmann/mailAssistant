@@ -10,6 +10,9 @@ pipeline {
         overrideIndexTriggers(true)
         timestamps()
     }
+    environment {
+        GOPROXY="https://nexus.mahillmann.de/repository/goproxy/"
+    } // environment
     stages {
         stage('build'){
             steps {
