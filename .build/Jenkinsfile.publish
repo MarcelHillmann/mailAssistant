@@ -39,8 +39,7 @@ pipeline {
                             export GIT_ASKPASS=./.git-askpass
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
-                            git remote set-url --push origin https://github.com/MarcelHillmann/mailAssistant
-                            git push --mirror
+                            git push --mirror https://github.com/MarcelHillmann/mailAssistant
                            """
                     } // withCredentials
                 } // script
