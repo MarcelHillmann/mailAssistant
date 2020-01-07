@@ -170,12 +170,7 @@ func normalize(name string) string {
 			return strings.TrimSuffix(ugly, ".logger")
 		}, func(ugly string) string {
 			return strings.Replace(ugly, "${project}", "mailAssistant", -1)
-		},func(ugly string ) string {
-			return strings.TrimSuffix(ugly,"mailassistant.actions.")
-		},func(ugly string ) string {
-			return strings.TrimSuffix(ugly,"mailAssistant.actions.")
 		},
-
 	}
 
 	makeItNicer := name
@@ -200,8 +195,15 @@ func logger(name, level string, msg []interface{}) {
 		}
 	}
 	methodName := strings.Replace(normalize(methodNameUgly), strings.ToLower(name)+".", "", 1)
-	if methodName == strings.ToLower(name) || strings.HasPrefix(methodName, "func") {
+	if methodName == strings.ToLower(name) ||
+		strings.ToLower(methodName) == strings.ToLower(name) ||
+		strings.HasPrefix(methodName, "func") {
 		methodName = "lambda"
+	}
+	for _, fcc := range []func(string)string{
+		func(ugly string) string { return strings.TrimPrefix(ugly, "mailassistant.actions.") },
+		func(ugly string) string { return strings.TrimPrefix(ugly, "mailAssistant.actions.") } }{
+		methodName = fcc(methodName)
 	}
 
 	_msg := ""

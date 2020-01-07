@@ -13,22 +13,33 @@ pipeline {
     stages {
         stage('build'){
             steps {
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]){
+                    sh 'go clean -cache -testcache'
+                } // go clean
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+                        ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
+                        ,"GOOS=linux"]) {
                     sh "go build -o upload/mailAssistant.amd64_linux"
-                }
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","CGO_ENABLED=0"]) {
+                } // amd64_linux
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+                        ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
+                        ,"GOOS=linux"
+                        ,"CGO_ENABLED=0"]){
                     sh "go build -ldflags='-w -s' -o upload/mailAssistant.alpine"
-                }
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=windows"]) {
+                } // alpine
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+                        ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
+                        ,"GOOS=windows"]) {
                     sh "go build -o upload/mailAssistant.amd64_windows.exe"
-                } // withEnv
+                } // amd64_windows
             } // steps
         } // stage
         stage('Test and analasys') {
             steps {
                 withSonarQubeEnv('sonar'){
                     script {
-                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
+                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+                                ,"PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
                             sh'bash .build/sonar-datacollector.sh'
                             archiveArtifacts( allowEmptyArchive: true, artifacts: '.sonarqube/*', excludes: '.gitempty', fingerprint: true)
                             if ( BRANCH_NAME.startsWith('PR-')){
@@ -105,6 +116,7 @@ pipeline {
     post {
         always {
             sh 'rm -rf upload >/dev/null; exit 0'
+            sh 'docker images prune; exit 0'
         } // always
     } //post
 } // pipeline
