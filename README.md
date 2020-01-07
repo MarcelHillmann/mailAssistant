@@ -4,6 +4,8 @@ automation for my Mail Accounts, like Outlook rules
 ## SonarQube
 
 ### Development
+[![Quality gate](https://sonarqube.mahillmann.de/api/project_badges/quality_gate?project=mailAssistant)](https://sonarqube.mahillmann.de/dashboard?id=mailAssistant)
+
 [![Alarmhinweise](https://sonarqube.mahillmann.de/api/project_badges/measure?project=mailAssistant&metric=alert_status)](https://sonarqube.mahillmann.de/dashboard?id=mailAssistant)
 [![SQALE-Bewertung](https://sonarqube.mahillmann.de/api/project_badges/measure?project=mailAssistant&metric=sqale_rating)](https://sonarqube.mahillmann.de/component_measures?id=mailAssistant&metric=Maintainability)
 [![Reliability Rating](https://sonarqube.mahillmann.de/api/project_badges/measure?project=mailAssistant&metric=reliability_rating)](https://sonarqube.mahillmann.de/component_measures?id=mailAssistant&metric=reliability_rating&view=list)
@@ -19,6 +21,8 @@ automation for my Mail Accounts, like Outlook rules
 [![Vulnerabilities](https://sonarqube.mahillmann.de/api/project_badges/measure?project=mailAssistant&metric=vulnerabilities)](https://sonarqube.mahillmann.de/project/issues?id=mailAssistant&resolved=false&types=VULNERABILITY)
 ---
 ### Jenkins develop
+[![Quality gate](https://sonarqube.mahillmann.de/api/project_badges/quality_gate?project=jenkins%23mailAssistant%23develop)](https://sonarqube.mahillmann.de/dashboard?id=jenkins%23mailAssistant%23develop)
+
 [![Alarmhinweise](https://sonarqube.mahillmann.de/api/project_badges/measure?project=jenkins%23mailAssistant%23develop&metric=alert_status)](https://sonarqube.mahillmann.de/dashboard?id=jenkins%23mailAssistant%23develop)
 [![SQALE-Bewertung](https://sonarqube.mahillmann.de/api/project_badges/measure?project=jenkins%23mailAssistant%23develop&metric=sqale_rating)](https://sonarqube.mahillmann.de/component_measures?id=jenkins%23mailAssistant%23develop&metric=Maintainability)
 [![Reliability Rating](https://sonarqube.mahillmann.de/api/project_badges/measure?project=jenkins%23mailAssistant%23develop&metric=reliability_rating)](https://sonarqube.mahillmann.de/component_measures?id=jenkins%23mailAssistant%23develop&metric=reliability_rating&view=list)
@@ -34,6 +38,8 @@ automation for my Mail Accounts, like Outlook rules
 [![Vulnerabilities](https://sonarqube.mahillmann.de/api/project_badges/measure?project=jenkins%23mailAssistant%23develop&metric=vulnerabilities)](https://sonarqube.mahillmann.de/project/issues?id=jenkins%23mailAssistant%23develop&resolved=false&types=VULNERABILITY)
 ---
 ### Jenkins master
+[![Quality gate](https://sonarqube.mahillmann.de/api/project_badges/quality_gate?project=jenkins%23mailAssistant%23master)](https://sonarqube.mahillmann.de/dashboard?id=jenkins%23mailAssistant%23master)
+
 [![Alarmhinweise](https://sonarqube.mahillmann.de/api/project_badges/measure?project=jenkins%23mailAssistant%23master&metric=alert_status)](https://sonarqube.mahillmann.de/dashboard?id=jenkins%23mailAssistant%23master)
 [![SQALE-Bewertung](https://sonarqube.mahillmann.de/api/project_badges/measure?project=jenkins%23mailAssistant%23master&metric=sqale_rating)](https://sonarqube.mahillmann.de/component_measures?id=jenkins%23mailAssistant%23master&metric=Maintainability)
 [![Reliability Rating](https://sonarqube.mahillmann.de/api/project_badges/measure?project=jenkins%23mailAssistant%23master&metric=reliability_rating)](https://sonarqube.mahillmann.de/component_measures?id=jenkins%23mailAssistant%23master&metric=reliability_rating&view=list)
