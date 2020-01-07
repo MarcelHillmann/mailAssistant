@@ -99,8 +99,8 @@ func (promise ImapPromise) FetchPromise(args []interface{}, fetchContent bool, c
 	if args != nil && len(args) == 1 && args[0] == conditions.CURSOR {
 		seqSet = new(imap.SeqSet)
 		seqSet.AddRange(1, promise.messages)
-	} else {
-		seqSet = promise.search(args, callback)
+	} else if seqSet = promise.search(args, callback); seqSet == nil {
+		return
 	}
 
 	fetchItems := fetchFast
@@ -132,6 +132,7 @@ func (promise *ImapPromise) search(args []interface{}, callback func(promise *Ms
 		panic(err)
 	} else if len(seqNums) <= 0 {
 		callback(&MsgPromises{ImapPromise: promise, messages: make([]*MsgPromise, 0), seqSet: new(imap.SeqSet)})
+		result = nil
 	} else {
 		result = new(imap.SeqSet)
 		result.AddNum(seqNums...)

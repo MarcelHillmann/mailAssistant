@@ -308,7 +308,7 @@ func sourceClient(t *testing.T) *account.MockClientPromise {
 	mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 		require.Equal(t, "INBOX.foo.bar", name)
 		require.False(t, readOnly)
-		return nil, nil
+		return new(imap.MailboxStatus), nil
 	}
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
 		require.NotNil(t, criteria)

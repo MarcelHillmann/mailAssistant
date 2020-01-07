@@ -33,7 +33,7 @@ func TestArchiveAttachmentSuccess(t *testing.T) {
 		mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.True(t, readOnly)
-			return nil,nil
+			return new(imap.MailboxStatus),nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) (uint32s []uint32, err error) {
 			require.NotNil(t, criteria)

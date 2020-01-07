@@ -178,13 +178,16 @@ func imapPromiseSearchPromiseOk(t *testing.T) {
 
 func imapPromiseSearchPromiseNothing(t *testing.T) {
 	injectPromise := 0
+	mock := NewMockClient()
+
 	defer func() {
 		err := recover()
 		require.Nil(t, err)
-		require.NotEmpty(t, injectPromise)
+		require.Equal(t,1, injectPromise)
+		require.Equal(t, "00010-00000-000", mock.Assert())
 	}()
 
-	mock := NewMockClient()
+
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
 		require.NotNil(t, criteria)
 		require.Len(t, criteria.WithFlags, 1)
@@ -278,14 +281,16 @@ func imapPromiseSearchPromiseFailedFetch(t *testing.T) {
 
 func imapPromiseSelectPromiseOkWithoutPath(t *testing.T) {
 	called := 0
+	mock := NewMockClient()
 	defer func() {
 		require.NotEmpty(t, called)
+		require.Equal(t, "00100-00000-000",mock.Assert())
 	}()
-	mock := NewMockClient()
 	mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
 		require.NotEmpty(t, name)
 		require.True(t, readOnly)
 		require.Equal(t, "INBOX", name)
+		status = new(imap.MailboxStatus)
 		return
 	}
 	promise := newImapPromise(mock)
@@ -296,14 +301,17 @@ func imapPromiseSelectPromiseOkWithoutPath(t *testing.T) {
 }
 func imapPromiseSelectPromiseOkWithPath(t *testing.T) {
 	called := 0
+	mock := NewMockClient()
 	defer func() {
 		require.NotEmpty(t, called)
+		require.Equal(t, "00100-00000-000",mock.Assert())
 	}()
-	mock := NewMockClient()
+
 	mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
 		require.True(t, readOnly)
 		require.NotEmpty(t, name)
 		require.Equal(t, "INBOX.test.hugo", name)
+		status = new(imap.MailboxStatus)
 		return
 	}
 	promise := newImapPromise(mock)
@@ -315,13 +323,15 @@ func imapPromiseSelectPromiseOkWithPath(t *testing.T) {
 
 func imapPromiseSelectPromiseFailed(t *testing.T) {
 	called := 0
+	mock := NewMockClient()
 	defer func() {
 		require.Empty(t, called)
 		err := recover()
 		require.NotNil(t, err)
-		require.Equal(t, "must fail", err.(error).Error())
+		require.Error(t, err.(error), "must fail")
+		require.Equal(t, "00100-00000-000",mock.Assert())
 	}()
-	mock := NewMockClient()
+
 	mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
 		require.NotEmpty(t, name)
 		require.True(t, readOnly)
