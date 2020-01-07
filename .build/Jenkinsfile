@@ -11,11 +11,13 @@ pipeline {
         timestamps()
     }
     environment {
-        GOPROXY="https://nexus.mahillmann.de/repository/goproxy/"
+        GOPROXY="https://nexus.mahillmann.de/repository/goproxy/,direct"
+        GOPRIVATE="*.mahillmann.de"
     } // environment
     stages {
         stage('build'){
             steps {
+                sh 'go env'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
                     sh "go build -o upload/mailAssistant.amd64_linux"
                 }
