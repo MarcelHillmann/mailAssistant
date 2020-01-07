@@ -37,7 +37,7 @@ pipeline {
                             cat ./.git-askpass
                             chmod +x ./.git-askpass
                             export GIT_ASKPASS=./.git-askpass
-                            bash -x $GIT_ASKPASS
+                            bash -x \$GIT_ASKPASS
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
                             git push --mirror https://github.com/MarcelHillmann/mailAssistant
