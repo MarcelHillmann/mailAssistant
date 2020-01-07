@@ -1,0 +1,16 @@
+---
+name: "Amazon Inbox to Archiv"
+schedule: "every 5 minutes"
+action: "imap_mv"
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "or"
+      value:
+      - field: "from"
+        value: "versandbestaetigung@amazon.de"
+      - field: "from"
+        value: "marketplace-messages@amazon.de"
+      - field: "from"
+        value: "aws-marketing-email-replies@amazon.com"
+  - moveTo: "Inbox/Archiv/AWS"

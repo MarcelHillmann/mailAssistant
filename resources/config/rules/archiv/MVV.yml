@@ -2,8 +2,9 @@
 name: "MVV Inbox to Archiv"
 schedule: "every 5 minutes"
 action: "imap_mv"
-disabled: true
 args:
   - mail_account: "mahillmannde-0001"
-  - mail_from: "service-dialog@mailing.bahn.de"
+  - search:
+    - field: "from"
+      value: "service-dialog@mailing.bahn.de"
   - moveTo: "Inbox/Archiv/MVV"

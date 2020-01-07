@@ -21,7 +21,7 @@ func newSeenJob(job Job, waitGroup *int32) {
 	job.GetAccount(job.GetString("mail_account")).
 		DialAndLoginPromise(func(promise *account.ImapPromise) {
 			promise.SelectPromise(job.GetString("path"), false, func(promise *account.ImapPromise) {
-				promise.SearchPromise(job.getSearchParameter(), false, func(promise *account.MsgPromises) {
+				promise.FetchPromise(job.getSearchParameter(), false, func(promise *account.MsgPromises) {
 					if num, err := promise.SetSeen(); errors.IsEmpty(err) {
 						logger.Debug("nothing to do")
 					} else if err == nil {
@@ -31,7 +31,7 @@ func newSeenJob(job Job, waitGroup *int32) {
 					} else {
 						panic(err)
 					}
-				}) // SearchPromise
+				}) // FetchPromise
 			}) // SelectPromise
 		}) // DialAndLoginPromise
 	// job.GetAccount

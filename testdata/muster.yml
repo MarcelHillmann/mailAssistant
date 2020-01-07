@@ -1,0 +1,46 @@
+search:
+- field: "or"
+  value:
+  - field: "from"
+    value: "a"
+  - field: "and"
+    value:
+    - field: "from"
+      value: "b"
+    - field: "not"
+      value:
+      - field: "or"
+        value:
+        - field: "to"
+          value: "c"
+        - field: "to"
+          value: "d"
+        - field: "to"
+          value: "e"
+    - field: "subject"
+      value: "hugo"
+    - field: "smaller"
+      value: 4
+    - field: "older"
+      value: "48h"
+    - field: "younger"
+      value: "24h"
+    - field: "seen"
+msearch:
+  - field: "all"
+  - field: "cc"
+    value: "yang"
+  - field: "older"
+    value: "every 5 seconds"
+  - field: "or"
+    value:
+      - field: "from"
+        value: "bar"
+
+# mail_search: ( FROM=a ) or ( from=b and not( TO=c or TO=d or TO=e ) and subject=hugo )
+# mail_search: or ( FROM=a ) ( and from=b not( TO=c or TO=d or TO=e ) subject=hugo )
+# mail_search: ( FROM=a or ( FROM=b not ( TO=c or TO=d or TO=e ) subject=hugo ) )
+# ------------ or (from: a and (from: b not (or (to: c to: d to: e ) ) subject: hugo ) )
+# ------------ or (from: a and (from: b not (or (to: c to: d to: e ) ) subject: hugo ) )
+# ------------ ( from: a  or  ( from: b  and  not ( to: c  or  to: d  or  to: e )   and  subject: hugo ) )
+##########################################################################

@@ -1,0 +1,11 @@
+---
+name: "clean JUNK box"
+schedule: "every 5 minutes"
+action: "junk"
+args:
+  - mail_account: "mahillmannde-0001"
+  - path: "INBOX/Junk"
+  - mail_to: "marcel@mahillmann.de"
+  - mail_not:
+      - field: "FROM"
+      - value: "produktempfehlung@notebooksbilliger.de"

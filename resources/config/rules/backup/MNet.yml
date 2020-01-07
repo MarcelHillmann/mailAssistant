@@ -2,11 +2,13 @@
 name: "M-Net Inbox to Backup MNet"
 schedule: "@daily"
 action: "imap_backup"
-disabled: true
 args:
   - mail_account: "mahillmannde-0001"
-  - mail_from: "newsletter@mail.m-net.de"
-  - mail_older: "P10D"
+  - search:
+    - field: "from"
+      value: "newsletter@mail.m-net.de"
+    - field: "older"
+      value: "P10D"
   - path: "Inbox/Archiv/m-net"
   - target_account: "marcel@ds918.local"
   - saveTo: "Inbox/m-net"

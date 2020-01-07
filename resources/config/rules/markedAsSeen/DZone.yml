@@ -1,18 +1,18 @@
 ---
 name: "DZone mark at seen"
-schedule: "every second"
+schedule: "every 10 minutes"
 action: "seen"
-disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - path: "Inbox/Archiv/DZone"
-  - mail_older: "24h"
-  - mail_unseen: true
-  - mail_or:
-    - field: "from"
-      value: "mailer@dzone.com"
+  - search:
+    - field: "older"
+      value: "24h"
+    - field: "unseen"
     - field: "or"
       value:
+      - field: "from"
+        value: "mailer@dzone.com"
       - field: "from"
         value: "noreply@dzone.com"
       - field: "from"

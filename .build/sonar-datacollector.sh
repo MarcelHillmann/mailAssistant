@@ -17,7 +17,7 @@ function header() {
 function go_meta_linter() {
     reset
     header "run golangci-lint" 6
-    golangci-lint run --out-format checkstyle ./... > .sonarqube/linter-report.xml 2>&1
+    timeout -k 90s 1m golangci-lint run --out-format checkstyle ./... > .sonarqube/linter-report.xml 2>&1
     showState $?
     reset
 }
@@ -25,7 +25,7 @@ function go_meta_linter() {
 function go_lint(){
     reset
     header "run golint" 7
-    golint ./... > .sonarqube/golint-report.out 2>&1
+    timeout -k 90s 1m golint ./... > .sonarqube/golint-report.out 2>&1
     showState $?
     reset
 }
@@ -33,7 +33,7 @@ function go_lint(){
 function go_vet(){
     reset
     header "run go vet" 7
-    go vet ./... > .sonarqube/govet-report.out 2>&1
+    timeout -k 90s 1m go vet ./... > .sonarqube/govet-report.out 2>&1
     showState $?
     reset
 }
@@ -41,7 +41,7 @@ function go_vet(){
 function go_test_json(){
     reset
     header "run tests with result as TEXT" 4
-    go test -json -covermode=count -coverprofile=.sonarqube/cover.out ./... > .sonarqube/test-report.json
+    timeout -k 90s 1m go test -json -covermode=count -coverprofile=.sonarqube/cover.out ./... > .sonarqube/test-report.json
     showState $? 1
     reset
 }
@@ -50,7 +50,7 @@ function go_junit() {
     reset
     if [[ -f .sonarqube/test-report.json ]]; then
         header "run go-junit-report" 6
-        go test -v ./... 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
+        timeout -k 90s 1m go test -v ./... 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
         showState $?
     fi
     reset

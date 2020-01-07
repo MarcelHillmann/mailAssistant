@@ -33,7 +33,7 @@ func TestSeenJobSuccess(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -99,7 +99,7 @@ func TestSeenJobFailedLogin(t *testing.T){
 		}
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Fail(t, "never call this")
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.Fail(t, "never call this")
@@ -197,7 +197,7 @@ func TestSeenJobFailedStoreEmpty(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -246,7 +246,7 @@ func TestSeenJobFailedStoredEmpty(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -317,7 +317,7 @@ func TestSeenJobFailedPanicUnlock(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)

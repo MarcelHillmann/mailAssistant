@@ -2,10 +2,11 @@ package rules
 
 import (
 	"github.com/fsnotify/fsnotify"
+	"log"
 	"mailAssistant/cntl"
 	"mailAssistant/logging"
 	"os"
-//	"time"
+	//	"time"
 
 	"io/ioutil"
 	"mailAssistant/account"
@@ -14,14 +15,14 @@ import (
 )
 
 var (
-//	never       time.Time
-	logRules    *logging.Logger
-	rulesDir,rulesDirErr = filepath.Abs("resources/config/rules/")
-	rulesWalker func(*fsnotify.Watcher) filepath.WalkFunc
+	//	never       time.Time
+	logRules              *logging.Logger
+	rulesDir, rulesDirErr = filepath.Abs("resources/config/rules/")
+	rulesWalker           func(*fsnotify.Watcher) filepath.WalkFunc
 )
 
 func init() {
-//	never, _ = time.Parse(time.RFC3339, "2999-12-31T23:59:59Z")
+	//	never, _ = time.Parse(time.RFC3339, "2999-12-31T23:59:59Z")
 	setRulesWalker(nil)
 }
 
@@ -47,23 +48,25 @@ func newRules(accounts *account.Accounts) Rules {
 	if !strings.HasSuffix(rulesDir, string(filepath.Separator)) {
 		rulesDir += string(filepath.Separator)
 	}
-	return Rules{make(map[string]string, 0), make(map[string]Rule, 0), accounts, rulesDir}
+	return Rules{make(map[string]string, 0), make(map[string]Rule, 0), make(map[string]bool),
+		accounts, rulesDir}
 }
 
 // Rules represents a collation of rule yaml's
 type Rules struct {
 	files    map[string]string
 	Rules    map[string]Rule
+	removed  map[string]bool
 	accounts *account.Accounts
 	rulesDir string
 }
 
 func (rules *Rules) startWatcher() {
 	watcher, _ := fsnotify.NewWatcher()
-	defer func(){
+	defer func() {
 		if err := recover(); err == nil {
 			_ = watcher.Close()
-		}else{
+		} else {
 			panic(err)
 		}
 	}()
@@ -113,9 +116,12 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 			r := rule.convert()
 			rules.Rules[rule.Name] = r
 
-			if _, found := rules.files[rule.fileName]; found {
+			log.Print(">>> ", rule.fileName)
+
+			if _, found := rules.files[rule.fileName]; found && ! rules.removed[rule.fileName] {
 				rules.getLogger().Panic(rule.fileName)
 			}
+			delete(rules.removed, rule.fileName)
 			rules.files[rule.fileName] = rule.Name
 			r.Schedule(rules.accounts)
 		}
@@ -123,9 +129,12 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 		rules.importRule(path, file, fsnotify.Remove)
 		rules.importRule(path, file, fsnotify.Create)
 	} else if op == fsnotify.Remove {
-		rules.getLogger().Debug("Remove ", file)
-		fileName := strings.ToLower(filepath.Join(path, file))
-		ruleFileName := strings.Replace(fileName, strings.ToLower(rules.rulesDir), "", -1)
+		fileName := ""
+		fileName = strings.ToLower(filepath.Join(path, file))
+		rules.getLogger().Debug("Remove ", path, "=>", file, "->", fileName)
+		ruleFileName := strings.TrimPrefix(fileName, strings.ToLower(rules.rulesDir))
+		rules.getLogger().Debug("Remove <<<", ruleFileName)
+		rules.removed[ruleFileName] = true
 		ruleName := rules.files[ruleFileName]
 		rules.Rules[ruleName].Stop()
 		delete(rules.Rules, ruleName)
@@ -144,7 +153,7 @@ func rulesWatchDir(watcher *fsnotify.Watcher) filepath.WalkFunc {
 	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
-		}else if info.IsDir() {
+		} else if info.IsDir() {
 			watcher.Add(path)
 		}
 		return nil

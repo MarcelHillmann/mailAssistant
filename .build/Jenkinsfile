@@ -13,11 +13,14 @@ pipeline {
     stages {
         stage('build'){
             steps {
-                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]) {
-                    sh "mkdir upload; go build -o upload/mailAssistant.amd64_linux"
-                    withEnv(["GOOS=windows"]){
-                        sh "go build -o upload/mailAssistant.amd64_windows.exe"
-                    }
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
+                    sh "go build -o upload/mailAssistant.amd64_linux"
+                }
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","CGO_ENABLED=0"]) {
+                    sh "go build -ldflags='-w -s' -o upload/mailAssistant.alpine"
+                }
+                withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=windows"]) {
+                    sh "go build -o upload/mailAssistant.amd64_windows.exe"
                 } // withEnv
             } // steps
         } // stage
@@ -27,6 +30,7 @@ pipeline {
                     script {
                         withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
                             sh'bash .build/sonar-datacollector.sh'
+                            archiveArtifacts( allowEmptyArchive: true, artifacts: '.sonarqube/*', excludes: '.gitempty', fingerprint: true)
                             if ( BRANCH_NAME.startsWith('PR-')){
                                 sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#PR' '-Dsonar.projectName=jenkins_mailAssistant_PR'"
                             }else{
@@ -46,7 +50,7 @@ pipeline {
                         }
                     } // script
                 } // timeout
-                junit allowEmptyResults: true, testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '.sonarqube/test.xml'
+                // junit allowEmptyResults: true, testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '.sonarqube/test.xml'
             } // steps
         } // stage
         stage('accept PR') {
@@ -69,15 +73,32 @@ pipeline {
             when {  not { branch 'PR-*' } }
             steps{
                 script{
-                    ["mailAssistant.amd64_linux"
-                    ,"mailAssistant.amd64_windows.exe"].each{
-                        nexusUpload("nexus",
-                                "https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}",
-                                "./upload/${it}")
-
-
-                    } // each
+                    if ( currentBuild.result=="SUCCESS" ){
+                        ["mailAssistant.amd64_linux"
+                        ,"mailAssistant.amd64_windows.exe"].each{
+                            nexusUpload("nexus",
+                                        "https://nexus.mahillmann.de/repository/everything-else/mailAssistant/${BRANCH_NAME}_${BUILD_NUMBER}/${it}",
+                                        "./upload/${it}")
+                        } // each
+                    } // != SUCCESS
                 } // script
+            } // steps
+        } // stage
+        stage('docker me'){
+            steps {
+                dir('.build'){
+                    script {
+                        def tag = BRANCH_NAME
+                        if ( BRANCH_NAME.startsWith('PR-')){
+                            tag="pull_request"
+                        }
+                        sh 'cp ../upload/mailAssistant.alpine mailAssistant'
+                        def img = docker.build("registry.mahillmann.de:5000/mailassistant:${tag}-latest", "--compress .")
+                        withDockerRegistry (url: 'https://registry.mahillmann.de:5000', credentialsId: 'nexus') {
+                            img.push("${tag}")
+                        } // withDockerRegistry
+                    } // script
+                } // dir
             } // steps
         } // stage
     } // stages

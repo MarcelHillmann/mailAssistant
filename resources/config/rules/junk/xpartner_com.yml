@@ -2,15 +2,19 @@
 name: "Junk: xpartner.com, svrdesiiign.ru, pixel-promarketing.de"
 schedule: "every 5 minutes"
 action: "junk"
-disabled: true
 args:
   - mail_account: "mahillmannde-0001"
-  - mail_or:
+  - path: "INBOX"
+  - search:
+    - field: "or"
+      value:
       - field: "from"
         value: "service@info.xpartner.com"
-      - field: "or"
-        value:
-          - field: "from"
-            value: "info@svrdesiiign.ru"
-          - field: "from"
-            value: "mail@pixel-promarketing.de"
+      - field: "from"
+        value: "info@svrdesiiign.ru"
+      - field: "from"
+        value: "mail@pixel-promarketing.de"
+      - field: "from"
+        value: "info@itfmebel8.ru"
+      - field: "from"
+        value: "info@dailylifeplan.com"

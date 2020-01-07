@@ -34,7 +34,7 @@ func TestJunkJobSuccess(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -77,8 +77,9 @@ func TestJunkJobSuccess(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 
 	var wg  int32
 	newJunkJob(job, &wg)
@@ -105,7 +106,7 @@ func TestJunkJobFailedLogin(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Fail(t, "never call this")
 			call.selected++
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.Fail(t, "never call this")
@@ -212,7 +213,7 @@ func TestJunkJobFailedStoreEmpty(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -235,8 +236,9 @@ func TestJunkJobFailedStoreEmpty(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 
 	var wg int32
 	newJunkJob(job, &wg)
@@ -261,7 +263,7 @@ func TestJunkJobNotLockedEmpty(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -331,7 +333,7 @@ func TestJunkJobFailedPanicUnlock(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -381,3 +383,73 @@ func TestJunkJobFailedPanicUnlock(t *testing.T){
 	require.Equal(t,"10110-00101-001", mock.Assert())
 }
 
+func TestJunkJobNotFrom(t *testing.T){
+	defer account.SetClientFactory(nil)
+
+	mock := account.NewMockClient()
+	account.SetClientFactory(func(addr string, tlsConfig *tls.Config) (account.IClient, error) {
+		require.Equal(t, "bar.foo:20000", addr)
+		require.NotNil(t, tlsConfig)
+		require.True(t, tlsConfig.InsecureSkipVerify)
+
+		mock.LoginCallback = func(u,p string) error {
+			require.Equal(t, "foo", u)
+			require.Equal(t, "bar", p)
+			return nil
+		}
+		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
+			require.Equal(t, "INBOX.foo.bar",name)
+			require.False(t, readOnly)
+			return new(imap.MailboxStatus), nil
+		}
+		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
+			require.NotNil(t, criteria)
+			return []uint32{10,11,12}, nil
+		}
+		mock.FetchCallback = func(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
+			require.NotNil(t, seqSet)
+			require.NotNil(t, items)
+			require.Len(t, items,3)
+			require.NotNil(t, ch)
+			ch <- createMessage(10, false)
+			ch <- createMessage(11, false)
+			ch <- createMessage(12, false)
+
+			close(ch)
+			return nil
+		}
+		mock.StoreCallback = func(seqSet *imap.SeqSet, item imap.StoreItem, value interface{}, ch chan *imap.Message) error {
+			require.NotNil(t, seqSet)
+			require.NotNil(t, item)
+			require.NotNil(t, value)
+			_v := value.([]interface{})
+			require.Len(t, _v, 1)
+			require.Equal(t, imap.DeletedFlag, _v[0].(string))
+			require.Nil(t, ch)
+			if seqSet.Set[0].Start < 10 || seqSet.Set[0].Stop > 12 {
+				require.Fail(t, "invalid seqSet")
+			}
+			return nil
+		}
+
+		mock.ExpungeCallback = func(ch chan uint32) error {
+			return nil
+		}
+		return mock, nil
+	})
+
+	job:= Job{}
+	job.accounts = new(account.Accounts)
+	job.accounts.Account = make(map[string]account.Account)
+	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job.Args = arguments.NewEmptyArgs()
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_to","hugo@boss.com")
+	job.SetArg("mail_not",[]map[string]interface{}{{"field":"from","value":"calvin@klein.org"}})
+
+	var wg  int32
+	newJunkJob(job, &wg)
+	require.Equal(t,Released, wg)
+	require.Equal(t,"10110-00101-011", mock.Assert())
+}

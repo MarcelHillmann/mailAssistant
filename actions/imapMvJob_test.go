@@ -34,7 +34,7 @@ func TestImapMvJobSuccess(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -70,9 +70,9 @@ func TestImapMvJobSuccess(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo", true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
-
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 	var wg int32
 	newImapMove(job, &wg)
 	require.Equal(t, Released,wg)
@@ -95,7 +95,7 @@ func TestImapMvJobFailedLogin(t *testing.T){
 		}
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Fail(t, "never call this")
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.Fail(t, "never call this")
@@ -193,7 +193,7 @@ func TestImapMvJobFailedStoreEmpty(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -216,8 +216,9 @@ func TestImapMvJobFailedStoreEmpty(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 
 	var wg  int32
 	newImapMove(job, &wg)
@@ -242,7 +243,7 @@ func TestImapMvJobNotLockedEmpty(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -273,8 +274,9 @@ func TestImapMvJobNotLockedEmpty(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 
 	var wg int32
 	newImapMove(job, &wg)
@@ -303,7 +305,7 @@ func TestImapMvJobFailedPanicUnlocked(t *testing.T){
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 			require.Equal(t, "INBOX.foo.bar",name)
 			require.False(t, readOnly)
-			return nil, nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
 			require.NotNil(t, criteria)
@@ -339,9 +341,10 @@ func TestImapMvJobFailedPanicUnlocked(t *testing.T){
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
-	job.Args.SetArg(moveTo, "INBOX/foo_bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg(moveTo, "INBOX/foo_bar")
+	job.SetArg("search", []interface{}{})
 
 	var wg int32
 	newImapMove(job, &wg)
