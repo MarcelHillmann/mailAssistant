@@ -32,7 +32,10 @@ pipeline {
                                    , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
                         sh """
                             echo 'echo $githubPass' > ./.git-askpass
-                            GIT_ASKPASS=./.git-askpass
+                            cat ./.git-askpass
+                            chmod +x ./.git-askpass
+                            ls -AlhX ./.git-askpass
+                            export GIT_ASKPASS=./.git-askpass
 
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
