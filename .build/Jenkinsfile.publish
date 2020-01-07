@@ -2,12 +2,12 @@
 
 pipeline {
     agent any
-    when {
-        branch 'master'
-        beforeOptions true
-        beforeAgent true
-    }
     stages {
+        when {
+            branch 'master'
+            beforeOptions true
+            beforeAgent true
+        }
         stage('hub.docker.com'){
             steps {
                 script {
@@ -20,13 +20,20 @@ pipeline {
             } // steps
         } // stage - hub.docker.com
         stage('github.com'){
-            script {
-                withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
-                               , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
-                    sh "git clone --mirror https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant"
-                    sh "git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant"
-                }
+            when {
+                branch 'master'
+                beforeOptions true
+                beforeAgent true
             }
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
+                                   , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
+                        sh "git clone --mirror https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant"
+                        sh "git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant"
+                    } // withCredentials
+                } // script
+            } // steps
         } // stage - github.com
     } // stages
 } // pipeline
