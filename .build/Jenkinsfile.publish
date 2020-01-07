@@ -38,7 +38,7 @@ pipeline {
                             echo "        password ${githubPass}" >> $HOME/.netrc
                             git remote set-url origin 'https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant'
                             git config --list
-                            git push --mirror https://github.com/MarcelHillmann/mailAssistant
+                            git push --mirror
                            """
                     } // withCredentials
                 } // script
