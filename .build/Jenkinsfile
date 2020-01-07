@@ -10,10 +10,6 @@ pipeline {
         overrideIndexTriggers(true)
         timestamps()
     }
-    environment {
-
-        // GOPRIVATE="*.mahillmann.de"
-    } // environment
     stages {
         stage('build'){
             steps {
