@@ -41,7 +41,10 @@ pipeline {
                             pwd
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
-                            export GIT_TRACE_CURL=true # GIT_TRACE_CURL_NO_DATA=true GIT_TRACE=true GIT_TRACE2=true
+                            export GIT_TRACE_CURL=true GIT_TRACE_CURL_NO_DATA=true
+                            #################################
+                            # GIT_TRACE=true GIT_TRACE2=true
+                            #################################
                             bash \$GIT_ASKPASS | base64
                             git push --mirror https://github.com/MarcelHillmann/mailAssistant
                            """
