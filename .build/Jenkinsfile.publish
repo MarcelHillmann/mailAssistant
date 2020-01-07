@@ -31,8 +31,9 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
                                    , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
                         sh """
-                            export function gitPass(){ echo ${githubPass} }
-                            GIT_ASKPASS=gitPass
+                            echo 'echo $githubPass' > ./.git-askpass
+                            GIT_ASKPASS=./.git-askpass
+
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
                             ls -AlhX
