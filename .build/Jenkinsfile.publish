@@ -37,7 +37,8 @@ pipeline {
                             echo "        login ${githubUser}" >> $HOME/.netrc
                             echo "        password ${githubPass}" >> $HOME/.netrc
                             ls -AlhX $HOME/
-                            export GIT_TRACE_CURL=true GIT_TRACE_CURL_NO_DATA=true
+                            export GIT_TRACE_CURL=true
+                            # GIT_TRACE_CURL_NO_DATA=true
                             #################################
                             # GIT_TRACE=true GIT_TRACE2=true
                             #################################
