@@ -17,8 +17,8 @@ pipeline {
     stages {
         stage('build'){
             steps {
-                sh 'go clean -cache -testcase'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
+                    sh 'go clean -cache -testcase'
                     sh "go build -o upload/mailAssistant.amd64_linux -v"
                 }
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux","CGO_ENABLED=0","CGO_LDFLAGS=-w -s"]) {
