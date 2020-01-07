@@ -31,14 +31,12 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
                                    , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
                         sh """
+                            git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
+                            cd mailAssistant.git/
                             echo 'echo $githubPass' > ./.git-askpass
                             cat ./.git-askpass
                             chmod +x ./.git-askpass
-                            ls -AlhX ./.git-askpass
                             export GIT_ASKPASS=./.git-askpass
-
-                            git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
-                            cd mailAssistant.git/
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
                             git remote set-url --push origin https://github.com/MarcelHillmann/mailAssistant
