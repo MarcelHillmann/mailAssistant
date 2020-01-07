@@ -11,8 +11,8 @@ pipeline {
             }
             steps {
                 script {
-                    def master = docker.image("registry.mahillmann.de/mailassistant:master")
-                        master.tag("margebouvier/mailassistant:master")
+                    sh "docker pull registry.mahillmann.de/mailassistant:master"
+                    sh "docker tag registry.mahillmann.de/mailassistant:master margebouvier/mailassistant:master"
                     docker.withRegistry(credentialsId: 'docker-hub-credentials'){
                         docker.image("margebouvier/mailassistant:master").push()
                     }
