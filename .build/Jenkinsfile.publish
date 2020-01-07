@@ -27,7 +27,7 @@ pipeline {
 //            } // when
             steps {
                 script {
-//                    sh 'find . -delete'
+                    sh 'find . -delete'
                     withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
                                    , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
                         sh """
