@@ -34,7 +34,7 @@ pipeline {
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
                             ls -AlhX
-                            git remote set-url --push https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant.git
+                            git remote set-url --push https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant
                             git push --mirror
                            """
                     } // withCredentials
