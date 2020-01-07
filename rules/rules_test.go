@@ -24,7 +24,6 @@ func TestRules(t *testing.T) {
 		t.Run("Error", rulesStartWatcherError)
 	})
 	t.Run("loadFromDisk", rulesLoadFromDisk)
-	// done
 	t.Run("importRule", func(t *testing.T) {
 		t.Run("Create", func(t *testing.T) {
 			t.Run("OK", rulesImportRuleCreate)
@@ -60,9 +59,6 @@ func TestRules_GetLogger_ReReInit(t *testing.T) {
 	require.Equal(t, "mailAssistant.rule.rules", log.Name())
 	log2 := r.getLogger()
 	require.NotNil(t, log2)
-	require.Same(t, log, log2)
-	require.Same(t, logRules, log2)
-	require.Same(t, logRules, log)
 	require.Equal(t, "mailAssistant.rule.rules", log2.Name())
 	logRules = nil
 }
@@ -220,10 +216,10 @@ func rulesStartWatcherOk(t *testing.T) {
 }
 
 func rulesStartWatcherError(t *testing.T) {
-	defer setRulesWalker(nil)
 	defer func() {
 		err := recover()
 		require.EqualError(t, err.(error), "startWalker walker must fail")
+		setRulesWalker(nil)
 	}()
 
 	setRulesWalker(func(watcher *fsnotify.Watcher) filepath.WalkFunc {

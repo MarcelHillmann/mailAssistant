@@ -28,7 +28,7 @@ func newImapBackup(job Job, waitGroup *int32) {
 	source.DialAndLoginPromise(func(sourcePromise *account.ImapPromise) {
 		target.DialAndLoginPromise(func(targetPromise *account.ImapPromise) {
 			sourcePromise.SelectPromise(pathFrom, false, func(promise *account.ImapPromise) {
-				promise.SearchPromise(job.getSearchParameter(), true, func(promise *account.MsgPromises) {
+				promise.FetchPromise(job.getSearchParameter(), true, func(promise *account.MsgPromises) {
 					targetPromise.UploadAndDelete(pathTo, promise, func(num int) {
 						if num == 0 {
 							logger.Debug("nothing to moveTo", moveTo)

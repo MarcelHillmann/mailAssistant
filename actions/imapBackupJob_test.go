@@ -44,9 +44,10 @@ func TestImapBackupJobSuccess(t *testing.T) {
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
 	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("target_account", "foo bar target")
-	job.Args.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mail_account", "foo bar")
+	job.SetArg("target_account", "foo bar target")
+	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("search",[]interface{}{})
 
 	var wg int32
 	newImapBackup(job, &wg)
@@ -307,7 +308,7 @@ func sourceClient(t *testing.T) *account.MockClientPromise {
 	mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
 		require.Equal(t, "INBOX.foo.bar", name)
 		require.False(t, readOnly)
-		return nil, nil
+		return new(imap.MailboxStatus), nil
 	}
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
 		require.NotNil(t, criteria)
