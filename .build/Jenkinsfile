@@ -20,7 +20,7 @@ pipeline {
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin",
                          "GOPROXY=https://nexus.mahillmann.de/repository/goproxy"]) {
                     sh 'go clean -cache -testcache'
-                    withEnv(["GOOS=linux"}){
+                    withEnv(["GOOS=linux"]){
                         sh "go build -o upload/mailAssistant.amd64_linux"
                         withEnv(["CGO_ENABLED=0","CGO_LDFLAGS=-w -s"]) {
                             sh "go build -o upload/mailAssistant.alpine"
