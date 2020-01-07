@@ -11,18 +11,17 @@ pipeline {
         timestamps()
     }
     environment {
-        GOPROXY="https://nexus.mahillmann.de/repository/goproxy/,direct"
-        GOPRIVATE="*.mahillmann.de"
+        GOPROXY="https://nexus.mahillmann.de/repository/goproxy/"
+        // GOPRIVATE="*.mahillmann.de"
     } // environment
     stages {
         stage('build'){
             steps {
                 sh 'rm -rf .cache; mkdir .cache; exit 0'
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux","GOCACHE=${WORKSPACE}/.cache"]) {
-                    sh 'env; go env'
                     sh "go build -o upload/mailAssistant.amd64_linux"
-                    withEnv(["CGO_ENABLED=0"]) {
-                        sh "go build -ldflags='-w -s' -o upload/mailAssistant.alpine"
+                    withEnv(["CGO_ENABLED=0","CGO_LDFLAGS=-w -s]) {
+                        sh "go build -o upload/mailAssistant.alpine"
                     }
                     withEnv(["GOOS=windows"]) {
                         sh "go build -o upload/mailAssistant.amd64_windows.exe"
