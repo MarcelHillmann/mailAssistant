@@ -42,7 +42,7 @@ pipeline {
     } // stages
     post{
         always {
-            sh 'rm -rf *'
+            sh 'find . -delete'
         }
     }
 } // pipeline
