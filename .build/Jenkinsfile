@@ -10,11 +10,21 @@ pipeline {
         timestamps()
     }
     stages {
-        stage('build'){
-            steps {
+        stage('pre build'){
+            when {
+                not { branch 'master' }
+                beforeOptions true
+                beforeInput true
+                beforeAgent true
+            }
+            steps{
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]){
                     sh 'go clean -cache -testcache'
                 } // go clean
+            } // steps
+        } // stage - pre build
+        stage('build'){
+            steps {
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
                         ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
                         ,"GOOS=linux"]) {
