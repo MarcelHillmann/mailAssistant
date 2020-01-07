@@ -35,10 +35,11 @@ pipeline {
                             cd mailAssistant.git/
                             echo 'echo \$githubPass' > ./.git-askpass
                             chmod +x ./.git-askpass
-                            export GIT_ASKPASS=./.git-askpass
+                            # export GIT_ASKPASS=./.git-askpass
                             pwd
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
+                            git config credential.https://github.com.password ${githubPass}
                             git config --list
                             git push --mirror https://github.com/MarcelHillmann/mailAssistant
                            """
