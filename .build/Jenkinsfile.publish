@@ -20,11 +20,11 @@ pipeline {
             } // steps
         } // stage - hub.docker.com
         stage('github.com'){
-//            when {
-//                branch 'master'
-//                beforeOptions true
-//                beforeAgent true
-//            } // when
+            when {
+                branch 'master'
+                beforeOptions true
+                beforeAgent true
+            } // when
             steps {
                 script {
                     sh 'find . -delete'
