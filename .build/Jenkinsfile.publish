@@ -4,11 +4,11 @@ pipeline {
     agent { label "linux" }
     stages {
         stage('hub.docker.com'){
-//            when {
-//                branch 'master'
-//                beforeOptions true
-//                beforeAgent true
-//            } // when
+            when {
+                branch 'master'
+                beforeOptions true
+                beforeAgent true
+            } // when
             steps {
                 script {
                     sh "docker pull registry.mahillmann.de/mailassistant:${BRANCH_NAME}"
