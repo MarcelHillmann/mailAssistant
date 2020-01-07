@@ -19,13 +19,13 @@ pipeline {
             steps {
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=linux"]) {
                     sh 'go env'
-                    sh "go build -o upload/mailAssistant.amd64_linux"
+                    sh "go build -u -o upload/mailAssistant.amd64_linux"
                 }
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","CGO_ENABLED=0"]) {
-                    sh "go build -ldflags='-w -s' -o upload/mailAssistant.alpine"
+                    sh "go build -u -ldflags='-w -s' -o upload/mailAssistant.alpine"
                 }
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOOS=windows"]) {
-                    sh "go build -o upload/mailAssistant.amd64_windows.exe"
+                    sh "go build -u -o upload/mailAssistant.amd64_windows.exe"
                 } // withEnv
             } // steps
         } // stage
