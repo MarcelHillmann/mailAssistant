@@ -4,18 +4,18 @@ pipeline {
     agent any
     stages {
         stage('hub.docker.com'){
-            when {
-                branch 'master'
-                beforeOptions true
-                beforeAgent true
-            }
+//            when {
+//                branch 'master'
+//                beforeOptions true
+//                beforeAgent true
+//            } // when
             steps {
                 script {
-                    sh "docker pull registry.mahillmann.de/mailassistant:master"
-                    sh "docker tag registry.mahillmann.de/mailassistant:master margebouvier/mailassistant:master"
-                    docker.withRegistry(url: "registry-1.docker.io",credentialsId: 'docker-hub-credentials'){
-                        docker.image("margebouvier/mailassistant:master").push()
-                    }
+                    sh "docker pull registry.mahillmann.de/mailassistant:${BRANCH_NAME}"
+                    sh "docker tag registry.mahillmann.de/mailassistant:${BRANCH_NAME} margebouvier/mailassistant:${BRANCH_NAME}"
+                    docker.withRegistry("https://registry-1.docker.io","docker-hub-credentials"){
+                        docker.image("margebouvier/mailassistant:${BRANCH_NAME}").push()
+                    } // withRegistry
                 } // script
             } // steps
         } // stage - hub.docker.com
@@ -24,7 +24,7 @@ pipeline {
                 branch 'master'
                 beforeOptions true
                 beforeAgent true
-            }
+            } // when
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'gitea-jenkins', passwordVariable: 'giteaPass', usernameVariable: 'giteaUser')
