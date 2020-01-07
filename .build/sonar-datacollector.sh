@@ -68,7 +68,6 @@ function showState(){
     fi # failed
 }
 
-go clean -testcache
 go_meta_linter
 go_lint
 go_vet
