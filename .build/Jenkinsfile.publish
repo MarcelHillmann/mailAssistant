@@ -32,7 +32,7 @@ pipeline {
                                    , usernamePassword(credentialsId: 'github-com', passwordVariable: 'githubPass', usernameVariable: 'githubUser')]) {
                         sh """
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
-                            ls -AlhX
+                            cd mailAssistant.git/
                             git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant.git
                            """
                     } // withCredentials
