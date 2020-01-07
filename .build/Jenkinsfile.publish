@@ -33,12 +33,9 @@ pipeline {
                         sh """
                             git clone --bare https://${giteaUser}:${giteaPass}@gitea.mahillmann.de/Marcel/mailAssistant
                             cd mailAssistant.git/
-                            echo "machine github.com" > $HOME/.netrc
-                            echo "        login ${githubUser}" >> $HOME/.netrc
-                            echo "        password ${githubPass}" >> $HOME/.netrc
                             git remote set-url origin 'https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant'
                             git config --list
-                            git push --mirror
+                            GIT_TRACE_CURL=1 git push --mirror
                            """
                     } // withCredentials
                 } // script
