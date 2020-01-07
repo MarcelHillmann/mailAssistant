@@ -35,7 +35,7 @@ pipeline {
                             cd mailAssistant.git/
                             git remote set-url origin 'https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant'
                             git config --list
-                            GIT_TRACE_CURL=1 git push --mirror
+                            git push --mirror https://${githubUser}:${githubPass}@github.com/MarcelHillmann/mailAssistant
                            """
                     } // withCredentials
                 } // script
