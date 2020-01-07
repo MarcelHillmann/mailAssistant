@@ -40,6 +40,7 @@ pipeline {
                             bash -x \$GIT_ASKPASS
                             ls -AlhX
                             git config credential.https://github.com.username ${githubUser}
+                            git config --list
                             git push --mirror https://github.com/MarcelHillmann/mailAssistant
                            """
                     } // withCredentials
