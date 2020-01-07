@@ -50,7 +50,7 @@ func (o or) Get() (res []interface{}) {
 	last := len(*o.conditions) - 1
 	res = make([]interface{}, 0)
 	for i := range *o.conditions {
-		if i < last || last == 0 && false == *o.locked {
+		if i < last || last == 0 && !*o.locked {
 			res = append(res, "or")
 		}
 		res = append(res, (*o.conditions)[i].Get()...)

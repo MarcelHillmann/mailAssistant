@@ -46,7 +46,7 @@ func (n not) Add(c Condition) {
 
 func (n not) Get() (res []interface{}) {
 	res = make([]interface{}, 0)
-	if false == *n.locked && len(*n.conditions) > 0 {
+	if len(*n.conditions) > 0 && !*n.locked {
 		res = append(res, "not")
 	}
 	for _, c := range *n.conditions {
