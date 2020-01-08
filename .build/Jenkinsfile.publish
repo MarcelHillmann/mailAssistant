@@ -42,9 +42,9 @@ pipeline {
             } // steps
         } // stage - github.com
     } // stages
-//    post{
-//        always {
-//            sh 'find . -delete'
-//        } // always
-//    } // post
+    post{
+        always {
+            sh 'find . -delete'
+        } // always
+    } // post
 } // pipeline
