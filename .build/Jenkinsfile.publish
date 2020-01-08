@@ -21,7 +21,7 @@ pipeline {
         } // stage - hub.docker.com
         stage('github.com'){
             when {
-                branch 'mirror'
+                branch 'master'
                 beforeOptions true
                 beforeAgent true
             } // when
