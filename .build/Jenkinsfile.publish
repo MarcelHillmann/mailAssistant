@@ -21,7 +21,7 @@ pipeline {
         } // stage - hub.docker.com
         stage('github.com'){
             when {
-                branch 'master'
+                branch 'mirror'
                 beforeOptions true
                 beforeAgent true
             } // when
@@ -42,9 +42,9 @@ pipeline {
             } // steps
         } // stage - github.com
     } // stages
-//    post{
-//        always {
-//            sh 'find . -delete'
-//        } // always
-//    } // post
+    post{
+        always {
+            sh 'find . -delete'
+        } // always
+    } // post
 } // pipeline
