@@ -18,7 +18,13 @@ var jobsCollector = make([]*observable,0)
 
 // Observe is the central registry method for monitoring
 func Observe(j observable){
-	jobsCollector = append(jobsCollector, &j)
+	var jPtr = &j
+	for _, ob := range jobsCollector {
+		if ob == jPtr {
+			return
+		}
+	}
+	jobsCollector = append(jobsCollector, jPtr)
 }
 
 // StartServer is launching the monitoring http server
