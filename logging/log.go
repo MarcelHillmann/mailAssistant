@@ -99,6 +99,11 @@ func (l Logger) Debug(msg ...interface{}) {
 	}
 }
 
+func (l Logger) Debugf(msg ...interface{}) {
+	if l.IsLogLevel(debug) {
+		logger(l.name, "DEBUG  ", []interface{}{fmt.Sprintf(msg[0].(string), msg[1:]...)})
+	}
+}
 // Enter is writing a special debug message that represents to enter a method
 func (l Logger) Enter() {
 	l.Debug(">>")

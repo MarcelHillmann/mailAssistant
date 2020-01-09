@@ -2,7 +2,6 @@ package rules
 
 import (
 	"github.com/fsnotify/fsnotify"
-	"log"
 	"mailAssistant/cntl"
 	"mailAssistant/logging"
 	"os"
@@ -112,11 +111,11 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 		} else if rule == nil || rule.IsEmpty() {
 			// nothing to do
 		} else {
-			rules.getLogger().Debug("Create --> %s => %s \n", rule.Name, rule.fileName)
+			rules.getLogger().Debug("Create --> %s => %s", rule.Name, rule.fileName)
 			r := rule.convert()
 			rules.Rules[rule.Name] = r
 
-			log.Print(">>> ", rule.fileName)
+			rules.getLogger().Debug(">>> ", rule.fileName)
 
 			if _, found := rules.files[rule.fileName]; found && ! rules.removed[rule.fileName] {
 				rules.getLogger().Panic(rule.fileName)
