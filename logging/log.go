@@ -111,7 +111,8 @@ func (l Logger) Leave() {
 
 // IsLogLevel check the loggerRegistry for a given log level
 func (l Logger) IsLogLevel(level logLevel) bool {
-	if lvl, ok := loggerRegistry[l.name]; ok && lvl != notExists {
+	name := strings.Split(l.name,"%")[0]
+	if lvl, ok := loggerRegistry[name]; ok && lvl != notExists {
 		return lvl <= level
 	}
 	parents := strings.Split(l.name, ".")
