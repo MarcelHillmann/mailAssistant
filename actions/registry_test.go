@@ -13,7 +13,7 @@ const (
 	dublicate = "SEVERE  [mailAssistant.actions.registry#register] duplicate action name foo.bar  =>  mailAssistant/actions.glob..func1\n"
 )
 
-var dummyJob = func(job Job, waitGroup *int32) {}
+var dummyJob = func(_ Job, _ *int32, _ func(int)) {}
 
 func TestRegistry_Add(t *testing.T){
 	actions = make(map[string]jobCallBack)

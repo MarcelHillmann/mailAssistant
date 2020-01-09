@@ -13,7 +13,7 @@ import (
 
 func TestJunkJob_Locked(t *testing.T){
 	var wg int32 = 1
-	newJunkJob(Job{}, &wg)
+	newJunkJob(Job{}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -82,7 +82,7 @@ func TestJunkJobSuccess(t *testing.T){
 	job.SetArg("search",[]interface{}{})
 
 	var wg  int32
-	newJunkJob(job, &wg)
+	newJunkJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t,"10110-00101-011", mock.Assert())
 }
@@ -139,7 +139,7 @@ func TestJunkJobFailedLogin(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newJunkJob(job, &wg)
+	newJunkJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10000-00000-001", mock.Assert())
 }
@@ -191,7 +191,7 @@ func TestJunkJobFailedSelect(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newJunkJob(job, &wg)
+	newJunkJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10100-00000-001", mock.Assert())
 }
@@ -241,7 +241,7 @@ func TestJunkJobFailedStoreEmpty(t *testing.T){
 	job.SetArg("search",[]interface{}{})
 
 	var wg int32
-	newJunkJob(job, &wg)
+	newJunkJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10110-00000-001", mock.Assert())
 }
@@ -308,7 +308,7 @@ func TestJunkJobNotLockedEmpty(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newJunkJob(job, &wg)
+	newJunkJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10110-00101-001", mock.Assert())
 }
@@ -378,7 +378,7 @@ func TestJunkJobFailedPanicUnlock(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newJunkJob(job, &wg)
+	newJunkJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t,"10110-00101-001", mock.Assert())
 }
@@ -449,7 +449,7 @@ func TestJunkJobNotFrom(t *testing.T){
 	job.SetArg("mail_not",[]map[string]interface{}{{"field":"from","value":"calvin@klein.org"}})
 
 	var wg  int32
-	newJunkJob(job, &wg)
+	newJunkJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t,"10110-00101-011", mock.Assert())
 }

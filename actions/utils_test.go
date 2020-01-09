@@ -22,14 +22,14 @@ func TestUtilIsLockedElseLock(t *testing.T) {
 	log.SetFlags(0)
 
 	logging.SetLevel("mailassistant.actions", "all")
-	log := logging.NewNamedLogger("mailassistant.actions")
+	logger := logging.NewNamedLogger("mailassistant.actions")
 
 	var wg int32
-	require.False(t, isLockedElseLock(log, &wg))
+	require.False(t, isLockedElseLock(logger, &wg))
 	require.Equal(t, "INFO    [mailassistant.actions#islockedelselock] lock\n", buffer.String())
 	require.Equal(t, Locked, wg)
 	buffer.Truncate(0)
-	require.True(t, isLockedElseLock(log, &wg))
+	require.True(t, isLockedElseLock(logger, &wg))
 	require.Equal(t, "INFO    [mailassistant.actions#islockedelselock] is locked\n", buffer.String())
 	require.Equal(t, Locked, wg)
 }
@@ -45,10 +45,10 @@ func TestUtilUnlockAlways(t *testing.T) {
 	log.SetFlags(0)
 
 	logging.SetLevel("mailassistant.actions", "all")
-	log := logging.NewNamedLogger("mailassistant.actions")
+	logger := logging.NewNamedLogger("mailassistant.actions")
 
 	var wg int32 = 400
-	unlockAlways(log, &wg)
+	unlockAlways(logger, &wg)
 	require.Equal(t, "INFO    [mailassistant.actions#unlockalways] unlocked\n", buffer.String())
 	require.Equal(t, Released, wg)
 }
@@ -66,9 +66,9 @@ func TestUtilDeferUnlockAlways(t *testing.T) {
 	log.SetOutput(buffer)
 	log.SetFlags(0)
 	logging.SetLevel("mailassistant.actions", "all")
-	log := logging.NewNamedLogger("mailassistant.actions")
+	logger := logging.NewNamedLogger("mailassistant.actions")
 
-	defer unlockAlways(log, &wg)
+	defer unlockAlways(logger, &wg)
 	panic("run recover()")
 }
 

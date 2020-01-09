@@ -12,7 +12,7 @@ import (
 
 func TestArchiveAttachmentLocked(t *testing.T) {
 	var wg int32 = 1
-	newArchiveAttachment(Job{}, &wg)
+	newArchiveAttachment(Job{}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -65,7 +65,7 @@ func TestArchiveAttachmentSuccess(t *testing.T) {
 	job.SetArg("search", []interface{}{})
 
 	var wg int32
-	newArchiveAttachment(job, &wg)
+	newArchiveAttachment(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "10110-00100-001", mock.Assert())
 }

@@ -13,7 +13,7 @@ import (
 
 func TestSeenJob_Locked(t *testing.T){
 	var wg int32 = 1
-	newSeenJob(Job{}, &wg)
+	newSeenJob(Job{}, &wg, metricsDummy)
 }
 
 func TestSeenJobSuccess(t *testing.T){
@@ -78,7 +78,7 @@ func TestSeenJobSuccess(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newSeenJob(job, &wg)
+	newSeenJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10110-00101-001", mock.Assert())
 }
@@ -126,7 +126,7 @@ func TestSeenJobFailedLogin(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newSeenJob(job, &wg)
+	newSeenJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10000-00000-001", mock.Assert())
 }
@@ -175,7 +175,7 @@ func TestSeenJobFailedSelect(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newSeenJob(job, &wg)
+	newSeenJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10100-00000-001", mock.Assert())
 }
@@ -224,7 +224,7 @@ func TestSeenJobFailedStoreEmpty(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newSeenJob(job, &wg)
+	newSeenJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10110-00000-001", mock.Assert())
 }
@@ -291,7 +291,7 @@ func TestSeenJobFailedStoredEmpty(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newSeenJob(job, &wg)
+	newSeenJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10110-00101-001", mock.Assert())
 }
@@ -362,7 +362,7 @@ func TestSeenJobFailedPanicUnlock(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newSeenJob(job, &wg)
+	newSeenJob(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10110-00101-001", mock.Assert())
 }

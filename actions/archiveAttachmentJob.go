@@ -12,7 +12,7 @@ func init() {
 	register("archiveAttachment", newArchiveAttachment)
 }
 
-func newArchiveAttachment(job Job, waitGroup *int32) {
+func newArchiveAttachment(job Job, waitGroup *int32, result func(int)) {
 	logger := logging.NewLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
@@ -35,6 +35,7 @@ func newArchiveAttachment(job Job, waitGroup *int32) {
 						} else if err := ioutil.WriteFile(saveTo, attachmentPromise.Body(), 0); err != nil {
 							logger.Severe(err)
 						} else {
+							result(1)
 							logger.Debug("saved ", saveTo)
 						}
 					}

@@ -6,7 +6,7 @@ import (
 	"runtime"
 )
 
-type jobCallBack func(job Job, waitGroup *int32)
+type jobCallBack func(job Job, waitGroup *int32, res func(int))
 
 var regLog = logging.NewNamedLogger("${project}.actions.registry")
 
