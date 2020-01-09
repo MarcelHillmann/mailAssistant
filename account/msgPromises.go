@@ -36,7 +36,7 @@ func (p MsgPromises) Move(moveTo string) (int, error) {
 	if p.seqSet.Empty() {
 		return 0, e.NewEmpty()
 	}
-	path := strings.Replace(moveTo, "/", ".", -1)
+	path := strings.ReplaceAll(moveTo, "/", ".")
 	if path == "" {
 		path = "INBOX"
 	}

@@ -78,10 +78,24 @@ func (l Logger) Severe(msg ...interface{}) {
 	}
 }
 
+// Severef is writing a severe message
+func (l Logger) Severef(format string, msg ...interface{}) {
+	if l.IsLogLevel(severe) {
+		l.Severe(fmt.Sprintf(format, msg...))
+	}
+}
+
 // Warn is writing a WARNING message
 func (l Logger) Warn(msg ...interface{}) {
 	if l.IsLogLevel(warn) {
 		logger(l.name, "WARNING", msg)
+	}
+}
+
+// Warnf is writing a WARNING message
+func (l Logger) Warnf(format string, msg ...interface{}) {
+	if l.IsLogLevel(warn) {
+		l.Warn(fmt.Sprintf(format, msg...))
 	}
 }
 
@@ -92,6 +106,13 @@ func (l Logger) Info(msg ...interface{}) {
 	}
 }
 
+// Infof is writing a INFO message
+func (l Logger) Infof(format string, msg ...interface{}) {
+	if l.IsLogLevel(info) {
+		l.Info(fmt.Sprintf(format, msg...))
+	}
+}
+
 // Debug is writing a debug message
 func (l Logger) Debug(msg ...interface{}) {
 	if l.IsLogLevel(debug) {
@@ -99,9 +120,10 @@ func (l Logger) Debug(msg ...interface{}) {
 	}
 }
 
-func (l Logger) Debugf(msg ...interface{}) {
+// Debugf is writing a debug message
+func (l Logger) Debugf(format string, msg ...interface{}) {
 	if l.IsLogLevel(debug) {
-		logger(l.name, "DEBUG  ", []interface{}{fmt.Sprintf(msg[0].(string), msg[1:]...)})
+		l.Debug( fmt.Sprintf(format, msg...))
 	}
 }
 // Enter is writing a special debug message that represents to enter a method

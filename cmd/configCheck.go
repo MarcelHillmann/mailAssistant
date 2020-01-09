@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/emersion/go-imap"
+	"github.com/emersion/go-imap/commands"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -50,11 +52,20 @@ func runRecursive(base , dir string) error {
 					break
 				}
 			}
+
+			if condition == nil {
+				continue
+			}
 			cnf := strings.TrimPrefix(path, base)
 			if condition.String() == "" {
 				return fmt.Errorf("check config file '%s'", cnf)
 			}
 			log.Printf("%s: %s\n", cnf, condition.String())
+			criteria := imap.NewSearchCriteria()
+			_ = criteria.ParseWithCharset(condition.Get(), nil)
+			s := commands.Search{"UTF-8", criteria}
+			cmd := s.Command()
+			cmd.WriteTo(&imap.Writer{Writer: os.Stderr, AllowAsyncLiterals: false})
 			log.Println("+++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++")
 		}
 	}

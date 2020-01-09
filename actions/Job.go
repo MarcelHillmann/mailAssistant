@@ -19,7 +19,7 @@ func NewJob(jobName, name string, args map[string]interface{}, accounts *account
 		fcc = newDummy
 	}
 	loggerName := runtime.FuncForPC(reflect.ValueOf(fcc).Pointer()).Name()
-	log.Info("action ", loggerName, "for", jobName)
+	log.Infof("action '%s' for '%s'", loggerName, jobName)
 
 	semaphore[jobName] = semaphoreNull()
 	job = Job{Args: arguments.NewArgs(args), log: logging.NewNamedLogger(loggerName+"%"+jobName), callback: fcc, accounts: accounts, jobName: jobName, metric: &metrics{disabled: disabled}}
