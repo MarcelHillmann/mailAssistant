@@ -3,7 +3,7 @@ package actions
 import "mailAssistant/account"
 
 func init() {
-	register("list", newArchiveAttachment)
+	register("list", newListMailbox)
 }
 
 func newListMailbox(job Job, waitGroup *int32, result func(int)) {
