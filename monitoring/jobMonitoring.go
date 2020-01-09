@@ -77,8 +77,10 @@ func (j jobMonitoring) FavIcon(writer http.ResponseWriter) {
 
 func (j jobMonitoring) execute(response http.ResponseWriter, contentType string, writer func([]jobWrapper) ([]byte, error)) {
 	jobs := make([]jobWrapper, len(jobsCollector))
-	for i, j := range jobsCollector {
+	i := 0
+	for _, j := range jobsCollector {
 		jobs[i] = newJobWrapper(j)
+		i++
 	}
 
 	if out, err := writer(jobs); err == nil && out == nil {
