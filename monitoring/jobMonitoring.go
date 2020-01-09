@@ -32,7 +32,7 @@ type data struct {
 }
 
 func newData(j []jobWrapper, active, passive int) data {
-	return data{time.Now().Format(time.RFC3339), j, activ,passive}
+	return data{time.Now().Format(time.RFC3339), j, active,passive}
 }
 
 func (j jobMonitoring) ServeHTTP(response http.ResponseWriter, request *http.Request) {
