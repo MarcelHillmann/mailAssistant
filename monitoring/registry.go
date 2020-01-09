@@ -3,6 +3,7 @@ package monitoring
 import (
 	"mailAssistant/cntl"
 	"net/http"
+	"strings"
 )
 
 type observable interface {
@@ -18,7 +19,7 @@ var jobsCollector = make(map[string]*observable)
 
 // Observe is the central registry method for monitoring
 func Observe(name string, j observable){
-	jobsCollector[name] = &j
+	jobsCollector[strings.ToUpper(name)] = &j
 }
 
 // StartServer is launching the monitoring http server

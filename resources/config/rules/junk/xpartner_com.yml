@@ -12,6 +12,8 @@ args:
       - field: "from"
         value: "service@info.xpartner.com"
       - field: "from"
+        value: "service@crm.xpartner.com"
+      - field: "from"
         value: "info@svrdesiiign.ru"
       - field: "from"
         value: "mail@pixel-promarketing.de"
