@@ -3,7 +3,6 @@ package actions
 import (
 	"mailAssistant/account"
 	e "mailAssistant/errors"
-	"mailAssistant/logging"
 )
 
 func init() {
@@ -11,7 +10,7 @@ func init() {
 }
 
 func newJunkJob(job Job, waitGroup *int32, result func(int)) {
-	logger := logging.NewLogger()
+	logger := job.GetLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
 	}
