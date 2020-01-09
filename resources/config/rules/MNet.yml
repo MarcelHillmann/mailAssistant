@@ -2,7 +2,7 @@
 name: "M-Net attachments"
 schedule: "every hour"
 action: "archiveAttachment"
-# disabled: true
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:
