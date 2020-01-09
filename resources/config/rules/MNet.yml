@@ -1,10 +1,8 @@
 ---
 name: "M-Net attachments"
 schedule: "every hour"
-# schedule: "every minute"
-# schedule: "every second"
-# disabled: true
 action: "archiveAttachment"
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:

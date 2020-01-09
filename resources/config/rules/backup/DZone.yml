@@ -6,10 +6,16 @@ disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:
-    - field: "from"
-      value: "mailer@dzone.com"
     - field: "older"
       value: "P10D"
+    - field: "or"
+      value:
+      - field: "from"
+        value: "mailer@dzone.com"
+      - field: "from"
+        value: "noreply@dzone.com"
+      - field: "from"
+        value: "privacy@dzone.com"
   - path: "Inbox/Archiv/DZone"
   - target_account: "marcel@ds918.local"
   - saveTo: "Inbox/DZone"

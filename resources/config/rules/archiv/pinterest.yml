@@ -1,0 +1,11 @@
+---
+name: "Pinterest Inbox to Archiv"
+schedule: "every minute"
+action: "imap_mv"
+disabled: true
+args:
+  - mail_account: "mahillmannde-0001"
+  - search:
+    - field: "from"
+      value: "recommendations@explore.pinterest.com"
+  - moveTo: "Inbox/Archiv/Pinterest"

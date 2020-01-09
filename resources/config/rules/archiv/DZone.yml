@@ -8,4 +8,12 @@ args:
   - search:
     - field: "older"
       value: "P10D"
+    - field: "or"
+      value:
+      - field: "from"
+        value: "mailer@dzone.com"
+      - field: "from"
+        value: "noreply@dzone.com"
+      - field: "from"
+        value: "privacy@dzone.com"
   - moveTo: "Inbox/Archiv/DZone"

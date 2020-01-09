@@ -6,6 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"html/template"
 	"net/http"
+	"sort"
 	"time"
 )
 
@@ -76,9 +77,17 @@ func (j jobMonitoring) FavIcon(writer http.ResponseWriter) {
 }
 
 func (j jobMonitoring) execute(response http.ResponseWriter, contentType string, writer func([]jobWrapper) ([]byte, error)) {
+	keys := make([]string, 0)
+	for key := range jobsCollector {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
 	jobs := make([]jobWrapper, len(jobsCollector))
-	for i, j := range jobsCollector {
-		jobs[i] = newJobWrapper(j)
+	i := 0
+	for _, jobName := range keys {
+		jobs[i] = newJobWrapper(jobsCollector[jobName])
+		i++
 	}
 
 	if out, err := writer(jobs); err == nil && out == nil {
