@@ -4,7 +4,7 @@ import (
 	"mailAssistant/logging"
 )
 
-func newDummy(job Job, wg *int32) {
+func newDummy(job Job, _ *int32, result func(int)) {
 	logging.NewLogger().Debug(job)
-	_ = wg
+	result(1)
 }

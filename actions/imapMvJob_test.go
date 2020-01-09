@@ -13,7 +13,7 @@ import (
 
 func TestImapMvJob_Locked(t *testing.T){
 	var wg int32 = 1
-	newImapMove(Job{}, &wg)
+	newImapMove(Job{}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -74,7 +74,7 @@ func TestImapMvJobSuccess(t *testing.T){
 	job.SetArg("path", "INBOX/foo/bar")
 	job.SetArg("search",[]interface{}{})
 	var wg int32
-	newImapMove(job, &wg)
+	newImapMove(job, &wg, metricsDummy)
 	require.Equal(t, Released,wg)
 	require.Equal(t,"10111-00100-001", mock.Assert())
 }
@@ -122,7 +122,7 @@ func TestImapMvJobFailedLogin(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapMove(job, &wg)
+	newImapMove(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10000-00000-001", mock.Assert())
 }
@@ -171,7 +171,7 @@ func TestImapMvJobFailedSelect(t *testing.T){
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapMove(job, &wg)
+	newImapMove(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "10100-00000-001", mock.Assert())
 }
@@ -221,7 +221,7 @@ func TestImapMvJobFailedStoreEmpty(t *testing.T){
 	job.SetArg("search",[]interface{}{})
 
 	var wg  int32
-	newImapMove(job, &wg)
+	newImapMove(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10110-00000-001", mock.Assert())
 }
@@ -279,7 +279,7 @@ func TestImapMvJobNotLockedEmpty(t *testing.T){
 	job.SetArg("search",[]interface{}{})
 
 	var wg int32
-	newImapMove(job, &wg)
+	newImapMove(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10111-00100-001", mock.Assert())
 }
@@ -347,7 +347,7 @@ func TestImapMvJobFailedPanicUnlocked(t *testing.T){
 	job.SetArg("search", []interface{}{})
 
 	var wg int32
-	newImapMove(job, &wg)
+	newImapMove(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "10111-00100-001", mock.Assert())
 }

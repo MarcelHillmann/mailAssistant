@@ -16,7 +16,7 @@ type observable interface {
 
 var jobsCollector = make([]*observable,0)
 
-// Observe is the central reqgistry method for monitoring
+// Observe is the central registry method for monitoring
 func Observe(j observable){
 	jobsCollector = append(jobsCollector, &j)
 }

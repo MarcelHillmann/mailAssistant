@@ -12,7 +12,7 @@ func init() {
 	register("seen", newSeenJob)
 }
 
-func newSeenJob(job Job, waitGroup *int32) {
+func newSeenJob(job Job, waitGroup *int32, result func(int)) {
 	logger := logging.NewLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
@@ -25,6 +25,7 @@ func newSeenJob(job Job, waitGroup *int32) {
 					if num, err := promise.SetSeen(); errors.IsEmpty(err) {
 						logger.Debug("nothing to do")
 					} else if err == nil {
+						result(num)
 						logger.Debug("successfully", num)
 						mod := time.Duration(math.RoundToEven(float64(num / 1000)))
 						time.Sleep(mod * time.Second)

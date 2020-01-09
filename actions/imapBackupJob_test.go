@@ -14,7 +14,7 @@ import (
 
 func TestImapBackupJobLocked(t *testing.T) {
 	var wg int32 = 1
-	newImapBackup(Job{}, &wg)
+	newImapBackup(Job{}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -50,7 +50,7 @@ func TestImapBackupJobSuccess(t *testing.T) {
 	job.SetArg("search",[]interface{}{})
 
 	var wg int32
-	newImapBackup(job, &wg)
+	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "10110-00100-311", sClient.Assert())
 	require.Equal(t,"10000-00030-001", tClient.Assert())
@@ -76,7 +76,7 @@ func TestImapBackupJobFailedAccountMissed(t *testing.T) {
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapBackup(job, &wg)
+	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 }
 
@@ -115,7 +115,7 @@ func TestImapBackupJobFailedLogin(t *testing.T) {
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapBackup(job, &wg)
+	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "10000-00000-001", sClient.Assert())
 	require.Equal(t, "10000-00000-001", tClient.Assert())
@@ -156,7 +156,7 @@ func TestImapBackupJobFailedSelect(t *testing.T) {
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapBackup(job, &wg)
+	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "00000-00000-000", sClient.Assert())
 	require.Equal(t, "00000-00000-000", tClient.Assert())
@@ -197,7 +197,7 @@ func TestImapBackupJobFailedSearchEmpty(t *testing.T) {
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapBackup(job, &wg)
+	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "00000-00000-000", sClient.Assert())
 	require.Equal(t, "00000-00000-000", tClient.Assert())
@@ -237,7 +237,7 @@ func TestImapBackupJobFailedDelete(t *testing.T) {
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapBackup(job, &wg)
+	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "00000-00000-000", sClient.Assert())
 	require.Equal(t, "00000-00000-000", tClient.Assert())
@@ -278,7 +278,7 @@ func TestImapBackupJobFailedPanicUnlock(t *testing.T) {
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
-	newImapBackup(job, &wg)
+	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t,Released, wg)
 	require.Equal(t, "00000-00000-000", sClient.Assert())
 	require.Equal(t, "00000-00000-000", tClient.Assert())

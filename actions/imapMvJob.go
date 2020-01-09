@@ -14,7 +14,7 @@ func init() {
 	register("imap_mv", newImapMove)
 }
 
-func newImapMove(job Job, waitGroup *int32) {
+func newImapMove(job Job, waitGroup *int32, result func(int)) {
 	logger := logging.NewLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
@@ -28,6 +28,7 @@ func newImapMove(job Job, waitGroup *int32) {
 					if num, err := promise.Move(job.GetString(moveTo)); errors.IsEmpty(err) {
 						logger.Debug(moveTo, job.GetString(moveTo), "nothing to do")
 					} else if err == nil {
+						result(num)
 						logger.Debug(moveTo, job.GetString(moveTo), "successfully", num)
 						mod := time.Duration(math.RoundToEven(float64(num / 1000)))
 						time.Sleep(mod * time.Second)

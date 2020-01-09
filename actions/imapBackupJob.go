@@ -11,7 +11,7 @@ func init() {
 	register("imap_backup", newImapBackup)
 }
 
-func newImapBackup(job Job, waitGroup *int32) {
+func newImapBackup(job Job, waitGroup *int32, result func(int)) {
 	logger := logging.NewLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
@@ -30,6 +30,7 @@ func newImapBackup(job Job, waitGroup *int32) {
 			sourcePromise.SelectPromise(pathFrom, false, func(promise *account.ImapPromise) {
 				promise.FetchPromise(job.getSearchParameter(), true, func(promise *account.MsgPromises) {
 					targetPromise.UploadAndDelete(pathTo, promise, func(num int) {
+						result(num)
 						if num == 0 {
 							logger.Debug("nothing to moveTo", moveTo)
 						} else {
