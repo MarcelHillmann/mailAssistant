@@ -12,12 +12,12 @@ import (
 )
 
 func TestNewJob(t *testing.T) {
-	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil)
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil, false)
 	require.NotNil(t, j)
 }
 
 func TestJob_Run(t *testing.T) {
-	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil)
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil, false)
 	logging.SetLevel(j.log.Name(), "all")
 	defer func() {
 		logging.SetLevel(j.log.Name(), "none")
@@ -38,7 +38,7 @@ func TestJob_GetAccount(t *testing.T) {
 	acc := account.Accounts{}
 	acc.Account = make(map[string]account.Account)
 	acc.Account["test"] = account.NewAccountForTest(t, "test", "foo", "bar", "l", false)
-	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), &acc)
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), &acc, false)
 	logging.SetLevel(j.log.Name(), "all")
 	defer func() {
 		logging.SetLevel(j.log.Name(), "none")
@@ -55,7 +55,7 @@ func TestJob_GetAccount(t *testing.T) {
 }
 
 func TestJob_GetLogger(t *testing.T) {
-	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil)
+	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil, false)
 	logger := j.GetLogger()
 	require.NotNil(t, logger)
 	require.Equal(t, "mailAssistant.actions.newDummy", logger.Name())
@@ -70,7 +70,7 @@ func TestJob_getSaveTo(t *testing.T) {
 	args["saveToWin"] = w
 	args["saveTo"] = l
 
-	j := NewJob("", "", args, nil)
+	j := NewJob("", "", args, nil, false)
 	saveToV := j.getSaveTo()
 	if runtime.GOOS == "windows" {
 		require.Equal(t, w, saveToV)
@@ -98,7 +98,7 @@ func TestJobGetSearchParameter(t *testing.T) {
 	searchArg[2] = map[string] interface{} {"field":"older", "value": "every 5 seconds"}
 	searchArg[3] = map[string] interface{} {"field":"or", "value": []interface{}{map[string]interface{}{"field": "from", "value": "foo@bar.org"}}}
 	args["search"] = searchArg
-	j := NewJob("dummy", "foo_bar", args, nil)
+	j := NewJob("dummy", "foo_bar", args, nil, false)
 	search := j.getSearchParameter()
 
 	require.NotNil(t, search)

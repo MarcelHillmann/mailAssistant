@@ -3,7 +3,6 @@ package rules
 import (
 	"github.com/onatm/clockwerk"
 	"github.com/stretchr/testify/require"
-	"mailAssistant/arguments"
 	"testing"
 )
 
@@ -16,7 +15,7 @@ func TestRule(t *testing.T) {
 
 func ruleSchedule(t *testing.T) {
 	t.Run("passed", func(t *testing.T) {
-		r := Rule{arguments.NewEmptyArgs(), "foo.bar", "1s", "dummy", nil, false}
+		r := newRule("foo.bar","1s", "dummy",false)
 		r.Schedule(nil)
 		require.Equal(t, "foo.bar", r.name)
 		require.Equal(t, "1s", r.schedule)
@@ -26,7 +25,7 @@ func ruleSchedule(t *testing.T) {
 	})
 
 	t.Run("invalid schedule", func(t *testing.T) {
-		r := Rule{arguments.NewEmptyArgs(), "foo.bar", "", "dummy", nil, false}
+		r := newRule("foo.bar","", "dummy",false)
 		r.Schedule(nil)
 		require.Equal(t, "foo.bar", r.name)
 		require.Equal(t, "", r.schedule)
@@ -35,7 +34,7 @@ func ruleSchedule(t *testing.T) {
 	})
 
 	t.Run("disabled", func(t *testing.T) {
-		r := Rule{arguments.NewEmptyArgs(), "foo.bar", "1s", "dummy", nil, true}
+		r := newRule("foo.bar","1s", "dummy",true)
 		r.clock = nil
 		r.disabled = true
 		r.Schedule(nil)
@@ -60,7 +59,7 @@ func ruleGetLogger(t *testing.T) {
 	ruleLogger = nil
 }
 
-func ruleStop(t *testing.T) {
+func ruleStop(_ *testing.T) {
 	r := Rule{clock: nil}
 	r.Stop()
 

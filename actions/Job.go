@@ -5,12 +5,14 @@ import (
 	"mailAssistant/arguments"
 	"mailAssistant/conditions"
 	"mailAssistant/logging"
+	"mailAssistant/monitoring"
 	"reflect"
 	"runtime"
+	"time"
 )
 
 // NewJob is a job factory
-func NewJob(jobName, name string, args map[string]interface{}, accounts *account.Accounts) Job {
+func NewJob(jobName, name string, args map[string]interface{}, accounts *account.Accounts, disabled bool) (job Job) {
 	log := logging.NewNamedLogger("${project}.actions")
 	fcc, ok := actions[name]
 	if !ok {
@@ -21,7 +23,12 @@ func NewJob(jobName, name string, args map[string]interface{}, accounts *account
 	log.Info("action ", loggerName, "for", jobName)
 
 	semaphore[jobName] = semaphoreNull()
-	return Job{Args: arguments.NewArgs(args), log: logging.NewNamedLogger(loggerName), callback: fcc, accounts: accounts, jobName: jobName}
+	if disabled {
+		args["disabled"] = true
+	}
+	job = Job{Args: arguments.NewArgs(args), log: logging.NewNamedLogger(loggerName), callback: fcc, accounts: accounts, jobName: jobName}
+	monitoring.Observe(&job)
+	return
 }
 
 func semaphoreNull() *int32 {
@@ -39,12 +46,18 @@ type Job struct {
 	accounts *account.Accounts
 	jobName  string
 	saveTo   string
+	lastRun  int64
+	runs     uint64
+	results  uint64
+	stoppedAt  int64
 }
 
 // Run is called by clockwerk framework
 func (j Job) Run() {
 	j.log.Enter()
 	j.callback(j, semaphore[j.jobName])
+	j.runs++
+	j.lastRun = time.Now().Unix()
 	j.log.Leave()
 }
 
@@ -55,17 +68,49 @@ func (j Job) GetAccount(name string) *account.Account {
 	}
 	return j.accounts.GetAccount(name)
 }
-
 func (j *Job) getSaveTo() string {
 	return saveTo(j)
 }
-
 func (j Job) getSearchParameter() []interface{} {
 	result := conditions.ParseYaml(j.GetArg("search"))
 	return result.Get()
 }
-
 // GetLogger is returning the job logger
 func (j Job) GetLogger() *logging.Logger {
 	return j.log
+}
+
+// JobName returns the internal jobName
+func (j Job) JobName() string {
+	return j.jobName
+}
+
+// LastRun returns the epoch from last execution
+func (j Job) LastRun() int64 {
+	return j.lastRun
+}
+
+// Runs returns the number of runes
+func (j Job) Runs() uint64 {
+	return j.runs
+}
+
+// Results return the number of executed mails
+func (j Job) Results() uint64 {
+	return j.results
+}
+
+// IsDisabled returns the internal disabled
+func (j Job) IsDisabled() bool {
+	return j.GetBool("disabled")
+}
+
+// Stopped that the epoch for descheduling
+func (j Job) Stopped() {
+	j.stoppedAt = time.Now().Unix()
+}
+
+// StoppedAt returns the epoch from stopping
+func (j Job) StoppedAt() int64 {
+	return j.stoppedAt
 }

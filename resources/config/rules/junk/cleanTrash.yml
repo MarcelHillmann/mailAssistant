@@ -2,6 +2,7 @@
 name: "clean JUNK box"
 schedule: "every 5 minutes"
 action: "junk"
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:

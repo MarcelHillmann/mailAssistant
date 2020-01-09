@@ -2,6 +2,7 @@
 name: "DZone Inbox to Backup MNet"
 schedule: "every 5 minutes"
 action: "imap_backup"
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:

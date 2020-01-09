@@ -2,6 +2,7 @@
 name: "Lego Inbox to Archiv"
 schedule: "every 5 minutes"
 action: "imap_mv"
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:
