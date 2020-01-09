@@ -29,9 +29,9 @@ func TestJob_Run(t *testing.T) {
 	log.SetOutput(buffer)
 	j.Run()
 	require.NotEmpty(t, buffer.String())
-	require.Equal(t, "DEBUG   [mailAssistant.actions.newDummy#job.run] >>\n"+
-		"DEBUG   [mailAssistant.actions.newDummy#lambda] map[]\n"+
-		"DEBUG   [mailAssistant.actions.newDummy#job.run] <<\n", buffer.String())
+	require.Equal(t, "DEBUG   [mailAssistant.actions.newDummy%dummy#job.run] >>\n"+
+		"DEBUG   [mailAssistant.actions.newDummy%dummy#newdummy] map[]\n"+
+		"DEBUG   [mailAssistant.actions.newDummy%dummy#job.run] <<\n", buffer.String())
 }
 
 func TestJob_GetAccount(t *testing.T) {
@@ -51,14 +51,14 @@ func TestJob_GetAccount(t *testing.T) {
 	require.NotNil(t, j.GetAccount("test"))
 	require.Nil(t, j.GetAccount("test22"))
 	require.NotEmpty(t, buffer.String())
-	require.Equal(t, "SEVERE  [mailAssistant.actions.newDummy#job.getaccount] test22 is not defined\n", buffer.String())
+	require.Equal(t, "SEVERE  [mailAssistant.actions.newDummy%dummy#job.getaccount] test22 is not defined\n", buffer.String())
 }
 
 func TestJob_GetLogger(t *testing.T) {
 	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil, false)
 	logger := j.GetLogger()
 	require.NotNil(t, logger)
-	require.Equal(t, "mailAssistant.actions.newDummy", logger.Name())
+	require.Equal(t, "mailAssistant.actions.newDummy%dummy", logger.Name())
 }
 
 func TestJob_getSaveTo(t *testing.T) {

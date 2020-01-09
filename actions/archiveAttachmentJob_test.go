@@ -12,7 +12,7 @@ import (
 
 func TestArchiveAttachmentLocked(t *testing.T) {
 	var wg int32 = 1
-	newArchiveAttachment(Job{}, &wg, metricsDummy)
+	newArchiveAttachment(Job{log: logging.NewLogger()}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
