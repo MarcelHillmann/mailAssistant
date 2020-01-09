@@ -1,0 +1,10 @@
+Report Generation Time: {{ .TimeGenerated }}
+{{ range $index, $job := .Jobs }}
+{{$job.Name }}
+---------------------------------------
+      Disabled: {{ $job.Disabled }}
+       stopped: {{ $job.Stopped }}
+  last execute: {{ $job.LastExec }}
+      executed: {{ $job.Runs}} time
+        result: {{ $job.Results }}
+{{ end }}

@@ -6,4 +6,5 @@ WORKDIR /opt/mailAssistant
 VOLUME ["/opt/mailAssistant/resources","/opt/homes"]
 RUN chmod +rwx /opt/homes
 USER nobody:nogroup
+EXPOSE 8080
 ENTRYPOINT entrypoint.sh

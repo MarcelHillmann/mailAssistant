@@ -5,9 +5,9 @@ import (
 	"log"
 	"mailAssistant/account"
 	"mailAssistant/cntl"
+	"mailAssistant/monitoring"
 	"mailAssistant/rules"
 	"os"
-	"syscall"
 )
 
 // RunAssistant is execute the main logic
@@ -19,10 +19,13 @@ func RunAssistant(c *cli.Context) error {
 		log.Print("<< RunAssistant",err)
 		return err
 	} else if err := rules.ImportAndLaunch(accounts); err != nil {
-		log.Print("<< RunAssistant",err)
+		log.Print("<< RunAssistant", err)
+		return err
+	}else if err := monitoring.StartServer(); err != nil {
+		log.Print("<< RunAssistant", err)
 		return err
 	} else {
-		cntl.WaitForOsNotify(os.Interrupt, syscall.SIGTERM)
+		cntl.WaitForOsNotify(os.Interrupt, os.Kill)
 		cntl.WaitForNotify()
 		cntl.StopAllClocks()
 	}

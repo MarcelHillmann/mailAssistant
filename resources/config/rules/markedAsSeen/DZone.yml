@@ -2,6 +2,7 @@
 name: "DZone mark at seen"
 schedule: "every 10 minutes"
 action: "seen"
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - path: "Inbox/Archiv/DZone"

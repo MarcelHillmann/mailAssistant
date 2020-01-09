@@ -2,6 +2,7 @@
 name: "Junk: xpartner.com, svrdesiiign.ru, pixel-promarketing.de"
 schedule: "every 5 minutes"
 action: "junk"
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - path: "INBOX"

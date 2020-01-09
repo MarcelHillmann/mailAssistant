@@ -2,6 +2,7 @@
 name: "M-Net Inbox to Backup MNet"
 schedule: "@daily"
 action: "imap_backup"
+disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:

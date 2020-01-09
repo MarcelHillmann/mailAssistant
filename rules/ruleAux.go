@@ -1,7 +1,5 @@
 package rules
 
-import "mailAssistant/arguments"
-
 type ruleAux struct {
 	fileName string
 	Name     string                   `yaml:"name"`
@@ -12,7 +10,7 @@ type ruleAux struct {
 }
 
 func (r ruleAux) convert() Rule {
-	result := Rule{arguments.NewEmptyArgs(), r.Name, r.Schedule, r.Action, nil, r.Disabled}
+	result := newRule(r.Name, r.Schedule, r.Action, r.Disabled)
 	for arg := range r.Args {
 		for key, value := range r.Args[arg] {
 			result.SetArg(key, value)
