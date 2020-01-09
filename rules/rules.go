@@ -99,7 +99,7 @@ func (rules *Rules) loadFromDisk(path string) {
 			rules.loadFromDisk(filepath.Join(path, file.Name()))
 			continue
 		}
-		rules.getLogger().Debug("foreach %s/%s\n", path, file.Name())
+		rules.getLogger().Debugf("foreach %s/%s\n", path, file.Name())
 		rules.importRule(path, file.Name(), fsnotify.Create)
 	} // for files
 }
