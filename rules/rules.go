@@ -111,7 +111,7 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 		} else if rule == nil || rule.IsEmpty() {
 			// nothing to do
 		} else {
-			rules.getLogger().Debug("Create --> %s => %s", rule.Name, rule.fileName)
+			rules.getLogger().Debugf("Create --> %s => %s", rule.Name, rule.fileName)
 			r := rule.convert()
 			rules.Rules[rule.Name] = r
 
