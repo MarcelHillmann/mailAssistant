@@ -1,8 +1,8 @@
 ---
 name: "Amazon Inbox to Archiv"
-schedule: "every 5 minutes"
+schedule: "every 24 hours"
 action: "imap_mv"
-disabled: true
+# disabled: true
 args:
   - mail_account: "mahillmannde-0001"
   - search:

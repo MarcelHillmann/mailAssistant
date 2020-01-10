@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -41,6 +42,8 @@ func (j jobMonitoring) ServeHTTP(response http.ResponseWriter, request *http.Req
 	onlyDisabled, onlyEnabled := query.Get("disabled") != "", query.Get("enabled") != ""
 
 	switch uri.Path {
+	case "/fire":
+		j.RunJob(response, query)
 	case "/favicon.ico":
 		response.WriteHeader(http.StatusNotFound)
 	case "/yaml":
@@ -93,17 +96,17 @@ func (j jobMonitoring) execute(response http.ResponseWriter,onlyDisabled, onlyEn
 	jobs := make([]jobWrapper, 0)
 	for _, jobName := range keys {
 		job := jobsCollector[jobName]
-
-		if (*job).IsDisabled() {
+		m := (*job).GetMetric()
+		if m.IsDisabled() {
 			passive++
 		}else {
 			active++
 		}
 
-		if onlyDisabled && (*job).IsDisabled() ||
-			onlyEnabled && !(*job).IsDisabled() ||
+		if onlyDisabled && m.IsDisabled() ||
+			onlyEnabled && !m.IsDisabled() ||
 			onlyDisabled == onlyEnabled {
-			jobs = append(jobs , newJobWrapper(jobsCollector[jobName]))
+			jobs = append(jobs , newJobWrapper(m))
 		}
 	}
 
@@ -116,4 +119,18 @@ func (j jobMonitoring) execute(response http.ResponseWriter,onlyDisabled, onlyEn
 		response.WriteHeader(http.StatusInternalServerError)
 		_, _ = response.Write([]byte(err.Error()))
 	}
+}
+
+func (j jobMonitoring) RunJob(response http.ResponseWriter, query url.Values) {
+	name := query.Get("name")
+
+	for jobName, job := range jobsCollector {
+		if strings.EqualFold(name, jobName) {
+			(*job).Run()
+			response.WriteHeader(http.StatusOK)
+			return
+		}
+	}
+
+	response.WriteHeader(http.StatusNotImplemented)
 }

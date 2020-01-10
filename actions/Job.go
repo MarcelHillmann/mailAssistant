@@ -23,7 +23,7 @@ func NewJob(jobName, name string, args map[string]interface{}, accounts *account
 
 	semaphore[jobName] = semaphoreNull()
 	job = Job{Args: arguments.NewArgs(args), log: logging.NewNamedLogger(loggerName+"%"+jobName), callback: fcc, accounts: accounts, jobName: jobName, metric: &metrics{disabled: disabled}}
-	monitoring.Observe(jobName, job.getMetric())
+	monitoring.Observe(jobName, job)
 	return
 }
 
@@ -77,7 +77,7 @@ func (j Job) Stopped() {
 	j.metric.stopped()
 }
 
-func (j Job) getMetric() *metrics {
+func (j Job) GetMetric() monitoring.IMetric {
 	metric := j.metric
 	metric.jobName = j.jobName
 	return metric

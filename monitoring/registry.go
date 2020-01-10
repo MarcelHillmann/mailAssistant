@@ -7,6 +7,10 @@ import (
 )
 
 type observable interface {
+	Run()
+	GetMetric() IMetric
+}
+type IMetric interface {
 	JobName() string
 	LastRun() int64
 	StoppedAt() int64
