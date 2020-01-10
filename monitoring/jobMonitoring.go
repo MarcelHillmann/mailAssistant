@@ -13,6 +13,8 @@ import (
 )
 
 const htmlTemplate = `Report Generation Time: {{ .TimeGenerated }}
+Active: {{ .Active }}
+Passive: {{ .Passive }}
 {{ range $index, $job := .Jobs }}
 {{$job.Name }}
 ---------------------------------------
