@@ -18,9 +18,9 @@ func TestNewJob(t *testing.T) {
 
 func TestJob_Run(t *testing.T) {
 	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), nil, false)
-	logging.SetLevel(j.log.Name(), "all")
+	logging.SetLevel("global", "all")
 	defer func() {
-		logging.SetLevel(j.log.Name(), "none")
+		logging.SetLevel("*", "")
 		log.SetFlags(log.LstdFlags)
 		log.SetOutput(os.Stderr)
 	}()
@@ -39,9 +39,9 @@ func TestJob_GetAccount(t *testing.T) {
 	acc.Account = make(map[string]account.Account)
 	acc.Account["test"] = account.NewAccountForTest(t, "test", "foo", "bar", "l", false)
 	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), &acc, false)
-	logging.SetLevel(j.log.Name(), "all")
+	logging.SetLevel("global", "all")
 	defer func() {
-		logging.SetLevel(j.log.Name(), "none")
+		logging.SetLevel("*","")
 		log.SetFlags(log.LstdFlags)
 		log.SetOutput(os.Stderr)
 	}()

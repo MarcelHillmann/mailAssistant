@@ -146,5 +146,5 @@ func orString4(t *testing.T) {
 	a.Add(newPair("e", "f"))
 	a.Add(newPair("g", "h"))
 
-	require.Equal(t, "( A='b' or C='d' or E='f' or G='h' )", a.String())
+	require.Equal(t, "( A='b'\n or C='d'\n or E='f'\n or G='h' )", a.String())
 }
