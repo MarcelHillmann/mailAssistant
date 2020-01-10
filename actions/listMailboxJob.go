@@ -6,7 +6,7 @@ func init() {
 	register("list", newListMailbox)
 }
 
-func newListMailbox(job Job, waitGroup *int32, result func(int)) {
+func newListMailbox(job Job, waitGroup *int32, _ func(int)) {
 	logger := job.GetLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
