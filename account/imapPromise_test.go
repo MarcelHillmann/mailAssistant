@@ -213,7 +213,7 @@ func imapPromiseSearchPromiseFailedSearch(t *testing.T) {
 	defer func() {
 		err := recover()
 		require.NotNil(t, err)
-		require.Equal(t, "search must fail", err.(error).Error())
+		require.Equal(t, "search must fail []interface {}{\"KEYWORD\", \"\\\\Seen\"}", err.(error).Error())
 		require.Empty(t, injectPromise)
 	}()
 

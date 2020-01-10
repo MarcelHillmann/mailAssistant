@@ -1,10 +1,13 @@
 package actions
 
-import "testing"
+import (
+	"mailAssistant/logging"
+	"testing"
+)
 
 func TestDummyJob(t *testing.T){
 	var wg int32
-	job := Job{}
+	job := Job{log: logging.NewLogger()}
 
 	newDummy(job,&wg, metricsDummy)
 }

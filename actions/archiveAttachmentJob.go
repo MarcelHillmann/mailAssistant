@@ -3,7 +3,6 @@ package actions
 import (
 	"io/ioutil"
 	"mailAssistant/account"
-	"mailAssistant/logging"
 	"os"
 	"path/filepath"
 )
@@ -13,7 +12,7 @@ func init() {
 }
 
 func newArchiveAttachment(job Job, waitGroup *int32, result func(int)) {
-	logger := logging.NewLogger()
+	logger := job.GetLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
 	}

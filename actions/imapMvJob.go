@@ -3,7 +3,6 @@ package actions
 import (
 	"mailAssistant/account"
 	"mailAssistant/errors"
-	"mailAssistant/logging"
 	"math"
 	"time"
 )
@@ -15,7 +14,7 @@ func init() {
 }
 
 func newImapMove(job Job, waitGroup *int32, result func(int)) {
-	logger := logging.NewLogger()
+	logger := job.GetLogger()
 	if isLockedElseLock(logger, waitGroup) {
 		return
 	}

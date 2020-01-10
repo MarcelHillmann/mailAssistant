@@ -14,7 +14,7 @@ import (
 
 func TestImapBackupJobLocked(t *testing.T) {
 	var wg int32 = 1
-	newImapBackup(Job{}, &wg, metricsDummy)
+	newImapBackup(Job{log: logging.NewLogger()}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 

@@ -69,7 +69,7 @@ func (o or) String() (str string) {
 		builder := stringEmpty
 		for _, c := range *o.conditions {
 			if builder != stringEmpty {
-				builder += stringOr
+				builder += "\n"+ stringOr
 			}
 			builder += c.String()
 		}

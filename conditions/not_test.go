@@ -163,5 +163,5 @@ func notStringEx(t *testing.T) {
 	or.Add(newPair("e", "f"))
 	or.Add(newPair("g", "h"))
 
-	require.Equal(t, "not ( ( A='b' and C='d' ) and ( E='f' or G='h' ) )", a.String())
+	require.Equal(t, "not ( ( A='b' and C='d' ) and ( E='f'\n or G='h' ) )", a.String())
 }

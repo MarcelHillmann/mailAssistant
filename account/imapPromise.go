@@ -1,6 +1,7 @@
 package account
 
 import (
+	"fmt"
 	"github.com/emersion/go-imap"
 	"mailAssistant/conditions"
 	"mailAssistant/logging"
@@ -133,7 +134,7 @@ func (promise *ImapPromise) search(args []interface{}, callback func(promise *Ms
 	searchCfg := imap.NewSearchCriteria()
 	_ = searchCfg.ParseWithCharset(args, nil)
 	if seqNums, err := promise.client.Search(searchCfg); err != nil && err.Error() != noMatchingMessages {
-		panic(err)
+		panic(fmt.Errorf("%s %#v",err.Error(), args))
 	} else if len(seqNums) <= 0 {
 		callback(&MsgPromises{ImapPromise: promise, messages: make([]*MsgPromise, 0), seqSet: new(imap.SeqSet)})
 		result = nil

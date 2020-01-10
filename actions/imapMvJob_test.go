@@ -8,12 +8,13 @@ import (
 	"mailAssistant/account"
 	"mailAssistant/arguments"
 	e "mailAssistant/errors"
+	"mailAssistant/logging"
 	"testing"
 )
 
 func TestImapMvJob_Locked(t *testing.T){
 	var wg int32 = 1
-	newImapMove(Job{}, &wg, metricsDummy)
+	newImapMove(Job{log: logging.NewLogger()}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -65,7 +66,7 @@ func TestImapMvJobSuccess(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{}
+	job:= Job{log: logging.NewLogger()}
 	job.accounts = new(account.Accounts)
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo", true)
@@ -113,7 +114,7 @@ func TestImapMvJobFailedLogin(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{}
+	job:= Job{log: logging.NewLogger()}
 	job.accounts = new(account.Accounts)
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
@@ -162,7 +163,7 @@ func TestImapMvJobFailedSelect(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{}
+	job:= Job{log: logging.NewLogger()}
 	job.accounts = new(account.Accounts)
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
@@ -211,7 +212,7 @@ func TestImapMvJobFailedStoreEmpty(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{}
+	job:= Job{log: logging.NewLogger()}
 	job.accounts = new(account.Accounts)
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
@@ -269,7 +270,7 @@ func TestImapMvJobNotLockedEmpty(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{}
+	job:= Job{log: logging.NewLogger()}
 	job.accounts = new(account.Accounts)
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
@@ -336,7 +337,7 @@ func TestImapMvJobFailedPanicUnlocked(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{}
+	job:= Job{log: logging.NewLogger()}
 	job.accounts = new(account.Accounts)
 	job.accounts.Account = make(map[string]account.Account)
 	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
