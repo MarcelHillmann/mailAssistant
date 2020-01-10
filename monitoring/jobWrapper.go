@@ -15,22 +15,21 @@ type jobWrapper struct {
 	Stopped  string
 }
 
-func newJobWrapper(job *observable) jobWrapper {
-	nJob := *job
+func newJobWrapper(metric IMetric) jobWrapper {
 	result := jobWrapper{}
-	result.Name = nJob.JobName()
-	if nJob.LastRun() == 0 {
+	result.Name = metric.JobName()
+	if metric.LastRun() == 0 {
 		result.LastExec = never
 	}else {
-		result.LastExec = time.Unix(nJob.LastRun(), 0).Format(time.StampMilli)
+		result.LastExec = time.Unix(metric.LastRun(), 0).Format(time.StampMilli)
 	}
-	result.Runs = nJob.Runs()
-	result.Results = nJob.Results()
-	result.Disabled = nJob.IsDisabled()
-	if nJob.StoppedAt() == 0 {
+	result.Runs = metric.Runs()
+	result.Results = metric.Results()
+	result.Disabled = metric.IsDisabled()
+	if metric.StoppedAt() == 0 {
 		result.Stopped = never
 	}else{
-		result.Stopped  = time.Unix(nJob.StoppedAt(), 0).Format(time.StampMilli)
+		result.Stopped  = time.Unix(metric.StoppedAt(), 0).Format(time.StampMilli)
 	}
 	return result
 }

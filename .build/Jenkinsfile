@@ -38,7 +38,7 @@ pipeline {
                             ,"GOOS=windows"]) {
                         sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_windows.exe"
                     } // amd64_windows
-                }
+                } // script
             } // steps
         } // stage
         stage('Test and analasys') {
