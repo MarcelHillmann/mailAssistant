@@ -15,7 +15,7 @@ import (
 
 var (
 	//	never       time.Time
-	logRules              *logging.Logger
+	logRules              logging.Logger
 	rulesDir, rulesDirErr = filepath.Abs("resources/config/rules/")
 	rulesWalker           func(*fsnotify.Watcher) filepath.WalkFunc
 )
@@ -141,7 +141,7 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 	} // Remove
 }
 
-func (rules Rules) getLogger() *logging.Logger {
+func (rules Rules) getLogger() logging.Logger {
 	if logRules == nil {
 		logRules = logging.NewNamedLogger("${project}.rule.rules")
 	}

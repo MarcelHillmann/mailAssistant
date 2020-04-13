@@ -1,27 +1,34 @@
 package actions
 
-import "time"
+import (
+	"github.com/prometheus/client_golang/prometheus"
+	"time"
+)
 
 type metrics struct {
-	jobName   string
-	disabled  bool
-	lastRun   int64
-	runs      uint64
-	results   uint64
-	stoppedAt int64
+	jobName     string
+	promRuns    prometheus.Counter
+	promResults prometheus.Counter
+	disabled    bool
+	lastRun     int64
+	runs        uint64
+	results     uint64
+	stoppedAt   int64
 }
 
-func (m *metrics) run(){
+func (m *metrics) run() {
 	m.lastRun = time.Now().Unix()
-	m.runs ++
+	m.runs++
+	m.promRuns.Inc()
 }
 
 func (m *metrics) stopped() {
 	m.stoppedAt = time.Now().Unix()
 }
 
-func (m *metrics) result(res int){
+func (m *metrics) result(res int) {
 	m.results += uint64(res)
+	m.promResults.Add(float64(res))
 }
 
 // LastRun returns the epoch from last execution

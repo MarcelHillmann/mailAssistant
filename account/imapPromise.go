@@ -28,7 +28,7 @@ var fetchFast = imap.FetchFast.Expand()
 type ImapPromise struct {
 	client   IClient
 	messages uint32
-	logger   *logging.Logger
+	logger   logging.Logger
 }
 
 func newImapPromise(connection IClient) *ImapPromise {
@@ -37,7 +37,7 @@ func newImapPromise(connection IClient) *ImapPromise {
 	return prom
 }
 
-func (promise *ImapPromise) getLogger() *logging.Logger {
+func (promise *ImapPromise) getLogger() logging.Logger {
 	if promise.logger == nil {
 		promise.logger = logging.NewLogger()
 	}

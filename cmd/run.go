@@ -13,7 +13,7 @@ import (
 // RunAssistant is execute the main logic
 func RunAssistant(c *cli.Context) error {
 	log.Print(">> RunAssistant")
-	_ = c.String("config")
+	zs := c.String("zipkin_server")
 
 	if accounts, err := account.ImportAccounts(); err != nil {
 		log.Print("<< RunAssistant",err)
@@ -21,7 +21,7 @@ func RunAssistant(c *cli.Context) error {
 	} else if err := rules.ImportAndLaunch(accounts); err != nil {
 		log.Print("<< RunAssistant", err)
 		return err
-	}else if err := monitoring.StartServer(); err != nil {
+	}else if err := monitoring.StartServer(zs); err != nil {
 		log.Print("<< RunAssistant", err)
 		return err
 	} else {

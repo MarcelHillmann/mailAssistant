@@ -73,11 +73,12 @@ func TestImapMvJobSuccess(t *testing.T){
 	job.Args = arguments.NewEmptyArgs()
 	job.SetArg("mail_account", "foo bar")
 	job.SetArg("path", "INBOX/foo/bar")
+	job.SetArg("mark_seen", true)
 	job.SetArg("search",[]interface{}{})
 	var wg int32
 	newImapMove(job, &wg, metricsDummy)
 	require.Equal(t, Released,wg)
-	require.Equal(t,"10111-00100-001", mock.Assert())
+	require.Equal(t,"10111-00101-001", mock.Assert())
 }
 
 func TestImapMvJobFailedLogin(t *testing.T){

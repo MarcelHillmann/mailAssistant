@@ -10,7 +10,7 @@ import (
 	"mailAssistant/planning"
 )
 
-var ruleLogger *logging.Logger
+var ruleLogger logging.Logger
 
 // Rule represent a rule yaml file
 type Rule struct {
@@ -34,7 +34,7 @@ func newRule(name, schedule, action string, disabled bool) (rule Rule) {
 	rule.disabled = disabled
 	return
 }
-func (r Rule) getLogger() *logging.Logger {
+func (r Rule) getLogger() logging.Logger {
 	if ruleLogger == nil {
 		ruleLogger = logging.NewNamedLogger("${project}.rules.rule")
 	}

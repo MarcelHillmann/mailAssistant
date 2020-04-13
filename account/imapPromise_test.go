@@ -7,6 +7,7 @@ import (
 	"github.com/emersion/go-imap/client"
 	"github.com/stretchr/testify/require"
 	"log"
+	"mailAssistant/conditions"
 	"mailAssistant/logging"
 	"os"
 	"testing"
@@ -26,7 +27,11 @@ func TestImapPromise(t *testing.T) {
 	})
 	t.Run("Logout", imapPromiseLogout)
 	t.Run("FetchPromise", func(t *testing.T) {
-		t.Run("Ok", imapPromiseSearchPromiseOk)
+		t.Run("Ok", func(t *testing.T) {
+			t.Run("Search", imapPromiseSearchPromiseOkSearch)
+			t.Run("Cursor",imapPromiseSearchPromiseOkCursor)
+			t.Run("Cursor empty",imapPromiseSearchPromiseOkCursorEmpty)
+		})
 		t.Run("Nothing", imapPromiseSearchPromiseNothing)
 		t.Run("Failed", func(t *testing.T) {
 			t.Run("search", imapPromiseSearchPromiseFailedSearch)
@@ -84,6 +89,7 @@ func imapPromiseListMailboxesOk(t *testing.T) {
 	promise.ListMailboxes()
 	require.Equal(t, 1, called)
 	require.Equal(t, expectLog, buffer.String())
+	require.Equal(t, "00000-01000-000", mock.Assert())
 }
 
 func imapPromiseListMailboxesFailed(t *testing.T) {
@@ -93,18 +99,21 @@ func imapPromiseListMailboxesFailed(t *testing.T) {
 	log.SetFlags(0)
 	log.SetOutput(buffer)
 	logging.SetLevel("mailAssistant.account.ImapPromise", "all")
+
+	mock := NewMockClient()
 	defer func() {
 		require.Equal(t, 1, called)
 		require.Equal(t, expectLog+expectMustDie, buffer.String())
 		err := recover()
 		require.NotNil(t, err)
 		require.EqualError(t, err.(error), "must die")
+		require.Equal(t, "00000-01000-000", mock.Assert())
 	}()
 	defer logging.SetLevel("mailAssistant.account.ImapPromise", "OFF")
 	defer log.SetFlags(log.LstdFlags)
 	defer log.SetOutput(os.Stderr)
 
-	mock := NewMockClient()
+
 	mock.ListCallback = func(ref, name string, ch chan *imap.MailboxInfo) error {
 		called++
 		require.NotNil(t, ch)
@@ -135,9 +144,10 @@ func imapPromiseLogout(t *testing.T) {
 	promise.Logout()
 	require.True(t, true)
 	require.Equal(t, 1, called)
+	require.Equal(t, "00000-00000-001", mock.Assert())
 }
 
-func imapPromiseSearchPromiseOk(t *testing.T) {
+func imapPromiseSearchPromiseOkSearch(t *testing.T) {
 	injectPromise := 0
 	defer func() {
 		recover()
@@ -174,6 +184,82 @@ func imapPromiseSearchPromiseOk(t *testing.T) {
 		injectPromise++
 		require.NotNil(t, promise)
 	})
+
+	require.Equal(t, "00010-00100-000", mock.Assert())
+}
+
+func imapPromiseSearchPromiseOkCursor(t *testing.T) {
+	injectPromise := 0
+	defer func() {
+		recover()
+		require.NotEmpty(t, injectPromise)
+	}()
+
+	mock := NewMockClient()
+	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
+		require.Fail(t, "never call this")
+		return
+	}
+	mock.FetchCallback = func(seqset *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
+		require.NotNil(t, seqset)
+		require.Len(t, seqset.Set, 1)
+		require.NotNil(t, items)
+		require.Len(t, items, 9)
+		require.NotNil(t, ch)
+
+		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}, 0), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
+		close(ch)
+		return nil
+	}
+
+	searchFor := make([]interface{}, 1)
+	searchFor[0] = conditions.CURSOR
+
+	promise := newImapPromise(mock)
+	promise.messages = 1
+	promise.FetchPromise(searchFor, true, func(promise *MsgPromises) {
+		injectPromise++
+		require.NotNil(t, promise)
+	})
+	require.Equal(t, "00000-00100-000", mock.Assert())
+}
+
+func imapPromiseSearchPromiseOkCursorEmpty(t *testing.T) {
+	injectPromise := 0
+	defer func() {
+		err := recover()
+		require.Nil(t, err)
+		require.Empty(t, injectPromise)
+	}()
+
+	mock := NewMockClient()
+	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
+		require.Fail(t, "never call this")
+		return
+	}
+	mock.FetchCallback = func(seqset *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
+		require.NotNil(t, seqset)
+		require.Len(t, seqset.Set, 1)
+		require.NotNil(t, items)
+		require.Len(t, items, 9)
+		require.NotNil(t, ch)
+
+		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}, 0), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
+		close(ch)
+		return nil
+	}
+
+	searchFor := make([]interface{}, 1)
+	searchFor[0] = conditions.CURSOR
+
+	promise := newImapPromise(mock)
+	promise.messages = 0
+	promise.FetchPromise(searchFor, true, func(promise *MsgPromises) {
+		injectPromise++
+		require.NotNil(t, promise)
+	})
+	require.Empty(t, injectPromise)
+	require.Equal(t, "00000-00000-000", mock.Assert())
 }
 
 func imapPromiseSearchPromiseNothing(t *testing.T) {
@@ -183,8 +269,6 @@ func imapPromiseSearchPromiseNothing(t *testing.T) {
 	defer func() {
 		err := recover()
 		require.Nil(t, err)
-		require.Equal(t,1, injectPromise)
-		require.Equal(t, "00010-00000-000", mock.Assert())
 	}()
 
 
@@ -206,18 +290,21 @@ func imapPromiseSearchPromiseNothing(t *testing.T) {
 		injectPromise++
 		require.NotNil(t, promise)
 	})
+	require.Equal(t,1, injectPromise)
+	require.Equal(t, "00010-00000-000", mock.Assert())
 }
 
 func imapPromiseSearchPromiseFailedSearch(t *testing.T) {
 	injectPromise := 0
+	mock := NewMockClient()
 	defer func() {
 		err := recover()
 		require.NotNil(t, err)
 		require.Equal(t, "search must fail []interface {}{\"KEYWORD\", \"\\\\Seen\"}", err.(error).Error())
 		require.Empty(t, injectPromise)
+		require.Equal(t, "00010-00000-000",mock.Assert())
 	}()
 
-	mock := NewMockClient()
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
 		require.NotNil(t, criteria)
 		require.Len(t, criteria.WithFlags, 1)
@@ -240,14 +327,15 @@ func imapPromiseSearchPromiseFailedSearch(t *testing.T) {
 
 func imapPromiseSearchPromiseFailedFetch(t *testing.T) {
 	injectPromise := 0
+
+	mock := NewMockClient()
 	defer func() {
 		err := recover()
 		require.NotNil(t, err)
 		require.EqualError(t, err.(error), "fetch must fail", )
 		require.Empty(t, injectPromise)
+		require.Equal(t, "00010-00100-000",mock.Assert())
 	}()
-
-	mock := NewMockClient()
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
 		require.NotNil(t, criteria)
 		require.Len(t, criteria.WithFlags, 1)
@@ -282,10 +370,6 @@ func imapPromiseSearchPromiseFailedFetch(t *testing.T) {
 func imapPromiseSelectPromiseOkWithoutPath(t *testing.T) {
 	called := 0
 	mock := NewMockClient()
-	defer func() {
-		require.NotEmpty(t, called)
-		require.Equal(t, "00100-00000-000",mock.Assert())
-	}()
 	mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
 		require.NotEmpty(t, name)
 		require.True(t, readOnly)
@@ -298,6 +382,8 @@ func imapPromiseSelectPromiseOkWithoutPath(t *testing.T) {
 		called++
 		require.NotNil(t, promise)
 	})
+	require.NotEmpty(t, called)
+	require.Equal(t, "00100-00000-000",mock.Assert())
 }
 func imapPromiseSelectPromiseOkWithPath(t *testing.T) {
 	called := 0
@@ -319,6 +405,7 @@ func imapPromiseSelectPromiseOkWithPath(t *testing.T) {
 		called++
 		require.NotNil(t, promise)
 	})
+	require.Equal(t, "00100-00000-000", mock.Assert())
 }
 
 func imapPromiseSelectPromiseFailed(t *testing.T) {
@@ -362,6 +449,7 @@ func imapPromiseAppendOkWithPath(t *testing.T) {
 		exec++
 	})
 	require.NotEmpty(t, exec)
+	require.Equal(t, "00000-00010-000", mock.Assert())
 }
 
 func imapPromiseAppendOkWithoutPath(t *testing.T) {
@@ -381,6 +469,7 @@ func imapPromiseAppendOkWithoutPath(t *testing.T) {
 		exec++
 	})
 	require.NotEmpty(t, exec)
+	require.Equal(t, "00000-00010-000", mock.Assert())
 }
 
 func imapPromiseAppendFailed(t *testing.T) {
@@ -397,6 +486,7 @@ func imapPromiseAppendFailed(t *testing.T) {
 	promise.AppendPromise("", nil, now, nil, func() {
 		require.Fail(t, "never call this")
 	})
+	require.Equal(t, "00000-00010-000", mock.Assert())
 }
 
 func imapPromiseStoreOk(t *testing.T) {
@@ -412,6 +502,7 @@ func imapPromiseStoreOk(t *testing.T) {
 	}
 	promise := newImapPromise(mock)
 	require.Nil(t, promise.Store(&imap.SeqSet{}, imap.FormatFlagsOp(imap.AddFlags, false), 1, nil))
+	require.Equal(t, "00000-00001-000", mock.Assert())
 }
 
 func imapPromiseStoreFailed(t *testing.T) {
@@ -427,6 +518,7 @@ func imapPromiseStoreFailed(t *testing.T) {
 	}
 	promise := newImapPromise(mock)
 	require.EqualError(t, promise.Store(&imap.SeqSet{}, imap.FormatFlagsOp(imap.AddFlags, false), 1, nil), "store must fail")
+	require.Equal(t, "00000-00001-000", mock.Assert())
 }
 
 func imapPromiseUploadAndDeleteOK(t *testing.T) {
@@ -462,6 +554,7 @@ func imapPromiseUploadAndDeleteOK(t *testing.T) {
 		called++
 	})
 	require.NotEmpty(t, called)
+	require.Equal(t, "00000-00010-100", mock.Assert())
 }
 
 func imapPromiseUploadAndDeleteOKNoLiteral(t *testing.T) {
@@ -492,6 +585,7 @@ func imapPromiseUploadAndDeleteOKNoLiteral(t *testing.T) {
 		called++
 	})
 	require.NotEmpty(t, called)
+	require.Equal(t, "00000-00000-000", mock.Assert())
 }
 
 func imapPromiseUploadAndDeleteOKEmpty(t *testing.T) {
@@ -512,6 +606,7 @@ func imapPromiseUploadAndDeleteOKEmpty(t *testing.T) {
 		called++
 	})
 	require.NotEmpty(t, called)
+	require.Equal(t, "00000-00000-000", mock.Assert())
 }
 
 func imapPromiseUploadAndDeleteFailedAppend(t *testing.T) {
@@ -541,6 +636,7 @@ func imapPromiseUploadAndDeleteFailedAppend(t *testing.T) {
 		called++
 	})
 	require.NotEmpty(t, called)
+	require.Equal(t, "00000-00010-000", mock.Assert())
 }
 
 func imapPromiseUploadAndDeleteFailedDelete(t *testing.T) {
@@ -570,4 +666,5 @@ func imapPromiseUploadAndDeleteFailedDelete(t *testing.T) {
 		called++
 	})
 	require.NotEmpty(t, called)
+	require.Equal(t, "00000-00010-100", mock.Assert())
 }

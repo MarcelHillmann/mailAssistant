@@ -125,6 +125,6 @@ func childRecursive(path string, levels map[string]logLevel, children []*registr
 	}
 }
 
-func getLogger() *Logger {
+func getLogger() Logger {
 	return NewGlobalLogger()
 }

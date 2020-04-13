@@ -21,6 +21,7 @@ func newArchiveAttachment(job Job, waitGroup *int32, result func(int)) {
 	if _, err := os.Stat(job.getSaveTo()); os.IsNotExist(err) {
 		os.MkdirAll(job.getSaveTo(), 0)
 	}
+
 	job.GetAccount(job.GetString("mail_account")).
 		DialAndLoginPromise(func(promise *account.ImapPromise) {
 			promise.SelectPromise(job.GetString("path"), job.GetBool("readonly"), func(promise *account.ImapPromise) {

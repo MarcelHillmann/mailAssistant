@@ -10,7 +10,7 @@ var (
 	done      = make(chan bool)
 	osChannel chan os.Signal
 	count     = 0
-	groupLog  *logging.Logger
+	groupLog  logging.Logger
 )
 
 // Notify is sending so much as needed bool to a channel
@@ -44,7 +44,7 @@ func WaitForOsNotify(signals ...os.Signal) {
 	}()
 }
 
-func getLogger() *logging.Logger {
+func getLogger() logging.Logger {
 	if groupLog == nil {
 		groupLog = logging.NewLogger()
 	}

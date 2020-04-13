@@ -34,11 +34,11 @@ const (
 	// -----------------------------------------------------
 )
 
-var durationLogger *logging.Logger
+var durationLogger logging.Logger
 
-func logger() *logging.Logger {
+func logger() logging.Logger {
 	if durationLogger == nil{
-		durationLogger=logging.NewLogger()
+		durationLogger = logging.NewLogger()
 	}
 	return durationLogger
 }

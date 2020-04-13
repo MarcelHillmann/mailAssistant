@@ -23,7 +23,7 @@ type MsgPromise struct {
 	IMessage
 	IClient
 	seqNum uint32
-	logger *logging.Logger
+	logger logging.Logger
 }
 
 func newMsgPromise(msg IMessage, seqNum uint32, client IClient) *MsgPromise {
@@ -31,7 +31,7 @@ func newMsgPromise(msg IMessage, seqNum uint32, client IClient) *MsgPromise {
 	return &MsgPromise{msg, client,seqNum, log}
 }
 
-func (promise MsgPromise) getLogger() *logging.Logger {
+func (promise MsgPromise) getLogger() logging.Logger {
 	return promise.logger
 }
 

@@ -6,9 +6,11 @@ import (
 	"log"
 	"mailAssistant/account"
 	"mailAssistant/logging"
+	"math/rand"
 	"os"
 	"runtime"
 	"testing"
+	"time"
 )
 
 func TestNewJob(t *testing.T) {
@@ -41,7 +43,7 @@ func TestJob_GetAccount(t *testing.T) {
 	j := NewJob("dummy", "foo_bar", make(map[string]interface{}), &acc, false)
 	logging.SetLevel("global", "all")
 	defer func() {
-		logging.SetLevel("*","")
+		logging.SetLevel("*", "")
 		log.SetFlags(log.LstdFlags)
 		log.SetOutput(os.Stderr)
 	}()
@@ -90,13 +92,11 @@ func TestJobGetSearchParameter(t *testing.T) {
 	args := make(map[string]interface{})
 	args["mail_account"] = "ignore"
 
-
-
-	searchArg := make([]interface{},4)
-	searchArg[0] = map[string] interface{} {"field":"ALL"}
-	searchArg[1] = map[string] interface{} {"field":"CC", "value": "yang"}
-	searchArg[2] = map[string] interface{} {"field":"older", "value": "every 5 seconds"}
-	searchArg[3] = map[string] interface{} {"field":"or", "value": []interface{}{map[string]interface{}{"field": "from", "value": "foo@bar.org"}}}
+	searchArg := make([]interface{}, 4)
+	searchArg[0] = map[string]interface{}{"field": "ALL"}
+	searchArg[1] = map[string]interface{}{"field": "CC", "value": "yang"}
+	searchArg[2] = map[string]interface{}{"field": "older", "value": "every 5 seconds"}
+	searchArg[3] = map[string]interface{}{"field": "or", "value": []interface{}{map[string]interface{}{"field": "from", "value": "foo@bar.org"}}}
 	args["search"] = searchArg
 	j := NewJob("dummy", "foo_bar", args, nil, false)
 	search := j.getSearchParameter()
@@ -110,4 +110,19 @@ func TestJobGetSearchParameter(t *testing.T) {
 	require.Equal(t, "or", search[5])
 	require.Equal(t, "FROM", search[6])
 	require.Equal(t, "foo@bar.org", search[7])
+}
+
+func TestJob_GetMetric(t *testing.T) {
+	start := rand.Int63()
+	stop := start + int64(1*time.Second)
+
+	j := Job{jobName: "foo", metric: &metrics{"override", false, start, 10, 1000, stop}}
+	m := j.GetMetric()
+
+	require.Equal(t, "foo", m.JobName())
+	require.False(t, m.IsDisabled())
+	require.Equal(t, start, m.LastRun())
+	require.Equal(t, uint64(10), m.Runs())
+	require.Equal(t, uint64(1000), m.Results())
+	require.Equal(t, stop, m.StoppedAt())
 }
