@@ -19,26 +19,24 @@ pipeline {
         } // stage - pre build
         stage('build'){
             steps {
-                script {
-                    def version=BUILD_TAG.replace(' ','')
-
-                    withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
-                            ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
-                            ,"GOOS=linux"]) {
-                        sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_linux"
-                    } // amd64_linux
-                    withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
-                            ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
-                            ,"GOOS=linux"
-                            ,"CGO_ENABLED=0"]){
-                        sh "go build -ldflags '-X main.version=${version} -w -s' -o upload/mailAssistant.alpine"
-                    } // alpine
-                    withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
-                            ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
-                            ,"GOOS=windows"]) {
-                        sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_windows.exe"
-                    } // amd64_windows
-                } // script
+                withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'nx_pass', usernameVariable: 'nx_user')]) {
+                    script {
+                        def version=BUILD_TAG.replace(' ','')
+						def go_proxy="https://${nx_user}:${nx_pass}@nexus.mahillmann.de/repository/goproxy"
+                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+                                ,"GOPROXY=${go_proxy}","GOOS=linux"]) {
+                            sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_linux"
+                        } // amd64_linux
+                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+                                ,"GOPROXY=${go_proxy}","GOOS=linux","CGO_ENABLED=0"]){
+                            sh "go build -ldflags '-X main.version=${version} -w -s' -o upload/mailAssistant.alpine"
+                        } // alpine
+                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+                                ,"GOPROXY=${go_proxy}","GOOS=windows"]) {
+                            sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_windows.exe"
+                        } // amd64_windows
+                    } // script
+                } // withCredentials
             } // steps
         } // stage
         stage('Test and analasys') {
