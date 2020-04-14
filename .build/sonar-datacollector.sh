@@ -72,6 +72,7 @@ function showState(){
     fi # failed
 }
 
+export PATH=$PATH;$GOPATH/bin/
 go_meta_linter
 go_lint
 go_vet
