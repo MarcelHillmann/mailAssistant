@@ -13,7 +13,6 @@ pipeline {
         stage('pre build'){
             steps{
                 withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"]){
-                    sh 'go
                     sh "bash ./.build/goClean.sh \"${BRANCH_NAME}\""
                 } // go clean
             } // steps
