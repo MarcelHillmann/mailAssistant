@@ -73,7 +73,7 @@ function showState(){
 }
 
 set -x
-export PATH=$PATH;$GOPATH/bin/
+export PATH=$PATH:$(go env GOPATH)
 set +x
 go_meta_linter
 go_lint
