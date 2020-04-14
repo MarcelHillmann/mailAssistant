@@ -18,7 +18,7 @@ function go_meta_linter() {
     go get -u github.com/golangci/golangci-lint
     reset
     header "run golangci-lint" 6
-    timeout -k 90s 1m golangci-lint run --out-format checkstyle ./... # > .sonarqube/linter-report.xml 2>&1
+    timeout -k 90s 1m ~/go/bin/golangci-lint run --out-format checkstyle ./... # > .sonarqube/linter-report.xml 2>&1
     showState $?
     reset
 }
@@ -27,7 +27,7 @@ function go_lint(){
     go get -u golang.org/x/lint/golint
     reset
     header "run golint" 7
-    timeout -k 90s 1m golint ./... > .sonarqube/golint-report.out 2>&1
+    timeout -k 90s 1m ~/go/bin/golint ./... > .sonarqube/golint-report.out 2>&1
     showState $?
     reset
 }
@@ -53,7 +53,7 @@ function go_junit() {
         go get -u github.com/jstemmer/go-junit-report
 	    reset
         header "run go-junit-report" 6
-        timeout -k 90s 1m go test -v ./... 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
+        timeout -k 90s 1m go test -v ./... 2>&1 | ~/go/bin/go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
         showState $?
     fi
     reset
@@ -70,12 +70,7 @@ function showState(){
         echo -e "\e[91m FAILED\e[0m"
     fi # failed
 }
-echo "#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%"
-go env
-echo "#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%"
-env
-echo "#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%#####%%%%%"
-echo $PATH
+
 go_meta_linter
 go_lint
 go_vet
