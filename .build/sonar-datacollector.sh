@@ -15,18 +15,18 @@ function header() {
 }
 
 function go_meta_linter() {
+    go get -u github.com/golangci/golangci-lint
     reset
     header "run golangci-lint" 6
-    go get -u github.com/golangci/golangci-lint
     timeout -k 90s 1m golangci-lint run --out-format checkstyle ./... > .sonarqube/linter-report.xml 2>&1
     showState $?
     reset
 }
 
 function go_lint(){
+    go get -u golang.org/x/lint/golint
     reset
     header "run golint" 7
-    go get -u golang.org/x/lint/golint
     timeout -k 90s 1m golint ./... > .sonarqube/golint-report.out 2>&1
     showState $?
     reset
@@ -49,10 +49,11 @@ function go_test_json(){
 }
 
 function go_junit() {
-    reset
     if [[ -f .sonarqube/test-report.json ]]; then
-        header "run go-junit-report" 6
         go get -u github.com/jstemmer/go-junit-report
+        go env
+	    reset
+        header "run go-junit-report" 6
         timeout -k 90s 1m go test -v ./... 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
         showState $?
     fi
