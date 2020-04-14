@@ -70,6 +70,7 @@ func newLogger(name string) Logger {
 	return &iLogger{name}
 }
 
+// Logger is a interface witch represents a log implementation
 type Logger interface {
 	Name() string
 	Debug(msg ...interface{})
