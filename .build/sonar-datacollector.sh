@@ -51,7 +51,6 @@ function go_test_json(){
 function go_junit() {
     if [[ -f .sonarqube/test-report.json ]]; then
         go get -u github.com/jstemmer/go-junit-report
-        go env
 	    reset
         header "run go-junit-report" 6
         timeout -k 90s 1m go test -v ./... 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml

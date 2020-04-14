@@ -41,7 +41,7 @@ pipeline {
         } // stage
         stage('Test and analasys') {
             steps {
-                withSonarQubeEnv('sonar'){
+                withSonarQubeEnv(credentialsId: 'sonarqube-secret'){
                     script {
                         withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
                                 ,"PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
