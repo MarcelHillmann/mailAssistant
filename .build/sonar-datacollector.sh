@@ -71,7 +71,6 @@ function showState(){
     fi # failed
 }
 
-# export PATH=$PATH:$(go env GOPATH)/bin
 echo $PATH
 go_meta_linter
 go_lint
