@@ -241,9 +241,9 @@ func logger(name, level string, msg []interface{}) {
 		pc, _, _, _ := runtime.Caller(i)
 		method := runtime.FuncForPC(pc)
 		methodNameUgly = strings.ToLower(method.Name())
-		if !strings.Contains(methodNameUgly, "/logging.logger") &&
-			!strings.Contains(methodNameUgly, "logging.logger") &&
-			!strings.Contains(methodNameUgly, "logging.logger.panic") &&
+		if !strings.Contains(methodNameUgly, "/logging.ilogger") &&
+			!strings.Contains(methodNameUgly, "logging.ilogger") &&
+			!strings.Contains(methodNameUgly, "logging.ilogger.panic") &&
 			!strings.HasSuffix(methodNameUgly, "logging.logwriter.write") {
 			break
 		}

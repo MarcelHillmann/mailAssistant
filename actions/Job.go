@@ -59,10 +59,11 @@ type Job struct {
 	*arguments.Args
 	logging.Logger
 	*account.Accounts
+	*metrics
+
 	callback jobCallBack
 	jobName  string
 	saveTo   string
-	 *metrics
 }
 
 // Run is called by clockwerk framework
@@ -78,7 +79,7 @@ func (j Job) GetAccount(name string) *account.Account {
 	if ! j.HasAccount(name) {
 		j.Severe(name, "is not defined")
 	}
-	return j.GetAccount(name)
+	return j.Accounts.GetAccount(name)
 }
 
 func (j *Job) getSaveTo() string {
@@ -102,7 +103,7 @@ func (j Job) Stopped() {
 
 // GetMetric is exporting a IMetric object
 func (j Job) GetMetric() monitoring.IMetric {
-	metric := j
+	metric := j.metrics
 	metric.jobName = j.jobName
 	return metric
 }

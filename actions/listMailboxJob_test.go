@@ -47,7 +47,7 @@ func TestListMailbox(t *testing.T){
 	account.SetClientFactory(func(addr string, tlsConfig *tls.Config) (client account.IClient, err error) {
 		return mock, nil
 	})
-	job := Job{Args: arguments.NewEmptyArgs(),log:logging.NewLogger(),accounts:accs}
+	job := Job{Args: arguments.NewEmptyArgs(),Logger:logging.NewLogger(),Accounts:accs}
 	job.SetArg("mail_account","foo")
 	wg :=new(int32)
 
@@ -57,7 +57,7 @@ func TestListMailbox(t *testing.T){
 }
 
 func TestListMailboxLocked(t *testing.T){
-	job := Job{log: logging.NewLogger()}
+	job := Job{Logger: logging.NewLogger()}
 	wg :=int32(1)
 	newListMailbox(job, &wg, nil)
 	require.NotEmpty(t,wg)

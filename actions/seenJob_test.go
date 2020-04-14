@@ -14,7 +14,7 @@ import (
 
 func TestSeenJob_Locked(t *testing.T){
 	var wg int32 = 1
-	newSeenJob(Job{log: logging.NewLogger()}, &wg, metricsDummy)
+	newSeenJob(Job{Logger: logging.NewLogger()}, &wg, metricsDummy)
 }
 
 func TestSeenJobSuccess(t *testing.T){
@@ -70,10 +70,10 @@ func TestSeenJobSuccess(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo", true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -118,10 +118,10 @@ func TestSeenJobFailedLogin(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -167,10 +167,10 @@ func TestSeenJobFailedSelect(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -216,10 +216,10 @@ func TestSeenJobFailedStoreEmpty(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -283,10 +283,10 @@ func TestSeenJobFailedStoredEmpty(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -354,10 +354,10 @@ func TestSeenJobFailedPanicUnlock(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")

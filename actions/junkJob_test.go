@@ -14,7 +14,7 @@ import (
 
 func TestJunkJob_Locked(t *testing.T){
 	var wg int32 = 1
-	newJunkJob(Job{log: logging.NewLogger()}, &wg, metricsDummy)
+	newJunkJob(Job{Logger: logging.NewLogger()}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -73,10 +73,10 @@ func TestJunkJobSuccess(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.SetArg("mail_account", "foo bar")
 	job.SetArg("path", "INBOX/foo/bar")
@@ -131,10 +131,10 @@ func TestJunkJobFailedLogin(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -183,10 +183,10 @@ func TestJunkJobFailedSelect(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -232,10 +232,10 @@ func TestJunkJobFailedStoreEmpty(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.SetArg("mail_account", "foo bar")
 	job.SetArg("path", "INBOX/foo/bar")
@@ -300,10 +300,10 @@ func TestJunkJobNotLockedEmpty(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -370,10 +370,10 @@ func TestJunkJobFailedPanicUnlock(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
@@ -439,10 +439,10 @@ func TestJunkJobNotFrom(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{log: logging.NewLogger()}
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job:= Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
 	job.Args = arguments.NewEmptyArgs()
 	job.SetArg("mail_account", "foo bar")
 	job.SetArg("path", "INBOX/foo/bar")

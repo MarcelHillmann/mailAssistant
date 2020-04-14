@@ -14,7 +14,7 @@ import (
 
 func TestImapBackupJobLocked(t *testing.T) {
 	var wg int32 = 1
-	newImapBackup(Job{log: logging.NewLogger()}, &wg, metricsDummy)
+	newImapBackup(Job{Logger: logging.NewLogger()}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -38,11 +38,11 @@ func TestImapBackupJobSuccess(t *testing.T) {
 
 	logging.SetLevel("unit", "all")
 	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
-	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
+	job.Logger = logging.NewNamedLogger("unit.tests")
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.SetArg("mail_account", "foo bar")
 	job.SetArg("target_account", "foo bar target")
@@ -66,10 +66,10 @@ func TestImapBackupJobFailedAccountMissed(t *testing.T) {
 
 	logging.SetLevel("unit", "all")
 	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Logger = logging.NewNamedLogger("unit.tests")
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("target_account", "foo bar target")
@@ -104,11 +104,11 @@ func TestImapBackupJobFailedLogin(t *testing.T) {
 
 	logging.SetLevel("unit", "all")
 	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
-	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
+	job.Logger = logging.NewNamedLogger("unit.tests")
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("target_account", "foo bar target")
@@ -145,11 +145,11 @@ func TestImapBackupJobFailedSelect(t *testing.T) {
 	logging.SetLevel("*", "")
 	logging.SetLevel("global", "all")
 	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
-	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
+	job.Logger = logging.NewNamedLogger("unit.tests")
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("target_account", "foo bar target")
@@ -186,11 +186,11 @@ func TestImapBackupJobFailedSearchEmpty(t *testing.T) {
 
 	logging.SetLevel("unit", "all")
 	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
-	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
+	job.Logger = logging.NewNamedLogger("unit.tests")
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("target_account", "foo bar target")
@@ -226,11 +226,11 @@ func TestImapBackupJobFailedDelete(t *testing.T) {
 
 	logging.SetLevel("unit", "all")
 	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
-	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
+	job.Logger = logging.NewNamedLogger("unit.tests")
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("target_account", "foo bar target")
@@ -267,11 +267,11 @@ func TestImapBackupJobFailedPanicUnlock(t *testing.T) {
 
 	logging.SetLevel("unit", "all")
 	job := Job{}
-	job.log = logging.NewNamedLogger("unit.tests")
-	job.accounts = new(account.Accounts)
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
-	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
+	job.Logger = logging.NewNamedLogger("unit.tests")
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("target_account", "foo bar target")

@@ -15,7 +15,7 @@ import (
 
 func TestArchiveAttachmentLocked(t *testing.T) {
 	var wg int32 = 1
-	newArchiveAttachment(Job{log: logging.NewLogger()}, &wg, metricsDummy)
+	newArchiveAttachment(Job{Logger: logging.NewLogger()}, &wg, metricsDummy)
 	require.Equal(t, Locked, wg)
 }
 
@@ -63,10 +63,10 @@ func TestArchiveAttachmentSuccess(t *testing.T) {
 	defer  os.RemoveAll("../../foo")
 
 	logging.SetLevel("unit", "all")
-	job := Job{Args: arguments.NewEmptyArgs(),log: logging.NewNamedLogger("unit.tests"), accounts: new(account.Accounts)}
-	job.accounts.Account = make(map[string]account.Account)
-	job.accounts.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
-	job.accounts.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
+	job := Job{Args: arguments.NewEmptyArgs(),Logger: logging.NewNamedLogger("unit.tests"), Accounts: new(account.Accounts)}
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
+	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
 	job.SetArg("mail_account", "foo bar")
 	job.SetArg("path", "INBOX/foo/bar")
 	job.SetArg("readonly", true)
