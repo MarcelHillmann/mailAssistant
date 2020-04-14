@@ -72,9 +72,7 @@ function showState(){
     fi # failed
 }
 
-set -x
-export PATH=$PATH:$(go env GOPATH)
-set +x
+export PATH=$PATH:$(go env GOPATH)/bin
 go_meta_linter
 go_lint
 go_vet
