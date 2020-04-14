@@ -17,7 +17,7 @@ function header() {
 function go_meta_linter() {
     reset
     header "run golangci-lint" 6
-    go install https://github.com/golangci/golangci-lint
+    go install -u github.com/golangci/golangci-lint
     timeout -k 90s 1m golangci-lint run --out-format checkstyle ./... > .sonarqube/linter-report.xml 2>&1
     showState $?
     reset
@@ -26,7 +26,7 @@ function go_meta_linter() {
 function go_lint(){
     reset
     header "run golint" 7
-    go install golang.org/x/lint/golint
+    go install -u golang.org/x/lint/golint
     timeout -k 90s 1m golint ./... > .sonarqube/golint-report.out 2>&1
     showState $?
     reset
@@ -52,7 +52,7 @@ function go_junit() {
     reset
     if [[ -f .sonarqube/test-report.json ]]; then
         header "run go-junit-report" 6
-        go install github.com/jstemmer/go-junit-report
+        go install -u github.com/jstemmer/go-junit-report
         timeout -k 90s 1m go test -v ./... 2>&1 | go-junit-report -package-name "${PKG}" -set-exit-code > .sonarqube/test.xml
         showState $?
     fi
