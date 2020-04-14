@@ -15,7 +15,7 @@ function header() {
 }
 
 function go_meta_linter() {
-    go get -u github.com/golangci/golangci-lint
+    go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
     reset
     header "run golangci-lint" 6
     timeout -k 90s 1m ~/go/bin/golangci-lint run --out-format checkstyle ./... # > .sonarqube/linter-report.xml 2>&1
