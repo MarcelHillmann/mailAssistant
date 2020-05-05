@@ -10,8 +10,6 @@ require (
 	github.com/emersion/go-message v0.10.4-0.20190609165112-592ace5bc1ca
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gorilla/mux v1.6.2
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/onatm/clockwerk v0.0.0-20190910145222-354c9bd6cf28
 	github.com/openzipkin/zipkin-go v0.2.2
 	github.com/prometheus/client_golang v1.5.1
