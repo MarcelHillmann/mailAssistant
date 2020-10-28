@@ -38,15 +38,23 @@ func TestDriverAllMsg(c *cli.Context) error {
 				go c.Fetch(s, []imap.FetchItem{imap.FetchEnvelope}, msg)
 
 				csv := make([][]string, 0)
-				csv = append(csv, []string{"num","SUBJECT", "Addr", "Mail"})
+				csv = append(csv, []string{"num", "SUBJECT", "DATE", "Addr", "Mail"})
 				for m := range msg {
 					env := m.Envelope
 					num := strconv.Itoa(int(m.SeqNum))
-					subject :=  env.Subject
-					for _, addr := range env.From { csv = append(csv, []string{num, subject, "FROM", ToString(addr)}) }
-					for _, addr := range env.To { csv = append(csv, []string{num,subject, "TO", ToString(addr)}) }
-					for _, addr := range env.Cc { csv = append(csv, []string{num,subject, "CC", ToString(addr)}) }
-					for _, addr := range env.Bcc { csv = append(csv, []string{num,subject, "BCC", ToString(addr)}) }
+					subject, date := env.Subject, env.Date
+					for _, addr := range env.From {
+						csv = append(csv, []string{num, subject, date.String(), "FROM", ToString(addr)})
+					}
+					for _, addr := range env.To {
+						csv = append(csv, []string{num, subject, date.String(), "TO", ToString(addr)})
+					}
+					for _, addr := range env.Cc {
+						csv = append(csv, []string{num, subject, date.String(), "CC", ToString(addr)})
+					}
+					for _, addr := range env.Bcc {
+						csv = append(csv, []string{num, subject, date.String(), "BCC", ToString(addr)})
+					}
 				}
 
 				out, _ := os.Create("D:/temp/overview.csv")
@@ -64,5 +72,5 @@ func TestDriverAllMsg(c *cli.Context) error {
 }
 
 func ToString(addr *imap.Address) string {
-	return fmt.Sprintf("%s %s <%s>", addr.MailboxName, addr.HostName, addr.PersonalName)
+	return fmt.Sprintf("%s@%s <%s>", addr.MailboxName, addr.HostName, addr.PersonalName)
 }

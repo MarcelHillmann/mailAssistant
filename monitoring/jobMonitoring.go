@@ -26,7 +26,7 @@ Passive: {{ .Passive }}
         result: {{ $job.Results }}
 {{ end }}`
 
-type jobMonitoring struct{
+type jobMonitoring struct {
 	*zipkin.Tracer
 	zipkin.SpanOption
 }
@@ -41,12 +41,12 @@ func newData(j []jobWrapper, active, passive int) data {
 	return data{time.Now().Format(time.RFC3339), j, active, passive}
 }
 
-func (jobMonitoring) query(request *http.Request) (disabled, enabled bool) {
+func (jobMonitoring) query(request *http.Request) (disabled, enabled bool, filter string) {
 	uri, _ := url.ParseRequestURI(request.RequestURI)
 	query := uri.Query()
-	qDisabled, qEnabled := query.Get("disabled"), query.Get("enabled")
-	disabled, enabled = strings.EqualFold(qDisabled,"j") || strings.EqualFold(qDisabled,"1") || strings.EqualFold(qDisabled,"y"),
-						strings.EqualFold(qEnabled,"j") || strings.EqualFold(qEnabled,"1") || strings.EqualFold(qEnabled,"y")
+	qDisabled, qEnabled, filter := query.Get("disabled"), query.Get("enabled"), query.Get("filter")
+	disabled, enabled = strings.EqualFold(qDisabled, "j") || strings.EqualFold(qDisabled, "1") || strings.EqualFold(qDisabled, "y"),
+		strings.EqualFold(qEnabled, "j") || strings.EqualFold(qEnabled, "1") || strings.EqualFold(qEnabled, "y")
 	return
 }
 func (j jobMonitoring) textPlain(response http.ResponseWriter, request *http.Request) { // ,onlyDisabled, onlyEnabled bool) {
@@ -57,8 +57,8 @@ func (j jobMonitoring) textPlain(response http.ResponseWriter, request *http.Req
 		return
 	}
 
-	disabled, enabled := j.query(request)
-	j.execute(response, disabled, enabled,  "application/json", func(wrappers []jobWrapper, a int, p int) ([]byte, error) {
+	disabled, enabled, filter := j.query(request)
+	j.execute(response, disabled, enabled, filter, "application/json", func(wrappers []jobWrapper, a int, p int) ([]byte, error) {
 		buffer := bytes.NewBuffer([]byte{})
 		err = result.Execute(buffer, newData(wrappers, a, p))
 		return buffer.Bytes(), err
@@ -68,16 +68,17 @@ func (j jobMonitoring) textPlain(response http.ResponseWriter, request *http.Req
 
 func (j jobMonitoring) applicationJSON(response http.ResponseWriter, request *http.Request) { // ,onlyDisabled, onlyEnabled bool) {
 	span := j.StartSpan("AsJson", j.SpanOption)
-	disabled, enabled := j.query(request)
-	j.execute(response, disabled, enabled, "application/json", func(wrappers []jobWrapper, a int, p int) (bytes []byte, err error) {
-		return json.MarshalIndent(newData(wrappers, a, p), "", "   ")
-	})
+	disabled, enabled, filter := j.query(request)
+	j.execute(response, disabled, enabled, filter,
+		"application/json", func(wrappers []jobWrapper, a int, p int) (bytes []byte, err error) {
+			return json.MarshalIndent(newData(wrappers, a, p), "", "   ")
+		})
 	span.Finish()
 }
 func (j jobMonitoring) textYAML(response http.ResponseWriter, request *http.Request) { // ,onlyDisabled, onlyEnabled bool) {
 	span := j.StartSpan("AsYaml", j.SpanOption)
-	disabled, enabled := j.query(request)
-	j.execute(response, disabled, enabled, "text/yaml", func(wrappers []jobWrapper, a int, p int) (bytes []byte, err error) {
+	disabled, enabled, filter := j.query(request)
+	j.execute(response, disabled, enabled, filter, "text/yaml", func(wrappers []jobWrapper, a int, p int) (bytes []byte, err error) {
 		return yaml.Marshal(newData(wrappers, a, p))
 	})
 	span.Finish()
@@ -87,7 +88,7 @@ func (j jobMonitoring) favicon(response http.ResponseWriter, _ *http.Request) {
 	response.WriteHeader(http.StatusNotFound)
 }
 
-func (j jobMonitoring) execute(response http.ResponseWriter, onlyDisabled, onlyEnabled bool, contentType string, writer func([]jobWrapper, int, int) ([]byte, error)) {
+func (j jobMonitoring) execute(response http.ResponseWriter, onlyDisabled, onlyEnabled bool, filter, contentType string, writer func([]jobWrapper, int, int) ([]byte, error)) {
 	keys := make([]string, 0)
 	for key := range jobsCollector {
 		keys = append(keys, key)
@@ -105,7 +106,9 @@ func (j jobMonitoring) execute(response http.ResponseWriter, onlyDisabled, onlyE
 			active++
 		}
 
-		if onlyDisabled && m.IsDisabled() ||
+		if filter != "" && (strings.EqualFold(m.JobName(), filter) || strings.Contains(strings.ToLower(m.JobName()), strings.ToLower(filter))) {
+			jobs = append(jobs, newJobWrapper(m))
+		} else if onlyDisabled && m.IsDisabled() ||
 			onlyEnabled && !m.IsDisabled() ||
 			onlyDisabled == onlyEnabled {
 			jobs = append(jobs, newJobWrapper(m))
@@ -144,7 +147,7 @@ func (j jobMonitoring) runJob(response http.ResponseWriter, request *http.Reques
 func (j jobMonitoring) missingJobName(writer http.ResponseWriter, _ *http.Request) {
 	span := j.StartSpan("missing_job_name", j.SpanOption)
 	writer.Write([]byte(`missing parameter name`))
-	writer.Header().Set("Content-Type","text/plain")
+	writer.Header().Set("Content-Type", "text/plain")
 	writer.WriteHeader(http.StatusBadRequest)
 	span.Finish()
 }
