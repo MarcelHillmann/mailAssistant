@@ -103,6 +103,7 @@ pipeline {
             } // steps
         } // stage
         stage('docker me'){
+            when {  not { branch 'PR-*' } }
             steps {
                 dir('.build'){
                     script {
