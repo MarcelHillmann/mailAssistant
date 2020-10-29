@@ -52,7 +52,7 @@ pipeline {
 	                               , "GOPROXY=${go_proxy}",]) {
 	                            sh'bash .build/sonar-datacollector.sh'
 	                            archiveArtifacts( allowEmptyArchive: true, artifacts: '.sonarqube/*', excludes: '.gitempty', fingerprint: true)
-                                sh returnStdout: true, script: "sonar-scanner -X -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins_mailAssistant:${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistant_${BRANCH_NAME}'"
+                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins_mailAssistant:${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistant_${BRANCH_NAME}'"
 	                        } // withEnv
 	                    } // withCredentials
                     } // script
