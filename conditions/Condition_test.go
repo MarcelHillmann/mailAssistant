@@ -249,11 +249,11 @@ func conditionToString1(t *testing.T) {
 	sc.WithFlags = []string{imap.SeenFlag, imap.AnsweredFlag, imap.FlaggedFlag, imap.DeletedFlag, imap.DraftFlag, imap.RecentFlag, string(imap.SetFlags), imap.AddFlags, imap.RemoveFlags}
 	sc.WithoutFlags = sc.WithFlags
 	sc.Not = []*imap.SearchCriteria{
-		0: {SeqNum: &imap.SeqSet{Set: []imap.Seq{{20, 21}}}},
+		0: {SeqNum: &imap.SeqSet{Set: []imap.Seq{0: {Start: 20, Stop: 21}}}},
 	}
 	sc.Or = [][2]*imap.SearchCriteria{0: {
-		0: {Uid: &imap.SeqSet{Set: []imap.Seq{{30, 31}}}},
-		1: {Uid: &imap.SeqSet{Set: []imap.Seq{{40, 41}}}},
+		0: {Uid: &imap.SeqSet{Set: []imap.Seq{0: {Start: 30, Stop: 31}}}},
+		1: {Uid: &imap.SeqSet{Set: []imap.Seq{0: {Start: 40, Stop: 41}}}},
 	}}
 	require.Equal(t, "SearchCriteria {"+
 		"SINCE: 2020-10-29 23:08:00 +0000 UTC, "+
