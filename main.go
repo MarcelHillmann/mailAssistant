@@ -110,5 +110,5 @@ func main() {
 		},
 	}
 
-	app.Run(os.Args)
+	_ = app.Run(os.Args)
 }

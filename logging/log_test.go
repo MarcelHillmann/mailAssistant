@@ -38,7 +38,7 @@ func TestLogger(t *testing.T) {
 	t.Run("debug Writer", func(t *testing.T) {
 		defer logUndo()
 		l := inject()
-		NewNamedLogWriter("global").Write([]byte("debug"))
+		_, _ = NewNamedLogWriter("global").Write([]byte("debug"))
 		require.Equal(t, "DEBUG   [global#lambda] \ndebug\n", l.String())
 	})
 	t.Run("INFO", func(t *testing.T) {

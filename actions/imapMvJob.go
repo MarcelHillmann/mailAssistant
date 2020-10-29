@@ -25,7 +25,7 @@ func newImapMove(job Job, waitGroup *int32, result func(int)) {
 			promise.SelectPromise(job.GetString("path"), false, func(promise *account.ImapPromise) {
 				promise.FetchPromise(job.getSearchParameter(), false, func(promise *account.MsgPromises) {
 					if job.GetBool("mark_seen") {
-						promise.SetSeen()
+						_, _ = promise.SetSeen()
 					}
 					if num, err := promise.Move(job.GetString(moveTo)); errors.IsEmpty(err) {
 						logger.Debug(moveTo, job.GetString(moveTo), "nothing to do")

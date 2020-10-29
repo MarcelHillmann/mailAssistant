@@ -64,7 +64,7 @@ func loadLogging() {
 
 func startWatcher(filepath string) {
 	watcher, _ := fsnotify.NewWatcher()
-	watcher.Add(filepath)
+	_ = watcher.Add(filepath)
 
 	defer watcher.Close()
 	for {

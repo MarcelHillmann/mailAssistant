@@ -47,8 +47,8 @@ func newRules(accounts *account.Accounts) Rules {
 	if !strings.HasSuffix(rulesDir, string(filepath.Separator)) {
 		rulesDir += string(filepath.Separator)
 	}
-	return Rules{make(map[string]string, 0), make(map[string]Rule, 0), make(map[string]bool),
-		accounts, rulesDir}
+	return Rules{files: make(map[string]string), Rules: make(map[string]Rule), removed: make(map[string]bool),
+		accounts: accounts, rulesDir: rulesDir}
 }
 
 // Rules represents a collation of rule yaml's
@@ -153,7 +153,7 @@ func rulesWatchDir(watcher *fsnotify.Watcher) filepath.WalkFunc {
 		if err != nil {
 			return err
 		} else if info.IsDir() {
-			watcher.Add(path)
+			_ = watcher.Add(path)
 		}
 		return nil
 	}

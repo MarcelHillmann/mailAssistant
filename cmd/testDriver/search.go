@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"log"
 	"mailAssistant/conditions"
+	"mailAssistant/utils"
+	"os"
 	"strings"
 )
 
@@ -54,9 +56,9 @@ func TestTreiber(c *cli.Context) error {
 		if err := c.Login(username, password); err != nil {
 			return err
 		} else {
-			defer c.Logout()
+			defer utils.Closer(c)
 			if verbose {
-				// c.SetDebug(os.Stderr)
+				c.SetDebug(os.Stderr)
 			}
 
 			if _, err := c.Select(path, true); err != nil {
@@ -78,16 +80,18 @@ func TestTreiber(c *cli.Context) error {
 				s := new(imap.SeqSet)
 				s.AddNum(seqNum...)
 				msg := make(chan *imap.Message)
-				go c.Fetch(s, []imap.FetchItem{
-					imap.FetchBody,
-					imap.FetchBodyStructure,
-					imap.FetchEnvelope,
-					imap.FetchFlags,
-					imap.FetchInternalDate,
-					imap.FetchRFC822Header,
-					imap.FetchRFC822Size,
-					imap.FetchRFC822Text,
-					imap.FetchRFC822}, msg)
+				go func() {
+					_ = c.Fetch(s, []imap.FetchItem{
+						imap.FetchBody,
+						imap.FetchBodyStructure,
+						imap.FetchEnvelope,
+						imap.FetchFlags,
+						imap.FetchInternalDate,
+						imap.FetchRFC822Header,
+						imap.FetchRFC822Size,
+						imap.FetchRFC822Text,
+						imap.FetchRFC822}, msg)
+				}()
 
 				for m := range msg {
 					env := m.Envelope
@@ -151,12 +155,12 @@ DispositionParams: '%s'
 
 func superVerbose(m *imap.Message) {
 	section := new(imap.BodySectionName)
-	for true {
+	for {
 		literal := m.GetBody(section)
 		if reader, err := mail.CreateReader(literal); err != nil {
 			break
 		} else {
-			for true {
+			for {
 				part, err := reader.NextPart()
 				if err != nil {
 					break
@@ -184,7 +188,7 @@ func superVerbose(m *imap.Message) {
 				if buffer, err := ioutil.ReadAll(part.Body); err == nil {
 					content := string(buffer)
 
-					for true {
+					for {
 						start1 := strings.Index(content, "Nura")
 						start2 := strings.Index(content, "nura")
 						start3 := strings.Index(content, "NURA")

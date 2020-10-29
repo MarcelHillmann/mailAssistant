@@ -99,10 +99,10 @@ func (promise ImapPromise) SelectPromise(path string, readOnly bool, callback fu
 // FetchPromise is fetching messages on the IMAP server, if successfully it calls a callback
 func (promise ImapPromise) FetchPromise(args []interface{}, fetchContent bool, callback func(promise *MsgPromises)) {
 	var seqSet *imap.SeqSet
-	if args != nil && len(args) == 1 && args[0] == conditions.CURSOR && promise.messages > 0 {
+	if len(args) == 1 && args[0] == conditions.CURSOR && promise.messages > 0 {
 		seqSet = new(imap.SeqSet)
 		seqSet.AddRange(1, promise.messages)
-	} else if args != nil && len(args) == 1 && args[0] == conditions.CURSOR && promise.messages == 0 {
+	} else if len(args) == 1 && args[0] == conditions.CURSOR && promise.messages == 0 {
 		return
 	} else if seqSet = promise.search(args, callback); seqSet == nil {
 		return

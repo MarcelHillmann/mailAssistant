@@ -149,7 +149,7 @@ func imapPromiseLogout(t *testing.T) {
 func imapPromiseSearchPromiseOkSearch(t *testing.T) {
 	injectPromise := 0
 	defer func() {
-		recover()
+		_ = recover()
 		require.NotEmpty(t, injectPromise)
 	}()
 
@@ -169,7 +169,7 @@ func imapPromiseSearchPromiseOkSearch(t *testing.T) {
 		require.Len(t, items, 9)
 		require.NotNil(t, ch)
 
-		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}, 0), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
+		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
 		close(ch)
 		return nil
 	}
@@ -190,7 +190,7 @@ func imapPromiseSearchPromiseOkSearch(t *testing.T) {
 func imapPromiseSearchPromiseOkCursor(t *testing.T) {
 	injectPromise := 0
 	defer func() {
-		recover()
+		_ = recover()
 		require.NotEmpty(t, injectPromise)
 	}()
 
@@ -206,7 +206,7 @@ func imapPromiseSearchPromiseOkCursor(t *testing.T) {
 		require.Len(t, items, 9)
 		require.NotNil(t, ch)
 
-		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}, 0), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
+		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
 		close(ch)
 		return nil
 	}
@@ -243,7 +243,7 @@ func imapPromiseSearchPromiseOkCursorEmpty(t *testing.T) {
 		require.Len(t, items, 9)
 		require.NotNil(t, ch)
 
-		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}, 0), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
+		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
 		close(ch)
 		return nil
 	}
@@ -349,7 +349,7 @@ func imapPromiseSearchPromiseFailedFetch(t *testing.T) {
 		require.Len(t, items, 9)
 		require.NotNil(t, ch)
 
-		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}, 0), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
+		ch <- &imap.Message{SeqNum: 1, Items: make(map[imap.FetchItem]interface{}), Envelope: &imap.Envelope{}, BodyStructure: &imap.BodyStructure{}, Flags: []string{}, InternalDate: time.Now(), Size: 0, Uid: 0, Body: make(map[*imap.BodySectionName]imap.Literal)}
 		close(ch)
 		return errors.New("fetch must fail")
 	}

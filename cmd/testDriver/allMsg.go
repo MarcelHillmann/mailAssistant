@@ -8,6 +8,7 @@ import (
 	"github.com/emersion/go-message"
 	"github.com/emersion/go-message/charset"
 	"github.com/urfave/cli/v2"
+	"mailAssistant/utils"
 	"os"
 	"strconv"
 )
@@ -19,11 +20,11 @@ func TestDriverAllMsg(c *cli.Context) error {
 	if c, err := client.DialTLS(server, nil); err != nil {
 		return err
 	} else {
-		defer c.Close()
+		defer utils.Closer(c)
 		if err := c.Login(username, password); err != nil {
 			return err
 		} else {
-			defer c.Logout()
+			defer utils.Defer(c.Logout)
 			if verbose {
 				c.SetDebug(os.Stderr)
 			}
@@ -35,7 +36,9 @@ func TestDriverAllMsg(c *cli.Context) error {
 				s.AddRange(1, mbox.Messages)
 
 				msg := make(chan *imap.Message)
-				go c.Fetch(s, []imap.FetchItem{imap.FetchEnvelope}, msg)
+				go func() {
+					_ = c.Fetch(s, []imap.FetchItem{imap.FetchEnvelope}, msg)
+				}()
 
 				csv := make([][]string, 0)
 				csv = append(csv, []string{"num", "SUBJECT", "DATE", "Addr", "Mail"})
@@ -62,7 +65,7 @@ func TestDriverAllMsg(c *cli.Context) error {
 				w := csv2.NewWriter(out)
 				w.UseCRLF = true
 				w.Comma = ';'
-				w.WriteAll(csv)
+				_ = w.WriteAll(csv)
 				out.Close()
 			}
 		}

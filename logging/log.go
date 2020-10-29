@@ -60,7 +60,7 @@ func init() {
 // SetLevel is a key, value pair to set a logLevel programmatically
 func SetLevel(name, level string) {
 	if name == "*" {
-		loggerRegistry = make(map[string]logLevel, 0)
+		loggerRegistry = make(map[string]logLevel)
 	} else {
 		loggerRegistry[name] = stringToLogLevel(level)
 	}
@@ -251,7 +251,7 @@ func logger(name, level string, msg []interface{}) {
 	}
 	methodName := strings.Replace(normalize(methodNameUgly), strings.ToLower(name)+".", "", 1)
 	if methodName == strings.ToLower(name) ||
-		strings.ToLower(methodName) == strings.ToLower(name) ||
+		strings.EqualFold(methodName, name) ||
 		strings.HasPrefix(methodName, "func") {
 		methodName = "lambda"
 	}

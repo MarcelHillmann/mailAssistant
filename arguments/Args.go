@@ -49,11 +49,11 @@ func (a Args) String() string {
 // GetBool search for a argument and return it as bool
 func (a Args) GetBool(key string) bool {
 	value := a.GetArg(key)
-	switch value.(type) {
+	switch t := value.(type) {
 	case bool:
-		return value.(bool)
+		return t
 	case string:
-		if value == "1" || strings.ToLower(value.(string)) == "true" {
+		if t == "1" || strings.EqualFold(t, "true") {
 			return true
 		}
 		return false
@@ -92,11 +92,11 @@ func (a Args) GetMap(key string) map[string]interface{} {
 // GetInt search for a argument and return it as int
 func (a Args) GetInt(key string) int {
 	value := a.GetArg(key)
-	switch value.(type) {
+	switch t := value.(type) {
 	case int:
-		return value.(int)
+		return t
 	case string:
-		if res, err := strconv.Atoi(value.(string)); err == nil {
+		if res, err := strconv.Atoi(t); err == nil {
 			return res
 		}
 		return 0
@@ -114,13 +114,13 @@ func (a Args) HasArg(key string) bool {
 // GetString search for a argument and return it as string
 func (a Args) GetString(key string) string {
 	value := a.GetArg(key)
-	switch value.(type) {
+	switch t := value.(type) {
 	case string:
-		return value.(string)
+		return t
 	case int:
-		return strconv.Itoa(value.(int))
+		return strconv.Itoa(t)
 	case bool:
-		if value.(bool) {
+		if t {
 			return "true"
 		}
 		return "false"

@@ -19,7 +19,7 @@ func newArchiveAttachment(job Job, waitGroup *int32, result func(int)) {
 	defer unlockAlways(logger, waitGroup)
 
 	if _, err := os.Stat(job.getSaveTo()); os.IsNotExist(err) {
-		os.MkdirAll(job.getSaveTo(), 0)
+		_ = os.MkdirAll(job.getSaveTo(), 0)
 	}
 
 	job.GetAccount(job.GetString("mail_account")).

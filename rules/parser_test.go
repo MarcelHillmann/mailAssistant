@@ -70,6 +70,6 @@ func TestParserFailedReadAll(t *testing.T) {
 		return []byte{}, errors.New("must fail")
 	}
 
-	parseYaml("../testdata/rules", "../testdata/rules/", "fooBar.yml")
+	_, _ = parseYaml("../testdata/rules", "../testdata/rules/", "fooBar.yml")
 	require.Fail(t, "never call this")
 }

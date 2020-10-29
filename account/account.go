@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/emersion/go-imap/client"
 	"mailAssistant/logging"
+	"mailAssistant/utils"
 	"testing"
 )
 
@@ -66,7 +67,7 @@ func (account Account) DialAndLoginPromise(callback func(*ImapPromise)) {
 	if account.debug {
 		connection.SetDebug(logging.NewNamedLogWriter("${project}.account." + account.name))
 	}
-	defer connection.Logout()
+	defer utils.Defer(connection.Logout)
 	if err := connection.Login(account.username, account.password); err != nil {
 		panic(err)
 	}

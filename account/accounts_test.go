@@ -155,7 +155,7 @@ func accountsNewAccounts(t *testing.T) {
 func accountsLoadFromDisk(t *testing.T) {
 	acc := newAccounts()
 	acc.accountDir, _ = filepath.Rel(".", "../testdata/accounts/")
-	acc.loadFromDisk()
+	_ = acc.loadFromDisk()
 
 	require.False(t, acc.HasAccount("test"))
 	require.Nil(t, acc.GetAccount("test"))

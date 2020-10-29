@@ -146,7 +146,7 @@ func (j jobMonitoring) runJob(response http.ResponseWriter, request *http.Reques
 
 func (j jobMonitoring) missingJobName(writer http.ResponseWriter, _ *http.Request) {
 	span := j.StartSpan("missing_job_name", j.SpanOption)
-	writer.Write([]byte(`missing parameter name`))
+	_, _ = writer.Write([]byte(`missing parameter name`))
 	writer.Header().Set("Content-Type", "text/plain")
 	writer.WriteHeader(http.StatusBadRequest)
 	span.Finish()

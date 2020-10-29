@@ -88,8 +88,8 @@ func appendLiteral(msg *imap.Message) {
 	att.SetContentType("foo/bar", make(map[string]string))
 	att.SetFilename("test.out")
 	attW, _ := w.CreateAttachment(*att)
-	attW.Write(make([]byte, 100))
-	attW.Close()
+	_, _ = attW.Write(make([]byte, 100))
+	_ = attW.Close()
 
 	section, _ := imap.ParseBodySectionName(imap.FetchBody)
 	msg.Body = make(map[*imap.BodySectionName]imap.Literal)
