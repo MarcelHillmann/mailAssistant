@@ -57,7 +57,7 @@ pipeline {
 	                    } // withCredentials
                     } // script
                 } // withSonarQubeEnv
-                timeout(5) { // Just in case something goes wrong, pipeline will be killed after a timeout
+                timeout(10) { // Just in case something goes wrong, pipeline will be killed after a timeout
                     script {
                         def qg = waitForQualityGate(false)
                         if (qg.status != 'OK') {
