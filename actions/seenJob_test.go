@@ -12,38 +12,38 @@ import (
 	"testing"
 )
 
-func TestSeenJob_Locked(t *testing.T){
+func TestSeenJob_Locked(t *testing.T) {
 	var wg int32 = 1
 	newSeenJob(Job{Logger: logging.NewLogger()}, &wg, metricsDummy)
 }
 
-func TestSeenJobSuccess(t *testing.T){
+func TestSeenJobSuccess(t *testing.T) {
 	defer account.SetClientFactory(nil)
 
 	mock := account.NewMockClient()
 	account.SetClientFactory(func(addr string, tlsConfig *tls.Config) (account.IClient, error) {
 		require.Equal(t, "bar.foo:20000", addr)
-		require.NotNil(t,  tlsConfig)
+		require.NotNil(t, tlsConfig)
 		require.True(t, tlsConfig.InsecureSkipVerify)
 
-		mock.LoginCallback = func(u,p string) error {
+		mock.LoginCallback = func(u, p string) error {
 			require.Equal(t, "foo", u)
 			require.Equal(t, "bar", p)
 			return nil
 		}
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
-			require.Equal(t, "INBOX.foo.bar",name)
+			require.Equal(t, "INBOX.foo.bar", name)
 			require.False(t, readOnly)
 			return new(imap.MailboxStatus), nil
 		}
-		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
+		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
 			require.NotNil(t, criteria)
-			return []uint32{10,11,12}, nil
+			return []uint32{10, 11, 12}, nil
 		}
 		mock.FetchCallback = func(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
 			require.NotNil(t, seqSet)
 			require.NotNil(t, items)
-			require.Len(t, items,3)
+			require.Len(t, items, 3)
 			require.NotNil(t, ch)
 
 			ch <- createMessage(10, false)
@@ -70,30 +70,30 @@ func TestSeenJobSuccess(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{Logger: logging.NewLogger()}
+	job := Job{Logger: logging.NewLogger()}
 	job.Accounts = new(account.Accounts)
 	job.Account = make(map[string]account.Account)
-	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo", true)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
 	newSeenJob(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
+	require.Equal(t, Released, wg)
 	require.Equal(t, "10110-00101-001", mock.Assert())
 }
 
-func TestSeenJobFailedLogin(t *testing.T){
+func TestSeenJobFailedLogin(t *testing.T) {
 	defer account.SetClientFactory(nil)
 
 	mock := account.NewMockClient()
 	account.SetClientFactory(func(addr string, tlsConfig *tls.Config) (account.IClient, error) {
 		require.Equal(t, "bar.foo:20000", addr)
-		require.NotNil(t,  tlsConfig)
+		require.NotNil(t, tlsConfig)
 		require.True(t, tlsConfig.InsecureSkipVerify)
 
-		mock.LoginCallback = func(u,p string) error {
+		mock.LoginCallback = func(u, p string) error {
 			require.Equal(t, "foo", u)
 			require.Equal(t, "bar", p)
 			return errors.New("Login failed")
@@ -102,7 +102,7 @@ func TestSeenJobFailedLogin(t *testing.T){
 			require.Fail(t, "never call this")
 			return new(imap.MailboxStatus), nil
 		}
-		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
+		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
 			require.Fail(t, "never call this")
 			return []uint32{}, nil
 		}
@@ -118,21 +118,21 @@ func TestSeenJobFailedLogin(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{Logger: logging.NewLogger()}
+	job := Job{Logger: logging.NewLogger()}
 	job.Accounts = new(account.Accounts)
 	job.Account = make(map[string]account.Account)
-	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
 	newSeenJob(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
+	require.Equal(t, Released, wg)
 	require.Equal(t, "10000-00000-001", mock.Assert())
 }
 
-func TestSeenJobFailedSelect(t *testing.T){
+func TestSeenJobFailedSelect(t *testing.T) {
 	defer account.SetClientFactory(nil)
 
 	mock := account.NewMockClient()
@@ -141,17 +141,17 @@ func TestSeenJobFailedSelect(t *testing.T){
 		require.NotNil(t, tlsConfig)
 		require.True(t, tlsConfig.InsecureSkipVerify)
 
-		mock.LoginCallback = func(u,p string) error {
+		mock.LoginCallback = func(u, p string) error {
 			require.Equal(t, "foo", u)
 			require.Equal(t, "bar", p)
 			return nil
 		}
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
-			require.Equal(t, "INBOX.foo.bar",name)
+			require.Equal(t, "INBOX.foo.bar", name)
 			require.False(t, readOnly)
 			return nil, errors.New("select failed")
 		}
-		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
+		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
 			require.Fail(t, "never call this")
 			return []uint32{}, nil
 		}
@@ -167,70 +167,21 @@ func TestSeenJobFailedSelect(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{Logger: logging.NewLogger()}
+	job := Job{Logger: logging.NewLogger()}
 	job.Accounts = new(account.Accounts)
 	job.Account = make(map[string]account.Account)
-	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
 	newSeenJob(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
+	require.Equal(t, Released, wg)
 	require.Equal(t, "10100-00000-001", mock.Assert())
 }
 
-func TestSeenJobFailedStoreEmpty(t *testing.T){
-	defer account.SetClientFactory(nil)
-
-	mock := account.NewMockClient()
-	account.SetClientFactory(func(addr string, tlsConfig *tls.Config) (account.IClient, error) {
-		require.Equal(t, "bar.foo:20000", addr)
-		require.NotNil(t,  tlsConfig)
-		require.True(t, tlsConfig.InsecureSkipVerify)
-
-		mock.LoginCallback = func(u,p string) error {
-			require.Equal(t, "foo", u)
-			require.Equal(t, "bar", p)
-			return nil
-		}
-		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
-			require.Equal(t, "INBOX.foo.bar",name)
-			require.False(t, readOnly)
-			return new(imap.MailboxStatus), nil
-		}
-		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
-			require.NotNil(t, criteria)
-			return []uint32{}, nil
-		}
-		mock.FetchCallback = func(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
-			require.Fail(t, "never call this")
-			close(ch)
-			return nil
-		}
-		mock.StoreCallback = func(seqSet *imap.SeqSet, item imap.StoreItem, value interface{}, ch chan *imap.Message) error {
-			return nil
-		}
-
-		return mock, nil
-	})
-
-	job:= Job{Logger: logging.NewLogger()}
-	job.Accounts = new(account.Accounts)
-	job.Account = make(map[string]account.Account)
-	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
-	job.Args = arguments.NewEmptyArgs()
-	job.Args.SetArg("mail_account", "foo bar")
-	job.Args.SetArg("path", "INBOX/foo/bar")
-
-	var wg int32
-	newSeenJob(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
-	require.Equal(t, "10110-00000-001", mock.Assert())
-}
-
-func TestSeenJobFailedStoredEmpty(t *testing.T){
+func TestSeenJobFailedStoreEmpty(t *testing.T) {
 	defer account.SetClientFactory(nil)
 
 	mock := account.NewMockClient()
@@ -239,24 +190,73 @@ func TestSeenJobFailedStoredEmpty(t *testing.T){
 		require.NotNil(t, tlsConfig)
 		require.True(t, tlsConfig.InsecureSkipVerify)
 
-		mock.LoginCallback = func(u,p string) error {
+		mock.LoginCallback = func(u, p string) error {
 			require.Equal(t, "foo", u)
 			require.Equal(t, "bar", p)
 			return nil
 		}
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
-			require.Equal(t, "INBOX.foo.bar",name)
+			require.Equal(t, "INBOX.foo.bar", name)
 			require.False(t, readOnly)
 			return new(imap.MailboxStatus), nil
 		}
-		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
+		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
 			require.NotNil(t, criteria)
-			return []uint32{10,11,12}, nil
+			return []uint32{}, nil
+		}
+		mock.FetchCallback = func(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
+			require.Fail(t, "never call this")
+			close(ch)
+			return nil
+		}
+		mock.StoreCallback = func(seqSet *imap.SeqSet, item imap.StoreItem, value interface{}, ch chan *imap.Message) error {
+			return nil
+		}
+
+		return mock, nil
+	})
+
+	job := Job{Logger: logging.NewLogger()}
+	job.Accounts = new(account.Accounts)
+	job.Account = make(map[string]account.Account)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", true)
+	job.Args = arguments.NewEmptyArgs()
+	job.Args.SetArg("mail_account", "foo bar")
+	job.Args.SetArg("path", "INBOX/foo/bar")
+
+	var wg int32
+	newSeenJob(job, &wg, metricsDummy)
+	require.Equal(t, Released, wg)
+	require.Equal(t, "10110-00000-001", mock.Assert())
+}
+
+func TestSeenJobFailedStoredEmpty(t *testing.T) {
+	defer account.SetClientFactory(nil)
+
+	mock := account.NewMockClient()
+	account.SetClientFactory(func(addr string, tlsConfig *tls.Config) (account.IClient, error) {
+		require.Equal(t, "bar.foo:20000", addr)
+		require.NotNil(t, tlsConfig)
+		require.True(t, tlsConfig.InsecureSkipVerify)
+
+		mock.LoginCallback = func(u, p string) error {
+			require.Equal(t, "foo", u)
+			require.Equal(t, "bar", p)
+			return nil
+		}
+		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
+			require.Equal(t, "INBOX.foo.bar", name)
+			require.False(t, readOnly)
+			return new(imap.MailboxStatus), nil
+		}
+		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
+			require.NotNil(t, criteria)
+			return []uint32{10, 11, 12}, nil
 		}
 		mock.FetchCallback = func(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
 			require.NotNil(t, seqSet)
 			require.NotNil(t, items)
-			require.Len(t, items,3)
+			require.Len(t, items, 3)
 			require.NotNil(t, ch)
 
 			ch <- createMessage(10, false)
@@ -283,25 +283,25 @@ func TestSeenJobFailedStoredEmpty(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{Logger: logging.NewLogger()}
+	job := Job{Logger: logging.NewLogger()}
 	job.Accounts = new(account.Accounts)
 	job.Account = make(map[string]account.Account)
-	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
 	newSeenJob(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
+	require.Equal(t, Released, wg)
 	require.Equal(t, "10110-00101-001", mock.Assert())
 }
 
-func TestSeenJobFailedPanicUnlock(t *testing.T){
+func TestSeenJobFailedPanicUnlock(t *testing.T) {
 	defer func() {
 		account.SetClientFactory(nil)
 		err := recover()
-		require.Nil(t,err)
+		require.Nil(t, err)
 	}()
 
 	mock := account.NewMockClient()
@@ -310,24 +310,24 @@ func TestSeenJobFailedPanicUnlock(t *testing.T){
 		require.NotNil(t, tlsConfig)
 		require.True(t, tlsConfig.InsecureSkipVerify)
 
-		mock.LoginCallback = func(u,p string) error {
+		mock.LoginCallback = func(u, p string) error {
 			require.Equal(t, "foo", u)
 			require.Equal(t, "bar", p)
 			return nil
 		}
 		mock.SelectCallback = func(name string, readOnly bool) (*imap.MailboxStatus, error) {
-			require.Equal(t, "INBOX.foo.bar",name)
+			require.Equal(t, "INBOX.foo.bar", name)
 			require.False(t, readOnly)
 			return new(imap.MailboxStatus), nil
 		}
-		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32,error) {
+		mock.SearchCallback = func(criteria *imap.SearchCriteria) ([]uint32, error) {
 			require.NotNil(t, criteria)
-			return []uint32{10,11,12}, nil
+			return []uint32{10, 11, 12}, nil
 		}
 		mock.FetchCallback = func(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
 			require.NotNil(t, seqSet)
 			require.NotNil(t, items)
-			require.Len(t, items,3)
+			require.Len(t, items, 3)
 			require.NotNil(t, ch)
 
 			ch <- createMessage(10, false)
@@ -354,16 +354,16 @@ func TestSeenJobFailedPanicUnlock(t *testing.T){
 		return mock, nil
 	})
 
-	job:= Job{Logger: logging.NewLogger()}
+	job := Job{Logger: logging.NewLogger()}
 	job.Accounts = new(account.Accounts)
 	job.Account = make(map[string]account.Account)
-	job.Account["foo bar"] = account.NewAccountForTest(t,"foo bar", "foo","bar","bar.foo",  true)
+	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", true)
 	job.Args = arguments.NewEmptyArgs()
 	job.Args.SetArg("mail_account", "foo bar")
 	job.Args.SetArg("path", "INBOX/foo/bar")
 
 	var wg int32
 	newSeenJob(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
+	require.Equal(t, Released, wg)
 	require.Equal(t, "10110-00101-001", mock.Assert())
 }

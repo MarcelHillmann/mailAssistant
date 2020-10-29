@@ -29,8 +29,8 @@ func TestImapPromise(t *testing.T) {
 	t.Run("FetchPromise", func(t *testing.T) {
 		t.Run("Ok", func(t *testing.T) {
 			t.Run("Search", imapPromiseSearchPromiseOkSearch)
-			t.Run("Cursor",imapPromiseSearchPromiseOkCursor)
-			t.Run("Cursor empty",imapPromiseSearchPromiseOkCursorEmpty)
+			t.Run("Cursor", imapPromiseSearchPromiseOkCursor)
+			t.Run("Cursor empty", imapPromiseSearchPromiseOkCursorEmpty)
 		})
 		t.Run("Nothing", imapPromiseSearchPromiseNothing)
 		t.Run("Failed", func(t *testing.T) {
@@ -80,7 +80,7 @@ func imapPromiseListMailboxesOk(t *testing.T) {
 		require.Empty(t, ref)
 		require.Equal(t, "*", name)
 		called++
-		ch <- &imap.MailboxInfo{Attributes: []string{"foo", "bar"},Delimiter: "bar", Name: "foo"}
+		ch <- &imap.MailboxInfo{Attributes: []string{"foo", "bar"}, Delimiter: "bar", Name: "foo"}
 		close(ch)
 		return nil
 	}
@@ -113,14 +113,13 @@ func imapPromiseListMailboxesFailed(t *testing.T) {
 	defer log.SetFlags(log.LstdFlags)
 	defer log.SetOutput(os.Stderr)
 
-
 	mock.ListCallback = func(ref, name string, ch chan *imap.MailboxInfo) error {
 		called++
 		require.NotNil(t, ch)
 		require.Empty(t, ref)
 		require.Equal(t, "*", name)
 
-		ch <- &imap.MailboxInfo{Attributes: []string{"foo", "bar"},Delimiter: "bar", Name: "foo"}
+		ch <- &imap.MailboxInfo{Attributes: []string{"foo", "bar"}, Delimiter: "bar", Name: "foo"}
 		close(ch)
 		return errors.New("must die")
 	}
@@ -271,7 +270,6 @@ func imapPromiseSearchPromiseNothing(t *testing.T) {
 		require.Nil(t, err)
 	}()
 
-
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
 		require.NotNil(t, criteria)
 		require.Len(t, criteria.WithFlags, 1)
@@ -290,7 +288,7 @@ func imapPromiseSearchPromiseNothing(t *testing.T) {
 		injectPromise++
 		require.NotNil(t, promise)
 	})
-	require.Equal(t,1, injectPromise)
+	require.Equal(t, 1, injectPromise)
 	require.Equal(t, "00010-00000-000", mock.Assert())
 }
 
@@ -302,7 +300,7 @@ func imapPromiseSearchPromiseFailedSearch(t *testing.T) {
 		require.NotNil(t, err)
 		require.Equal(t, "search must fail []interface {}{\"KEYWORD\", \"\\\\Seen\"}", err.(error).Error())
 		require.Empty(t, injectPromise)
-		require.Equal(t, "00010-00000-000",mock.Assert())
+		require.Equal(t, "00010-00000-000", mock.Assert())
 	}()
 
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
@@ -332,9 +330,9 @@ func imapPromiseSearchPromiseFailedFetch(t *testing.T) {
 	defer func() {
 		err := recover()
 		require.NotNil(t, err)
-		require.EqualError(t, err.(error), "fetch must fail", )
+		require.EqualError(t, err.(error), "fetch must fail")
 		require.Empty(t, injectPromise)
-		require.Equal(t, "00010-00100-000",mock.Assert())
+		require.Equal(t, "00010-00100-000", mock.Assert())
 	}()
 	mock.SearchCallback = func(criteria *imap.SearchCriteria) (seqNums []uint32, err error) {
 		require.NotNil(t, criteria)
@@ -383,14 +381,14 @@ func imapPromiseSelectPromiseOkWithoutPath(t *testing.T) {
 		require.NotNil(t, promise)
 	})
 	require.NotEmpty(t, called)
-	require.Equal(t, "00100-00000-000",mock.Assert())
+	require.Equal(t, "00100-00000-000", mock.Assert())
 }
 func imapPromiseSelectPromiseOkWithPath(t *testing.T) {
 	called := 0
 	mock := NewMockClient()
 	defer func() {
 		require.NotEmpty(t, called)
-		require.Equal(t, "00100-00000-000",mock.Assert())
+		require.Equal(t, "00100-00000-000", mock.Assert())
 	}()
 
 	mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
@@ -416,7 +414,7 @@ func imapPromiseSelectPromiseFailed(t *testing.T) {
 		err := recover()
 		require.NotNil(t, err)
 		require.Error(t, err.(error), "must fail")
-		require.Equal(t, "00100-00000-000",mock.Assert())
+		require.Equal(t, "00100-00000-000", mock.Assert())
 	}()
 
 	mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
@@ -526,7 +524,7 @@ func imapPromiseUploadAndDeleteOK(t *testing.T) {
 	mock.AppendCallback = func(mBox string, flags []string, date time.Time, msg imap.Literal) error {
 		require.Equal(t, "INBOX", mBox)
 		require.NotNil(t, flags)
-		require.Len(t, flags,1)
+		require.Len(t, flags, 1)
 		require.NotNil(t, date)
 		require.NotNil(t, msg)
 		return nil

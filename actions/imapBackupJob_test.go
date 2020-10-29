@@ -47,13 +47,13 @@ func TestImapBackupJobSuccess(t *testing.T) {
 	job.SetArg("mail_account", "foo bar")
 	job.SetArg("target_account", "foo bar target")
 	job.SetArg("path", "INBOX/foo/bar")
-	job.SetArg("search",[]interface{}{})
+	job.SetArg("search", []interface{}{})
 
 	var wg int32
 	newImapBackup(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "10110-00100-311", sClient.Assert())
-	require.Equal(t,"10000-00030-001", tClient.Assert())
+	require.Equal(t, "10000-00030-001", tClient.Assert())
 }
 
 func TestImapBackupJobFailedAccountMissed(t *testing.T) {
@@ -238,7 +238,7 @@ func TestImapBackupJobFailedDelete(t *testing.T) {
 
 	var wg int32
 	newImapBackup(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
+	require.Equal(t, Released, wg)
 	require.Equal(t, "00000-00000-000", sClient.Assert())
 	require.Equal(t, "00000-00000-000", tClient.Assert())
 }
@@ -279,7 +279,7 @@ func TestImapBackupJobFailedPanicUnlock(t *testing.T) {
 
 	var wg int32
 	newImapBackup(job, &wg, metricsDummy)
-	require.Equal(t,Released, wg)
+	require.Equal(t, Released, wg)
 	require.Equal(t, "00000-00000-000", sClient.Assert())
 	require.Equal(t, "00000-00000-000", tClient.Assert())
 
@@ -288,7 +288,7 @@ func TestImapBackupJobFailedPanicUnlock(t *testing.T) {
 func sourceClient(t *testing.T) *account.MockClientPromise {
 	mock := account.NewMockClientMinimal()
 	mock.DeleteCallback = func(num uint32) error {
-		if num <10 || num > 12 {
+		if num < 10 || num > 12 {
 			require.Fail(t, "invalid mail number")
 		}
 		return nil

@@ -23,4 +23,3 @@ func IsEmpty(inErr error) bool {
 		return false
 	}
 }
-

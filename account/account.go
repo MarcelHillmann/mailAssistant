@@ -20,7 +20,7 @@ func NewAccountForTest(t *testing.T, name, user, pw, host string, skipVerify boo
 	if t == nil {
 		panic(errors.New("invalid caller"))
 	}
-	return Account{name, user, pw, host, 20000, false,skipVerify}
+	return Account{name, user, pw, host, 20000, false, skipVerify}
 }
 
 func init() {
@@ -39,7 +39,7 @@ func SetClientFactory(function factory) {
 	}
 }
 
-func tlsConfig(insecure bool) *tls.Config{
+func tlsConfig(insecure bool) *tls.Config {
 	cnf := tls.Config{}
 	cnf.InsecureSkipVerify = insecure
 	return &cnf
@@ -64,7 +64,7 @@ func (account Account) DialAndLoginPromise(callback func(*ImapPromise)) {
 	}
 
 	if account.debug {
-		connection.SetDebug(logging.NewNamedLogWriter("${project}.account."+account.name))
+		connection.SetDebug(logging.NewNamedLogWriter("${project}.account." + account.name))
 	}
 	defer connection.Logout()
 	if err := connection.Login(account.username, account.password); err != nil {

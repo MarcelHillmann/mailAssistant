@@ -8,6 +8,7 @@ type observable interface {
 	Run()
 	GetMetric() IMetric
 }
+
 // IMetric will be wrapped for jobMonitoring
 type IMetric interface {
 	JobName() string
@@ -21,6 +22,6 @@ type IMetric interface {
 var jobsCollector = make(map[string]*observable)
 
 // Observe is the central registry method for monitoring
-func Observe(name string, j observable){
+func Observe(name string, j observable) {
 	jobsCollector[strings.ToUpper(name)] = &j
 }

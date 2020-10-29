@@ -8,7 +8,7 @@ func (h headParent) HasParent() bool {
 	return h.p != nil
 }
 
-func (h *headParent) SetCursor(){
+func (h *headParent) SetCursor() {
 	h.p.SetCursor()
 }
 

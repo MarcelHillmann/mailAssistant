@@ -54,6 +54,7 @@ func (a Accounts) GetAccount(name string) *Account {
 	}
 	return nil
 }
+
 // HasAccount is checking if a named account exists
 func (a Accounts) HasAccount(name string) bool {
 	if _, found := a.Account[name]; found {
@@ -101,7 +102,7 @@ func (a Accounts) importAccount(path string, filename string, op fsnotify.Op) {
 
 func (a *Accounts) startWatcher() {
 	watcher, _ := fsnotify.NewWatcher()
-	defer func(){ _ = watcher.Close()}()
+	defer func() { _ = watcher.Close() }()
 
 	go func() {
 		for {

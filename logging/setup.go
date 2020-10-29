@@ -100,7 +100,7 @@ func unmarshal(file *os.File, config *registryAux) error {
 		return err
 	}
 
-	SetLevel("*","")
+	SetLevel("*", "")
 	if config.HasNoLevel() {
 		loggerRegistry[global] = none
 	} else {

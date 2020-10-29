@@ -11,24 +11,24 @@ import (
 	"time"
 )
 
-func TestGroupCntl_Notify(t *testing.T){
+func TestGroupCntl_Notify(t *testing.T) {
 	done = make(chan bool)
-	got:=0
-	go func(){
+	got := 0
+	go func() {
 		for <-done {
 			got++
 		}
 	}()
 
-	count=2
+	count = 2
 	Notify()
 	close(done)
-	time.Sleep(100 *time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	require.Equal(t, 2, got)
 }
 
-func TestGroupCntl_WaitForNotify(t *testing.T){
-	count=0
+func TestGroupCntl_WaitForNotify(t *testing.T) {
+	count = 0
 	done = make(chan bool)
 
 	go WaitForNotify()
@@ -38,9 +38,9 @@ func TestGroupCntl_WaitForNotify(t *testing.T){
 	close(done)
 }
 
-func TestGroupCntl_ToNotify(t *testing.T){
-	defer func(){
-		count=0
+func TestGroupCntl_ToNotify(t *testing.T) {
+	defer func() {
+		count = 0
 	}()
 
 	done = make(chan bool)
@@ -58,8 +58,8 @@ func TestGroupCntl_WaitForOsNotify(t *testing.T) {
 	byt := bytes.NewBufferString("")
 	log.SetFlags(0)
 	log.SetOutput(byt)
-	logging.SetLevel("mailAssistant.cntl","all")
-	go func(){
+	logging.SetLevel("mailAssistant.cntl", "all")
+	go func() {
 		time.Sleep(time.Second)
 		osChannel <- os.Interrupt
 	}()

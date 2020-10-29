@@ -13,11 +13,11 @@ import (
 
 var (
 	jobAnno = []string{"job"}
-	runes = prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "mailassistant", Subsystem: "job",Name: "runes", Help: "job runes", ConstLabels: nil}, jobAnno)
-	results = prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "mailassistant", Subsystem: "job",Name: "results", Help: "job results", ConstLabels: nil}, jobAnno)
+	runes   = prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "mailassistant", Subsystem: "job", Name: "runes", Help: "job runes", ConstLabels: nil}, jobAnno)
+	results = prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "mailassistant", Subsystem: "job", Name: "results", Help: "job results", ConstLabels: nil}, jobAnno)
 )
 
-func init(){
+func init() {
 	prometheus.MustRegister(runes, results)
 }
 
@@ -37,12 +37,12 @@ func NewJob(jobName, name string, args map[string]interface{}, accounts *account
 	jobCounter := runes.WithLabelValues(jobName)
 	jobResults := results.WithLabelValues(jobName)
 
-	job = Job{	Args: arguments.NewArgs(args),
-				Logger: logging.NewNamedLogger(loggerName+"%"+jobName),
-				Accounts: accounts,
-				callback: fcc,
-				jobName: jobName,
-				metrics: &metrics{disabled: disabled, promRuns: jobCounter, promResults: jobResults}}
+	job = Job{Args: arguments.NewArgs(args),
+		Logger:   logging.NewNamedLogger(loggerName + "%" + jobName),
+		Accounts: accounts,
+		callback: fcc,
+		jobName:  jobName,
+		metrics:  &metrics{disabled: disabled, promRuns: jobCounter, promResults: jobResults}}
 	monitoring.Observe(jobName, job)
 	return
 }
@@ -76,7 +76,7 @@ func (j Job) Run() {
 
 // GetAccount is checking and returning the searched account
 func (j Job) GetAccount(name string) *account.Account {
-	if ! j.HasAccount(name) {
+	if !j.HasAccount(name) {
 		j.Severe(name, "is not defined")
 	}
 	return j.Accounts.GetAccount(name)
@@ -107,4 +107,3 @@ func (j Job) GetMetric() monitoring.IMetric {
 	metric.jobName = j.jobName
 	return metric
 }
-

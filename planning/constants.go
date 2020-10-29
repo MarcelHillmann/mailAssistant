@@ -21,23 +21,23 @@ const (
 	day     = "day"
 	month   = "month"
 	// -----------------------------------------------------
-	zero             = time.Duration(0)
+	zero = time.Duration(0)
 
 	// Invalid represents an invalid schedule string
 	Invalid          = time.Duration(-1)
-	nanosPerSecond   = 1000000000;
+	nanosPerSecond   = 1000000000
 	secondsPerMinute = 60
-	minutesPerHour   = 60;
+	minutesPerHour   = 60
 	hoursPerDay      = 24
 	secondsPerHour   = secondsPerMinute * minutesPerHour
-	secondsPerDay    = secondsPerHour * hoursPerDay;
+	secondsPerDay    = secondsPerHour * hoursPerDay
 	// -----------------------------------------------------
 )
 
 var durationLogger logging.Logger
 
 func logger() logging.Logger {
-	if durationLogger == nil{
+	if durationLogger == nil {
 		durationLogger = logging.NewLogger()
 	}
 	return durationLogger

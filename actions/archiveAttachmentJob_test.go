@@ -34,22 +34,22 @@ func TestArchiveAttachmentSuccess(t *testing.T) {
 			return nil
 		}
 		mock.SelectCallback = func(name string, readOnly bool) (status *imap.MailboxStatus, err error) {
-			require.Equal(t, "INBOX.foo.bar",name)
+			require.Equal(t, "INBOX.foo.bar", name)
 			require.True(t, readOnly)
-			return new(imap.MailboxStatus),nil
+			return new(imap.MailboxStatus), nil
 		}
 		mock.SearchCallback = func(criteria *imap.SearchCriteria) (uint32s []uint32, err error) {
 			require.NotNil(t, criteria)
-			return []uint32{10,11,12}, nil
+			return []uint32{10, 11, 12}, nil
 		}
 		mock.FetchCallback = func(seqSet *imap.SeqSet, items []imap.FetchItem, ch chan *imap.Message) error {
-			msg := createMessage(10,false)
+			msg := createMessage(10, false)
 			appendLiteral(msg)
 			ch <- msg
-			msg = createMessage(11,false)
+			msg = createMessage(11, false)
 			appendLiteral(msg)
 			ch <- msg
-			ch <- createMessage(12,false)
+			ch <- createMessage(12, false)
 			close(ch)
 			return nil
 		}
@@ -60,10 +60,10 @@ func TestArchiveAttachmentSuccess(t *testing.T) {
 	})
 
 	_ = os.RemoveAll("../../foo")
-	defer  os.RemoveAll("../../foo")
+	defer os.RemoveAll("../../foo")
 
 	logging.SetLevel("unit", "all")
-	job := Job{Args: arguments.NewEmptyArgs(),Logger: logging.NewNamedLogger("unit.tests"), Accounts: new(account.Accounts)}
+	job := Job{Args: arguments.NewEmptyArgs(), Logger: logging.NewNamedLogger("unit.tests"), Accounts: new(account.Accounts)}
 	job.Account = make(map[string]account.Account)
 	job.Account["foo bar"] = account.NewAccountForTest(t, "foo bar", "foo", "bar", "bar.foo", false)
 	job.Account["foo bar target"] = account.NewAccountForTest(t, "foo bar target", "foo", "bar", "target.local", true)
@@ -74,25 +74,24 @@ func TestArchiveAttachmentSuccess(t *testing.T) {
 	job.SetArg("attachment_type", "foo/bar")
 	job.SetArg("search", []interface{}{})
 
-
 	var wg int32
 	newArchiveAttachment(job, &wg, metricsDummy)
 	require.Equal(t, Released, wg)
 	require.Equal(t, "10110-00100-001", mock.Assert())
 }
 
-func appendLiteral(msg *imap.Message){
+func appendLiteral(msg *imap.Message) {
 	header := new(mail.Header)
 	buffer := bytes.NewBufferString("")
-	w, _ :=mail.CreateWriter(buffer, *header)
+	w, _ := mail.CreateWriter(buffer, *header)
 	att := new(mail.AttachmentHeader)
 	att.SetContentType("foo/bar", make(map[string]string))
 	att.SetFilename("test.out")
 	attW, _ := w.CreateAttachment(*att)
-	attW.Write(make([]byte,100))
+	attW.Write(make([]byte, 100))
 	attW.Close()
 
 	section, _ := imap.ParseBodySectionName(imap.FetchBody)
 	msg.Body = make(map[*imap.BodySectionName]imap.Literal)
-	msg.Body[section] =  buffer
+	msg.Body[section] = buffer
 }

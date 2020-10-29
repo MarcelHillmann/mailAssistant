@@ -7,14 +7,14 @@ import (
 )
 
 var constTestCases = []testCase{ //
-	{"Second", "@second", time.Second},                //
-	{"Minute", "@minute", time.Minute},                //
-	{"Hourly", "@hoUrLy", time.Hour},                  //
-	{"Daily", "@daily", 24 * time.Hour},               //
-	{"Weekly", "@weekly", 7 * 24 * time.Hour},         //
-	{"Monthly", "@monthly", 30 * 24 * time.Hour},      //
-	{"Yearly", "@yearly", 360 * 24 * time.Hour},       //
-	{"Annually", "@annually", Invalid}, //
+	{"Second", "@second", time.Second},           //
+	{"Minute", "@minute", time.Minute},           //
+	{"Hourly", "@hoUrLy", time.Hour},             //
+	{"Daily", "@daily", 24 * time.Hour},          //
+	{"Weekly", "@weekly", 7 * 24 * time.Hour},    //
+	{"Monthly", "@monthly", 30 * 24 * time.Hour}, //
+	{"Yearly", "@yearly", 360 * 24 * time.Hour},  //
+	{"Annually", "@annually", Invalid},           //
 }
 
 func planningConstToDuration(t *testing.T) {

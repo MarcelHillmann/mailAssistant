@@ -117,7 +117,7 @@ func (rules Rules) importRule(path, file string, op fsnotify.Op) {
 
 			rules.getLogger().Debug(">>> ", rule.fileName)
 
-			if _, found := rules.files[rule.fileName]; found && ! rules.removed[rule.fileName] {
+			if _, found := rules.files[rule.fileName]; found && !rules.removed[rule.fileName] {
 				rules.getLogger().Panic(rule.fileName)
 			}
 			delete(rules.removed, rule.fileName)

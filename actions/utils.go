@@ -12,7 +12,6 @@ const (
 	Released = int32(0)
 )
 
-
 func isLockedElseLock(logger logging.Logger, waitGroup *int32) bool {
 	if atomic.LoadInt32(waitGroup) > Released {
 		logger.Info("is locked")
@@ -30,4 +29,3 @@ func unlockAlways(logger logging.Logger, waitGroup *int32) {
 	atomic.StoreInt32(waitGroup, Released)
 	logger.Info("unlocked")
 }
-

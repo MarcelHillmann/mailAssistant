@@ -71,5 +71,5 @@ func TestParserFailedReadAll(t *testing.T) {
 	}
 
 	parseYaml("../testdata/rules", "../testdata/rules/", "fooBar.yml")
-	require.Fail(t,"never call this")
+	require.Fail(t, "never call this")
 }

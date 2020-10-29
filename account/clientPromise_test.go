@@ -71,7 +71,7 @@ func clientPromiseList(t *testing.T) {
 func clientPromiseLogin(t *testing.T) {
 	defer func() { _ = recover() }()
 	c := clientPromise{}
-	_ = c.Login("","")
+	_ = c.Login("", "")
 	require.Fail(t, "nil pointer???")
 }
 

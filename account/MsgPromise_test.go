@@ -19,7 +19,7 @@ func (m MockMessage) GetBody(section *imap.BodySectionName) imap.Literal {
 
 const mimeType = "application/pdf"
 
-func TestMsgPromise(t *testing.T){
+func TestMsgPromise(t *testing.T) {
 	t.Run("GetAttachment", func(t *testing.T) {
 		t.Run("can't read", msgPromiseGetAttachmentCantRead)
 		t.Run("found", msgPromiseGetAttachmentFound)
@@ -34,20 +34,20 @@ func TestMsgPromise_GetAttachmentFailedNextPart(t *testing.T) {
 		return nil, errors.New("must fail")
 	}
 
-	defer func(){
+	defer func() {
 		err := recover()
-		require.NotNil(t,err)
-		require.EqualError(t, err.(error),"must fail")
+		require.NotNil(t, err)
+		require.EqualError(t, err.(error), "must fail")
 		nextPart = internalNextPart
 	}()
 
 	mock := new(MockMessage)
 	mock.callback = func(section *imap.BodySectionName) imap.Literal {
 		require.NotNil(t, section)
-		return CreateMail([]string{mimeType,"pdf"})
+		return CreateMail([]string{mimeType, "pdf"})
 	}
 
-	msg := newMsgPromise(mock,0, nil)
+	msg := newMsgPromise(mock, 0, nil)
 	msg.GetAttachment(mimeType)
 	require.Fail(t, "never call this")
 }
@@ -60,7 +60,7 @@ func msgPromiseGetAttachmentCantRead(t *testing.T) {
 		return buf
 	}
 
-	msg := newMsgPromise(mock,0, nil)
+	msg := newMsgPromise(mock, 0, nil)
 	attachments := msg.GetAttachment(mimeType)
 	require.NotNil(t, attachments)
 	require.Len(t, attachments, 0)
@@ -70,10 +70,10 @@ func msgPromiseGetAttachmentFound(t *testing.T) {
 	mock := new(MockMessage)
 	mock.callback = func(section *imap.BodySectionName) imap.Literal {
 		require.NotNil(t, section)
-		return CreateMail([]string{mimeType,"pdf"})
+		return CreateMail([]string{mimeType, "pdf"})
 	}
 
-	msg := newMsgPromise(mock,0, nil)
+	msg := newMsgPromise(mock, 0, nil)
 	attachments := msg.GetAttachment(mimeType)
 	require.NotNil(t, attachments)
 	require.Len(t, attachments, 1)
@@ -87,10 +87,10 @@ func msgPromiseGetAttachmentNotFound(t *testing.T) {
 	mock := new(MockMessage)
 	mock.callback = func(section *imap.BodySectionName) imap.Literal {
 		require.NotNil(t, section)
-		return CreateMail([]string{"text/plain","txt"})
+		return CreateMail([]string{"text/plain", "txt"})
 	}
 
-	msg := newMsgPromise(mock,0, nil)
+	msg := newMsgPromise(mock, 0, nil)
 	attachments := msg.GetAttachment(mimeType)
 	require.NotNil(t, attachments)
 	require.Len(t, attachments, 0)
@@ -103,7 +103,7 @@ func msgPromiseGetAttachmentEmpty(t *testing.T) {
 		return CreateMail()
 	}
 
-	msg := newMsgPromise(mock,0, nil)
+	msg := newMsgPromise(mock, 0, nil)
 	attachments := msg.GetAttachment(mimeType)
 	require.NotNil(t, attachments)
 	require.Len(t, attachments, 0)
@@ -116,7 +116,7 @@ func msgPromiseGetAttachmentNoLiteral(t *testing.T) {
 		return nil
 	}
 
-	msg := newMsgPromise(mock,0, nil)
+	msg := newMsgPromise(mock, 0, nil)
 	attachments := msg.GetAttachment(mimeType)
 	require.NotNil(t, attachments)
 	require.Len(t, attachments, 0)
@@ -124,8 +124,8 @@ func msgPromiseGetAttachmentNoLiteral(t *testing.T) {
 
 func CreateMail(mimeTypes ...[]string) imap.Literal {
 	header := new(mail.Header)
-	header.SetAddressList("From", []*mail.Address{{Name: "Foo Bar  DE", Address:"foo@bar.de"}})
-	header.SetAddressList("To", []*mail.Address{{Name:"Foo Bar COM",  Address:"foo@bar.com"}})
+	header.SetAddressList("From", []*mail.Address{{Name: "Foo Bar  DE", Address: "foo@bar.de"}})
+	header.SetAddressList("To", []*mail.Address{{Name: "Foo Bar COM", Address: "foo@bar.com"}})
 	header.SetSubject("Foo.Bar")
 	header.Set("MIME-Version", "1.0")
 	header.Set("Content-Type", "TEXT/PLAIN; CHARSET=US-ASCII")
@@ -137,7 +137,7 @@ func CreateMail(mimeTypes ...[]string) imap.Literal {
 	for _, mimeType := range mimeTypes {
 		attHeader := mail.AttachmentHeader{}
 		attHeader.SetContentType(mimeType[0], map[string]string{})
-		attHeader.SetFilename("test."+mimeType[1])
+		attHeader.SetFilename("test." + mimeType[1])
 		attWriter, _ := mailW.CreateAttachment(attHeader)
 		_, _ = attWriter.Write([]byte{0, 0, 0, 0})
 	}

@@ -72,7 +72,7 @@ func rulesImportRuleCreate(t *testing.T) {
 	require.Len(t, r.Rules, 1, "rules post")
 	require.Len(t, r.files, 1, "files post")
 
-	require.Condition(t, func() bool{
+	require.Condition(t, func() bool {
 		return r.files[fileName] == "testcase" || r.files[fileNameUx] == "testcase"
 	}, "r.[filename] == testcase")
 	tc := r.Rules["testcase"]
@@ -159,7 +159,7 @@ func rulesImportRuleDelete(t *testing.T) {
 	r := newRules(nil)
 	if strings.ToLower(runtime.GOOS) == "windows" {
 		r.files[fileName] = "testcase"
-	}else{
+	} else {
 		r.files[fileNameUx] = "testcase"
 	}
 	r.Rules["testcase"] = Rule{}
@@ -176,12 +176,12 @@ func rulesLoadFromDisk(t *testing.T) {
 	r.loadFromDisk("../testdata/rules/")
 	require.Len(t, r.Rules, 2)
 	require.Len(t, r.files, 2)
-	require.Condition(t, func()bool {
-		return r.files[fileName] == "testcase" ||r.files[fileNameUx] == "testcase"
+	require.Condition(t, func() bool {
+		return r.files[fileName] == "testcase" || r.files[fileNameUx] == "testcase"
 
 	}, "r.files == testcase")
 	require.Condition(t, func() bool {
-		return r.files[fileNameSub] == "sub testcase" ||r.files[fileNameSubUx] == "sub testcase"
+		return r.files[fileNameSub] == "sub testcase" || r.files[fileNameSubUx] == "sub testcase"
 	}, "sub testcase")
 	require.NotNil(t, r.Rules["testcase"])
 	require.NotNil(t, r.Rules["sub testcase"])
@@ -192,7 +192,7 @@ func rulesStartWatcherOk(t *testing.T) {
 
 	setRulesWalker(func(watcher *fsnotify.Watcher) filepath.WalkFunc {
 		return func(path string, info os.FileInfo, err error) error {
-			watcher.Events <- fsnotify.Event{Name:"text.yaml~",Op: fsnotify.Create}
+			watcher.Events <- fsnotify.Event{Name: "text.yaml~", Op: fsnotify.Create}
 			_ = watcher.Close()
 			return nil
 		}
@@ -207,7 +207,7 @@ func rulesStartWatcherOk(t *testing.T) {
 	}()
 
 	time.Sleep(100 * time.Millisecond)
-	require.Equal(t, 1, cntl.ToNotify(),"ToNotify 1")
+	require.Equal(t, 1, cntl.ToNotify(), "ToNotify 1")
 	cntl.Notify()
 	time.Sleep(100 * time.Millisecond)
 	require.Equal(t, 0, cntl.ToNotify(), "ToNotify 0")
@@ -255,16 +255,16 @@ func (m MockFileInfo) Sys() interface{} {
 	return nil
 }
 func rulesWatchDirOk(t *testing.T) {
-	w,_ := fsnotify.NewWatcher()
+	w, _ := fsnotify.NewWatcher()
 	require.Nil(t, rulesWatchDir(w)("", MockFileInfo{false}, nil))
 }
 
 func rulesWatchDirError(t *testing.T) {
-	w,_ := fsnotify.NewWatcher()
+	w, _ := fsnotify.NewWatcher()
 	require.EqualError(t, rulesWatchDir(w)("", MockFileInfo{false}, errors.New("fail")), "fail")
 }
 
 func rulesWatchDirIsDir(t *testing.T) {
-	w,_ := fsnotify.NewWatcher()
+	w, _ := fsnotify.NewWatcher()
 	require.Nil(t, rulesWatchDir(w)("", MockFileInfo{true}, nil))
 }

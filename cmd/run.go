@@ -16,12 +16,12 @@ func RunAssistant(c *cli.Context) error {
 	zs := c.String("zipkin_server")
 
 	if accounts, err := account.ImportAccounts(); err != nil {
-		log.Print("<< RunAssistant",err)
+		log.Print("<< RunAssistant", err)
 		return err
 	} else if err := rules.ImportAndLaunch(accounts); err != nil {
 		log.Print("<< RunAssistant", err)
 		return err
-	}else if err := monitoring.StartServer(zs); err != nil {
+	} else if err := monitoring.StartServer(zs); err != nil {
 		log.Print("<< RunAssistant", err)
 		return err
 	} else {

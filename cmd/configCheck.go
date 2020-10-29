@@ -23,7 +23,7 @@ func RunConfigCheck(c *cli.Context) error {
 }
 
 func runRecursive(base, dir string) error {
-	if file, err := os.OpenFile(dir, os.O_RDONLY,0); err == nil || os.IsExist(err) {
+	if file, err := os.OpenFile(dir, os.O_RDONLY, 0); err == nil || os.IsExist(err) {
 		file.Close()
 		return runFile("", dir)
 	}
@@ -67,7 +67,7 @@ func runFile(base, file string) error {
 		}
 
 		cnf := strings.TrimPrefix(base, base)
-		if condition == nil  || condition.String() == "" {
+		if condition == nil || condition.String() == "" {
 			return fmt.Errorf("check config file '%s'", cnf)
 		}
 		log.Printf("%s: %s\n", cnf, condition.String())

@@ -172,7 +172,7 @@ func dialAndLoginPromiseLogoutFailed(t *testing.T) {
 }
 
 func TestNewAccountForTest(t *testing.T) {
-	a:=NewAccountForTest(t, "","","","",true)
+	a := NewAccountForTest(t, "", "", "", "", true)
 	require.Empty(t, a.name)
 	require.Empty(t, a.username)
 	require.Empty(t, a.password)
@@ -182,8 +182,8 @@ func TestNewAccountForTest(t *testing.T) {
 
 	defer func() {
 		err := recover()
-		require.NotNil(t,err)
-		require.EqualError(t,err.(error),"invalid caller")
+		require.NotNil(t, err)
+		require.EqualError(t, err.(error), "invalid caller")
 	}()
-	NewAccountForTest(nil, "","","","",true)
+	NewAccountForTest(nil, "", "", "", "", true)
 }

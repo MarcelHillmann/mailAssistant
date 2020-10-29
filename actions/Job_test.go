@@ -116,7 +116,7 @@ func TestJob_GetMetric(t *testing.T) {
 	start := rand.Int63()
 	stop := start + int64(1*time.Second)
 
-	j := Job{jobName: "foo", metrics: &metrics{jobName: "override",disabled: false, lastRun: start, runs: 10, results: 1000, stoppedAt: stop}}
+	j := Job{jobName: "foo", metrics: &metrics{jobName: "override", disabled: false, lastRun: start, runs: 10, results: 1000, stoppedAt: stop}}
 	m := j.GetMetric()
 
 	require.Equal(t, "foo", m.JobName())

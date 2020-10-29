@@ -46,7 +46,7 @@ func everyToDuration(every string) time.Duration {
 		if err != nil {
 			break
 		}
-		return time.Duration( iEvery * int64(everyToDuration(month)))
+		return time.Duration(iEvery * int64(everyToDuration(month)))
 	case strings.HasSuffix(every, day):
 		return 24 * everyToDuration(hour)
 	case strings.HasSuffix(every, hour):

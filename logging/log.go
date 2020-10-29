@@ -10,12 +10,12 @@ import (
 	"strings"
 )
 
-var logCounter = prometheus.NewCounterVec(	prometheus.CounterOpts{
-												Namespace: "mailassistant",
-												Subsystem: "logging",
-												Name:      "log",
-												Help:      "counter per logger and level",
-											}, []string{"name", "level"})
+var logCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
+	Namespace: "mailassistant",
+	Subsystem: "logging",
+	Name:      "log",
+	Help:      "counter per logger and level",
+}, []string{"name", "level"})
 
 // NewLogger is a factory for a new log instance with an autodetected log name
 func NewLogger() Logger {

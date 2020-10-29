@@ -15,9 +15,9 @@ func ParseSchedule(input string) time.Duration {
 		return everyToDuration(strings.Replace(_input, "every", "", 1))
 	} else if strings.HasPrefix(input, "P") || strings.HasPrefix(input, "-P") {
 		return javaDuration(strings.TrimSpace(input))
-	}else if goDuration, err := time.ParseDuration(input); err == nil{
+	} else if goDuration, err := time.ParseDuration(input); err == nil {
 		return goDuration
-	}else{
+	} else {
 		logging.NewLogger().Severe(err)
 	}
 	return Invalid

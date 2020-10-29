@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	clocks = make([]*clockwerk.Clockwerk,0)
-	mutex = &sync.Mutex{}
+	clocks = make([]*clockwerk.Clockwerk, 0)
+	mutex  = &sync.Mutex{}
 )
 
 // NewClockwork is a factory for the clockwerk framework, it's saving each instance
@@ -21,10 +21,10 @@ func NewClockwork() *clockwerk.Clockwerk {
 
 // StopAllClocks is stopping all saved clockwerk framework instances
 // it is blocking new factory calls
-func StopAllClocks(){
+func StopAllClocks() {
 	mutex.Lock()
 	for _, clock := range clocks {
 		clock.Stop()
 	}
-	clocks = make([]*clockwerk.Clockwerk,0)
+	clocks = make([]*clockwerk.Clockwerk, 0)
 }

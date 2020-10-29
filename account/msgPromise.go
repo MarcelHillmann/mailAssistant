@@ -28,7 +28,7 @@ type MsgPromise struct {
 
 func newMsgPromise(msg IMessage, seqNum uint32, client IClient) *MsgPromise {
 	log := logging.NewLogger()
-	return &MsgPromise{msg, client,seqNum, log}
+	return &MsgPromise{msg, client, seqNum, log}
 }
 
 func (promise MsgPromise) getLogger() logging.Logger {
@@ -36,7 +36,7 @@ func (promise MsgPromise) getLogger() logging.Logger {
 }
 
 // GetLiteral returns the hole mail
-func (promise *MsgPromise) GetLiteral() (literal imap.Literal){
+func (promise *MsgPromise) GetLiteral() (literal imap.Literal) {
 	var section imap.BodySectionName
 	literal = promise.GetBody(&section)
 	if literal == nil {
@@ -92,11 +92,12 @@ func (promise MsgPromise) GetAttachment(mimeTypeString string) []*AttachmentProm
 }
 
 // DeletePromise is setting the delete flag to the represented message
-func (promise MsgPromise) DeletePromise(callback func(err error)){
+func (promise MsgPromise) DeletePromise(callback func(err error)) {
 	callback(promise.IClient.Delete(promise.seqNum))
 }
 
-var nextPart  = internalNextPart
+var nextPart = internalNextPart
+
 func internalNextPart(reader *mail.Reader) (*mail.Part, error) {
 	return reader.NextPart()
 }

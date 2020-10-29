@@ -94,7 +94,7 @@ func conditionInternalParseYamlNot(t *testing.T) {
 }
 
 func conditionInternalParseYamlOlder(t *testing.T) {
-	older := time.Now().UnixNano() - int64(24 * time.Hour)
+	older := time.Now().UnixNano() - int64(24*time.Hour)
 	assertDate := time.Unix(0, older).Format(imap.DateLayout)
 	cond := newAnd()
 	item := make(map[string]interface{})
@@ -111,7 +111,7 @@ func conditionInternalParseYamlOlder(t *testing.T) {
 
 func conditionInternalParseYamlYounger(t *testing.T) {
 	older := time.Now().UnixNano() - int64(24*time.Hour)
-	assertDate := time.Unix(0,older).Format(imap.DateLayout)
+	assertDate := time.Unix(0, older).Format(imap.DateLayout)
 	cond := newAnd()
 	item := make(map[string]interface{})
 	item["field"] = "younger"

@@ -3,20 +3,19 @@ package conditions
 import "fmt"
 
 type dummy struct {
-
 }
 
 func (d dummy) Parent(*Condition) {
-  panic(fmt.Errorf(notYetImplemented))
+	panic(fmt.Errorf(notYetImplemented))
 }
 
-func (d dummy) SetCursor(){
-  panic(fmt.Errorf(notYetImplemented))
-                     
+func (d dummy) SetCursor() {
+	panic(fmt.Errorf(notYetImplemented))
+
 }
 
 func (d dummy) Add(Condition) {
-  panic(fmt.Errorf(notYetImplemented))
+	panic(fmt.Errorf(notYetImplemented))
 }
 
 func (d dummy) Get() []interface{} {

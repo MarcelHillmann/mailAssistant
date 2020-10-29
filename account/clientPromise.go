@@ -57,5 +57,5 @@ func (promise clientPromise) Delete(num uint32) error {
 	seqSet.AddNum(num)
 	flags := []interface{}{imap.DeletedFlag}
 
-	return promise.Store(seqSet,"+FLAGS.SILENT", flags, nil)
+	return promise.Store(seqSet, "+FLAGS.SILENT", flags, nil)
 }
