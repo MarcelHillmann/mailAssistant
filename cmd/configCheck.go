@@ -23,7 +23,7 @@ func RunConfigCheck(c *cli.Context) error {
 }
 
 func runRecursive(base, dir string) error {
-	if file, err := os.OpenFile(dir, os.O_RDONLY,0); err == nil || os.IsExist(err) {
+	if file, err := os.OpenFile(dir, os.O_RDONLY, 0); err == nil || os.IsExist(err) {
 		file.Close()
 		return runFile("", dir)
 	}
@@ -40,8 +40,8 @@ func runRecursive(base, dir string) error {
 			if err := runRecursive(base, path); err != nil {
 				return err
 			}
-		} else {
-			runFile(base, file.Name())
+		} else if err = runFile(base, file.Name()); err != nil {
+			return err
 		}
 	}
 
@@ -56,7 +56,10 @@ func runFile(base, file string) error {
 		var condition conditions.Condition
 		var yamlContent map[string]interface{}
 
-		yaml.Unmarshal(content, &yamlContent)
+		err := yaml.Unmarshal(content, &yamlContent)
+		if err != nil {
+			return err
+		}
 		args := yamlContent["args"].([]interface{})
 		for _, arg := range args {
 			item := arg.(map[interface{}]interface{})
@@ -67,15 +70,15 @@ func runFile(base, file string) error {
 		}
 
 		cnf := strings.TrimPrefix(base, base)
-		if condition == nil  || condition.String() == "" {
+		if condition == nil || condition.String() == "" {
 			return fmt.Errorf("check config file '%s'", cnf)
 		}
 		log.Printf("%s: %s\n", cnf, condition.String())
 		criteria := imap.NewSearchCriteria()
 		_ = criteria.ParseWithCharset(condition.Get(), nil)
-		s := commands.Search{"UTF-8", criteria}
+		s := commands.Search{Charset: "UTF-8", Criteria: criteria}
 		cmd := s.Command()
-		cmd.WriteTo(&imap.Writer{Writer: os.Stderr, AllowAsyncLiterals: false})
+		_ = cmd.WriteTo(&imap.Writer{Writer: os.Stderr, AllowAsyncLiterals: false})
 		log.Println("+++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++ +++++")
 		return nil
 	}

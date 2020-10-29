@@ -20,7 +20,7 @@ func newJobWrapper(metric IMetric) jobWrapper {
 	result.Name = metric.JobName()
 	if metric.LastRun() == 0 {
 		result.LastExec = never
-	}else {
+	} else {
 		result.LastExec = time.Unix(metric.LastRun(), 0).Format(time.StampMilli)
 	}
 	result.Runs = metric.Runs()
@@ -28,8 +28,8 @@ func newJobWrapper(metric IMetric) jobWrapper {
 	result.Disabled = metric.IsDisabled()
 	if metric.StoppedAt() == 0 {
 		result.Stopped = never
-	}else{
-		result.Stopped  = time.Unix(metric.StoppedAt(), 0).Format(time.StampMilli)
+	} else {
+		result.Stopped = time.Unix(metric.StoppedAt(), 0).Format(time.StampMilli)
 	}
 	return result
 }

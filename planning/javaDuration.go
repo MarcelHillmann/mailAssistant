@@ -48,9 +48,11 @@ func ofSeconds(seconds, nanos time.Duration) time.Duration {
 	}
 	return secs*time.Second + nos
 }
+
 func floorMod(x, y time.Duration) time.Duration {
 	return x - floorDiv(x, y)*y
 }
+
 func floorDiv(x, y time.Duration) time.Duration {
 	r := x / y
 	if (x^y) < 0 && (r*y != x) {
@@ -58,6 +60,7 @@ func floorDiv(x, y time.Duration) time.Duration {
 	}
 	return r
 }
+
 func addExact(x, y time.Duration) time.Duration {
 	r := x + y
 	if ((x ^ r) & (y ^ r)) < 0 {
@@ -65,17 +68,17 @@ func addExact(x, y time.Duration) time.Duration {
 	}
 	return r
 }
-func parseFraction(text string, parsed string, negate int) time.Duration {
-	_ = text
-	_parsed := (parsed + "000000000")[0:9]
-	iParsed, _ := strconv.Atoi(_parsed)
+
+func parseFraction(_ string, parsed string, negate int) time.Duration {
+	newParsed := (parsed + "000000000")[0:9]
+	iParsed, _ := strconv.Atoi(newParsed)
 	return time.Duration(iParsed * negate)
 }
-func parseNumber(text, parsed string, multiplier int, field string) time.Duration {
+
+func parseNumber(_, parsed string, multiplier int, _ string) time.Duration {
 	if parsed == "" {
 		return zero
 	}
-	_, _ = text, field
 	iP, _ := strconv.Atoi(parsed)
 	return time.Duration(iP * multiplier)
 }

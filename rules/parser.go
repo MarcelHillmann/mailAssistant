@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"mailAssistant/logging"
+	"mailAssistant/utils"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,7 +23,7 @@ func parseYaml(rulesDir, path, file string) (*ruleAux, error) {
 	filename := strings.ToLower(file)
 	if strings.HasSuffix(filename, ".yml") || strings.HasSuffix(filename, ".yaml") {
 		osFile, err := os.Open(joinPath)
-		defer osFile.Close()
+		defer utils.Closer(osFile)
 
 		if err == nil {
 			content, err := parserReadAll(osFile)

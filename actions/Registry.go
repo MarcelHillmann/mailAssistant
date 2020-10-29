@@ -11,7 +11,7 @@ type jobCallBack func(job Job, waitGroup *int32, res func(int))
 var regLog = logging.NewNamedLogger("${project}.actions.registry")
 
 var (
-	actions = make(map[string]jobCallBack, 0)
+	actions = make(map[string]jobCallBack)
 )
 
 func register(name string, callback jobCallBack) {

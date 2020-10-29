@@ -19,56 +19,56 @@ pipeline {
         } // stage - pre build
         stage('build'){
             steps {
-                script {
-                    def version=BUILD_TAG.replace(' ','')
-
-                    withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
-                            ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
-                            ,"GOOS=linux"]) {
-                        sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_linux"
-                    } // amd64_linux
-                    withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
-                            ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
-                            ,"GOOS=linux"
-                            ,"CGO_ENABLED=0"]){
-                        sh "go build -ldflags '-X main.version=${version} -w -s' -o upload/mailAssistant.alpine"
-                    } // alpine
-                    withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
-                            ,"GOPROXY=https://nexus.mahillmann.de/repository/goproxy"
-                            ,"GOOS=windows"]) {
-                        sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_windows.exe"
-                    } // amd64_windows
-                } // script
+                withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'nx_pass', usernameVariable: 'nx_user')]) {
+                    script {
+                        def version=BUILD_TAG.replace(' ','')
+						def go_proxy="https://${nx_user}:${nx_pass}@nexus.mahillmann.de/repository/goproxy"
+                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin","GOPROXY=${go_proxy}"]) {
+                            withEnv(["GOOS=linux"]) {
+                                sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_linux"
+                            } // amd64_linux
+                            withEnv(["GOOS=linux","CGO_ENABLED=0"]){
+                                sh "go build -ldflags '-X main.version=${version} -w -s' -o upload/mailAssistant.alpine"
+                            } // alpine
+                            withEnv(["GOOS=windows"]) {
+                                sh "go build -ldflags '-X main.version=${version}' -o upload/mailAssistant.amd64_windows.exe"
+                            } // amd64_windows
+                        }
+                    } // script
+                } // withCredentials
             } // steps
         } // stage
         stage('Test and analasys') {
             steps {
-                withSonarQubeEnv('sonar'){
+                withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonarqube-secret'){
                     script {
-                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
-                                ,"PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"]) {
-                            sh'bash .build/sonar-datacollector.sh'
-                            archiveArtifacts( allowEmptyArchive: true, artifacts: '.sonarqube/*', excludes: '.gitempty', fingerprint: true)
-                            if ( BRANCH_NAME.startsWith('PR-')){
-                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#PR' '-Dsonar.projectName=jenkins_mailAssistant_PR'"
-                            }else{
-                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins#mailAssistant#${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistant_${BRANCH_NAME}'"
-                            }
-                        } // withEnv
+                        withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'nx_pass', usernameVariable: 'nx_user')]) {
+                            def go_proxy="https://${nx_user}:${nx_pass}@nexus.mahillmann.de/repository/goproxy"
+	                        withEnv(["PATH+GO=${tool(name: '1.13', type: 'go')}/bin"
+	                               , "PATH+sonar=${tool name: '4.0.0', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin"
+	                               , "PATH+GOBIN=/home/jenkins/go/bin/"
+	                               , "GOBIN=/home/jenkins/go/bin/"
+	                               , "GOPROXY=${go_proxy}",]) {
+	                            sh'bash .build/sonar-datacollector.sh'
+	                            archiveArtifacts( allowEmptyArchive: true, artifacts: '.sonarqube/*', excludes: '.gitempty', fingerprint: true)
+                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins_mailAssistant:${BRANCH_NAME}' '-Dsonar.projectName=mailAssistant ${BRANCH_NAME}'"
+	                        } // withEnv
+	                    } // withCredentials
                     } // script
                 } // withSonarQubeEnv
+                sleep(10)
                 timeout(5) { // Just in case something goes wrong, pipeline will be killed after a timeout
                     script {
                         def qg = waitForQualityGate(false)
-                        if (qg.status != 'OK') {
-                            echo "Pipeline aborted due to quality gate failure: ${qg.status}"
-                            currentBuild.result="UNSTABLE"
-                        } else{
+                        echo(qg.status)
+                        if (qg.status == 'OK') {
                             currentBuild.result="SUCCESS"
+                        } else{
+                            currentBuild.result="UNSTABLE"
+                            echo "Pipeline aborted due to quality gate failure: ${qg.status}"
                         }
                     } // script
                 } // timeout
-                // junit allowEmptyResults: true, testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '.sonarqube/test.xml'
             } // steps
         } // stage
         stage('accept PR') {

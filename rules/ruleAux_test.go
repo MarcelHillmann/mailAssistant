@@ -5,13 +5,13 @@ import (
 	"testing"
 )
 
-func TestRuleAux(t *testing.T){
-	t.Run("convert",ruleAuxConvert)
+func TestRuleAux(t *testing.T) {
+	t.Run("convert", ruleAuxConvert)
 	t.Run("IsEmpty", ruleAuxIsEmpty)
 }
 
-func ruleAuxConvert(t *testing.T){
-	aux := ruleAux{"t.yml","t","1s","dummy", false,[]map[string]interface{}{map[string]interface{}{"test":"a", "bool":true,"int":0}}}
+func ruleAuxConvert(t *testing.T) {
+	aux := ruleAux{"t.yml", "t", "1s", "dummy", false, []map[string]interface{}{map[string]interface{}{"test": "a", "bool": true, "int": 0}}}
 	converted := aux.convert()
 	require.NotNil(t, converted)
 	require.Equal(t, "t", converted.name)
@@ -23,18 +23,18 @@ func ruleAuxConvert(t *testing.T){
 	require.Equal(t, 0, converted.GetInt("int"))
 }
 
-func ruleAuxIsEmpty(t *testing.T){
-	aux := ruleAux{"","","","", false,make([]map[string]interface{},0)}
+func ruleAuxIsEmpty(t *testing.T) {
+	aux := ruleAux{"", "", "", "", false, make([]map[string]interface{}, 0)}
 	require.True(t, aux.IsEmpty())
-	aux.Name ="t"
+	aux.Name = "t"
 	require.True(t, aux.IsEmpty())
-	aux.Schedule ="t"
+	aux.Schedule = "t"
 	require.True(t, aux.IsEmpty())
-	aux.Action="t"
+	aux.Action = "t"
 	require.False(t, aux.IsEmpty())
-	aux.Name =""
+	aux.Name = ""
 	require.True(t, aux.IsEmpty())
-	aux.Name ="t"
-	aux.Schedule =""
+	aux.Name = "t"
+	aux.Schedule = ""
 	require.True(t, aux.IsEmpty())
 }

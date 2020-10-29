@@ -12,48 +12,48 @@ import (
 	"testing"
 )
 
-func TestAccountParser(t *testing.T){
+func TestAccountParser(t *testing.T) {
 	t.Run("failOpen", accountParserFailOpen)
 	t.Run("failNotYaml", accountParserFailNotYaml)
 }
 
-func accountParserFailOpen(t *testing.T){
-	defer func(){
+func accountParserFailOpen(t *testing.T) {
+	defer func() {
 		log.SetOutput(os.Stderr)
 		log.SetFlags(log.LstdFlags)
-		logging.SetLevel("mailAssistant.account.parseYaml","OFF")
-	} ()
-	logging.SetLevel("mailAssistant.account.parseYaml","all")
+		logging.SetLevel("mailAssistant.account.parseYaml", "OFF")
+	}()
+	logging.SetLevel("mailAssistant.account.parseYaml", "all")
 	buffer := bytes.NewBufferString("")
 	log.SetFlags(0)
 	log.SetOutput(buffer)
 
-	aux, err := parseYaml("","notExists.yml")
+	aux, err := parseYaml("", "notExists.yml")
 	require.NotNil(t, err)
 	require.Nil(t, aux)
 
 	str := buffer.String()
-	require.Condition(t, func()bool {
+	require.Condition(t, func() bool {
 		return str == "SEVERE  [mailAssistant.account.parseYaml#lambda] open notExists.yml: The system cannot find the file specified.\n" ||
 			str == "SEVERE  [mailAssistant.account.parseYaml#lambda] open notExists.yml: no such file or directory\n"
 	}, str)
 }
 
-func accountParserFailNotYaml(t *testing.T){
-	defer func(){
+func accountParserFailNotYaml(t *testing.T) {
+	defer func() {
 		log.SetOutput(os.Stderr)
 		log.SetFlags(log.LstdFlags)
-	} ()
+	}()
 	buffer := bytes.NewBufferString("")
 	log.SetFlags(0)
 	log.SetOutput(buffer)
 
-	aux, err := parseYaml("","notExists.xxx")
+	aux, err := parseYaml("", "notExists.xxx")
 	require.Nil(t, err)
 	require.Nil(t, aux)
 }
 
-func TestParserFailedReadAll(t *testing.T){
+func TestParserFailedReadAll(t *testing.T) {
 	defer func() {
 		parserReadAll = ioutil.ReadAll
 		err := recover()
@@ -64,6 +64,6 @@ func TestParserFailedReadAll(t *testing.T){
 		return []byte{}, errors.New("must fail")
 	}
 
-	parseYaml("","../testdata/accounts/muster@testcase.local.yml")
+	_, _ = parseYaml("", "../testdata/accounts/muster@testcase.local.yml")
 	require.Fail(t, "never called")
 }

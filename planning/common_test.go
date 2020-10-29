@@ -11,11 +11,12 @@ type testCase struct {
 	value  string
 	result time.Duration
 }
+
 func TestPlanning(t *testing.T) {
 	t.Run("ConstToDuration", planningConstToDuration)
 	t.Run("EveryToDuration", planningEveryToDuration)
-	t.Run("JavaToDuration",planningJavaToDuration)
-	t.Run("GoToDuration",planningGoToDuration)
+	t.Run("JavaToDuration", planningJavaToDuration)
+	t.Run("GoToDuration", planningGoToDuration)
 	t.Run("Unknown", planningUnknown)
 }
 

@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"github.com/prometheus/client_golang/prometheus"
 	"mailAssistant/account"
 	"mailAssistant/arguments"
 	"mailAssistant/conditions"
@@ -9,6 +10,16 @@ import (
 	"reflect"
 	"runtime"
 )
+
+var (
+	jobAnno = []string{"job"}
+	runes   = prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "mailassistant", Subsystem: "job", Name: "runes", Help: "job runes", ConstLabels: nil}, jobAnno)
+	results = prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "mailassistant", Subsystem: "job", Name: "results", Help: "job results", ConstLabels: nil}, jobAnno)
+)
+
+func init() {
+	prometheus.MustRegister(runes, results)
+}
 
 // NewJob is a job factory
 func NewJob(jobName, name string, args map[string]interface{}, accounts *account.Accounts, disabled bool) (job Job) {
@@ -22,7 +33,16 @@ func NewJob(jobName, name string, args map[string]interface{}, accounts *account
 	log.Infof("action '%s' for '%s'", loggerName, jobName)
 
 	semaphore[jobName] = semaphoreNull()
-	job = Job{Args: arguments.NewArgs(args), log: logging.NewNamedLogger(loggerName+"%"+jobName), callback: fcc, accounts: accounts, jobName: jobName, metric: &metrics{disabled: disabled}}
+
+	jobCounter := runes.WithLabelValues(jobName)
+	jobResults := results.WithLabelValues(jobName)
+
+	job = Job{Args: arguments.NewArgs(args),
+		Logger:   logging.NewNamedLogger(loggerName + "%" + jobName),
+		Accounts: accounts,
+		callback: fcc,
+		jobName:  jobName,
+		metrics:  &metrics{disabled: disabled, promRuns: jobCounter, promResults: jobResults}}
 	monitoring.Observe(jobName, job)
 	return
 }
@@ -37,49 +57,53 @@ var semaphore = make(map[string]*int32)
 // Job represents a job for scheduling
 type Job struct {
 	*arguments.Args
-	log      *logging.Logger
+	logging.Logger
+	*account.Accounts
+	*metrics
+
 	callback jobCallBack
-	accounts *account.Accounts
 	jobName  string
 	saveTo   string
-	metric   *metrics
 }
 
 // Run is called by clockwerk framework
 func (j Job) Run() {
-	j.log.Enter()
-	j.callback(j, semaphore[j.jobName], j.metric.result)
-	j.metric.run()
-	j.log.Leave()
+	j.Enter()
+	j.callback(j, semaphore[j.jobName], j.result)
+	j.run()
+	j.Leave()
 }
 
 // GetAccount is checking and returning the searched account
 func (j Job) GetAccount(name string) *account.Account {
-	if ! j.accounts.HasAccount(name) {
-		j.log.Severe(name, "is not defined")
+	if !j.HasAccount(name) {
+		j.Severe(name, "is not defined")
 	}
-	return j.accounts.GetAccount(name)
+	return j.Accounts.GetAccount(name)
 }
+
 func (j *Job) getSaveTo() string {
 	return saveTo(j)
 }
+
 func (j Job) getSearchParameter() []interface{} {
 	result := conditions.ParseYaml(j.GetArg("search"))
 	return result.Get()
 }
+
 // GetLogger is returning the job logger
-func (j Job) GetLogger() *logging.Logger {
-	return j.log
+func (j Job) GetLogger() logging.Logger {
+	return j
 }
 
 // Stopped that the epoch for descheduled
 func (j Job) Stopped() {
-	j.metric.stopped()
+	j.stopped()
 }
 
+// GetMetric is exporting a IMetric object
 func (j Job) GetMetric() monitoring.IMetric {
-	metric := j.metric
+	metric := j.metrics
 	metric.jobName = j.jobName
 	return metric
 }
-

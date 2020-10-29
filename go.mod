@@ -9,11 +9,12 @@ require (
 	github.com/emersion/go-imap-move v0.0.0-20190710073258-6e5a51a5b342
 	github.com/emersion/go-message v0.10.4-0.20190609165112-592ace5bc1ca
 	github.com/fsnotify/fsnotify v1.4.7
-	github.com/kr/pretty v0.1.0 // indirect
+	github.com/gorilla/mux v1.6.2
 	github.com/onatm/clockwerk v0.0.0-20190910145222-354c9bd6cf28
+	github.com/openzipkin/zipkin-go v0.2.2
+	github.com/prometheus/client_golang v1.5.1
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli/v2 v2.1.1
-	golang.org/x/sys v0.0.0-20191128015809-6d18c012aee9 // indirect
-	gopkg.in/yaml.v2 v2.2.2
+	gopkg.in/yaml.v2 v2.2.5
 	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
 )

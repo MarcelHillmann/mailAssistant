@@ -28,7 +28,7 @@ var fetchFast = imap.FetchFast.Expand()
 type ImapPromise struct {
 	client   IClient
 	messages uint32
-	logger   *logging.Logger
+	logger   logging.Logger
 }
 
 func newImapPromise(connection IClient) *ImapPromise {
@@ -37,7 +37,7 @@ func newImapPromise(connection IClient) *ImapPromise {
 	return prom
 }
 
-func (promise *ImapPromise) getLogger() *logging.Logger {
+func (promise *ImapPromise) getLogger() logging.Logger {
 	if promise.logger == nil {
 		promise.logger = logging.NewLogger()
 	}
@@ -62,7 +62,7 @@ func (promise *ImapPromise) ListMailboxes() {
 }
 
 // AppendPromise adds a mail on the IMAP server
-func (promise ImapPromise) AppendPromise(saveTo string, flags []string, date time.Time, msg imap.Literal, successfully func())  {
+func (promise ImapPromise) AppendPromise(saveTo string, flags []string, date time.Time, msg imap.Literal, successfully func()) {
 	saveTo = strings.ReplaceAll(saveTo, "/", ".")
 	if saveTo == "" {
 		saveTo = "INBOX"
@@ -99,10 +99,10 @@ func (promise ImapPromise) SelectPromise(path string, readOnly bool, callback fu
 // FetchPromise is fetching messages on the IMAP server, if successfully it calls a callback
 func (promise ImapPromise) FetchPromise(args []interface{}, fetchContent bool, callback func(promise *MsgPromises)) {
 	var seqSet *imap.SeqSet
-	if args != nil && len(args) == 1 && args[0] == conditions.CURSOR && promise.messages > 0 {
+	if len(args) == 1 && args[0] == conditions.CURSOR && promise.messages > 0 {
 		seqSet = new(imap.SeqSet)
 		seqSet.AddRange(1, promise.messages)
-	}else if args != nil && len(args) == 1 && args[0] == conditions.CURSOR && promise.messages == 0{
+	} else if len(args) == 1 && args[0] == conditions.CURSOR && promise.messages == 0 {
 		return
 	} else if seqSet = promise.search(args, callback); seqSet == nil {
 		return
@@ -125,7 +125,7 @@ func (promise ImapPromise) FetchPromise(args []interface{}, fetchContent bool, c
 	if err := <-done; err != nil {
 		promise.getLogger().Panic(err)
 	}
-	if !seqSet.Empty()  {
+	if !seqSet.Empty() {
 		callback(&msgPromise)
 	}
 }
@@ -134,7 +134,7 @@ func (promise *ImapPromise) search(args []interface{}, callback func(promise *Ms
 	searchCfg := imap.NewSearchCriteria()
 	_ = searchCfg.ParseWithCharset(args, nil)
 	if seqNums, err := promise.client.Search(searchCfg); err != nil && err.Error() != noMatchingMessages {
-		panic(fmt.Errorf("%s %#v",err.Error(), args))
+		panic(fmt.Errorf("%s %#v", err.Error(), args))
 	} else if len(seqNums) <= 0 {
 		callback(&MsgPromises{ImapPromise: promise, messages: make([]*MsgPromise, 0), seqSet: new(imap.SeqSet)})
 		result = nil

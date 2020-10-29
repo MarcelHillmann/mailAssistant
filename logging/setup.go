@@ -64,7 +64,7 @@ func loadLogging() {
 
 func startWatcher(filepath string) {
 	watcher, _ := fsnotify.NewWatcher()
-	watcher.Add(filepath)
+	_ = watcher.Add(filepath)
 
 	defer watcher.Close()
 	for {
@@ -100,7 +100,7 @@ func unmarshal(file *os.File, config *registryAux) error {
 		return err
 	}
 
-	SetLevel("*","")
+	SetLevel("*", "")
 	if config.HasNoLevel() {
 		loggerRegistry[global] = none
 	} else {
@@ -113,18 +113,18 @@ func unmarshal(file *os.File, config *registryAux) error {
 }
 
 func childRecursive(path string, levels map[string]logLevel, children []*registryAux) {
-	var _path = ""
+	var finalPath = ""
 	if path != "" {
-		_path = path + "."
+		finalPath = path + "."
 	}
 	for _, child := range children {
-		levels[_path+child.Name] = child.GetLevel()
+		levels[finalPath+child.Name] = child.GetLevel()
 		if child.HasChildren() {
-			childRecursive(_path+child.Name, levels, child.Children)
+			childRecursive(finalPath+child.Name, levels, child.Children)
 		}
 	}
 }
 
-func getLogger() *Logger {
+func getLogger() Logger {
 	return NewGlobalLogger()
 }

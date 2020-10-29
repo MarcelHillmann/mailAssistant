@@ -71,7 +71,7 @@ func andAddLocked(t *testing.T) {
 	pair := (*a.conditions)[0].(pair)
 	require.NotNil(t, pair.parent)
 	require.Equal(t, CURSOR, pair.keyval.field)
-	require.Nil(t,  pair.keyval.value)
+	require.Nil(t, pair.keyval.value)
 }
 
 func andGet(t *testing.T) {

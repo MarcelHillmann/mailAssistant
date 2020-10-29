@@ -10,7 +10,7 @@ func newCursor() pair {
 }
 
 func newPair(field string, value interface{}) pair {
-	return pair{parent: &headParent{}, keyval: &keyVal{field: field,value: value}}
+	return pair{parent: &headParent{}, keyval: &keyVal{field: field, value: value}}
 }
 
 type keyVal struct {
@@ -25,12 +25,13 @@ func (k *keyVal) Field(field string) {
 func (k *keyVal) Value(value interface{}) {
 	k.value = value
 }
+
 type pair struct {
 	parent *headParent
 	keyval *keyVal
 }
 
-func (p pair) Parent(c Condition){
+func (p pair) Parent(c Condition) {
 	p.parent.Parent(c)
 }
 

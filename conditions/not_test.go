@@ -72,14 +72,14 @@ func notAddLocked(t *testing.T) {
 	pair := (*a.conditions)[0].(pair)
 	require.NotNil(t, pair.parent)
 	require.Equal(t, CURSOR, pair.keyval.field)
-	require.Nil(t,  pair.keyval.value)
+	require.Nil(t, pair.keyval.value)
 }
 
 func notGet(t *testing.T) {
 	a := newNot()
 	require.Equal(t, []interface{}{}, a.Get())
 	a.Add(newPair("a", "b"))
-	require.Equal(t, []interface{}{"not","A", "b"}, a.Get())
+	require.Equal(t, []interface{}{"not", "A", "b"}, a.Get())
 }
 
 func notParseYaml(t *testing.T) {
@@ -93,14 +93,14 @@ func notParseYaml(t *testing.T) {
 	require.Len(t, *a.conditions, 1)
 	require.False(t, *a.locked)
 	require.Equal(t, []interface{}{"not", "FROM", "b"}, a.Get())
-	require.Equal(t,  "not FROM='b'",a.String())
+	require.Equal(t, "not FROM='b'", a.String())
 }
 
 func notSetCursorNoParent(t *testing.T) {
 	a := newNot()
 	require.Equal(t, []interface{}{}, a.Get())
 	a.Add(newPair("a", "b"))
-	require.Equal(t, []interface{}{"not","A", "b"}, a.Get())
+	require.Equal(t, []interface{}{"not", "A", "b"}, a.Get())
 	a.SetCursor()
 	require.Equal(t, []interface{}{CURSOR}, a.Get())
 }
@@ -111,12 +111,12 @@ func notSetCursorWithParent(t *testing.T) {
 	parent.Add(a)
 	a.Add(newPair("a", "b"))
 
-	require.Equal(t, []interface{}{"not","A", "b"}, a.Get())
+	require.Equal(t, []interface{}{"not", "A", "b"}, a.Get())
 	require.Len(t, *parent.conditions, 1)
 	require.Equal(t, (*parent.conditions)[0], a)
 
 	a.SetCursor()
-	require.Equal(t, []interface{}{"not","A", "b"}, a.Get())
+	require.Equal(t, []interface{}{"not", "A", "b"}, a.Get())
 	require.False(t, *a.locked)
 
 	require.Len(t, *parent.conditions, 1)
@@ -158,7 +158,7 @@ func notStringEx(t *testing.T) {
 	and.Add(newPair("c", "d"))
 	a.Add(and)
 
-	or:=newOr()
+	or := newOr()
 	a.Add(or)
 	or.Add(newPair("e", "f"))
 	or.Add(newPair("g", "h"))

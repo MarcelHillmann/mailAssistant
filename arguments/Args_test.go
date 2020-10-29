@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var expected = map[string]interface{}{"a": "1", "b": false,"c": 4,"d":"","e":true,"f":uint(0)}
+var expected = map[string]interface{}{"a": "1", "b": false, "c": 4, "d": "", "e": true, "f": uint(0)}
 
 func TestArgs(t *testing.T) {
 	t.Run("HasArg", argsHasArg)
@@ -51,7 +51,7 @@ func argsGetArgKey(t *testing.T) {
 		keys := args.GetArgKeys()
 		require.NotNil(t, keys)
 		require.Len(t, keys, 6)
-		require.Equal(t, []string{"a", "b", "c", "d","e","f"}, keys)
+		require.Equal(t, []string{"a", "b", "c", "d", "e", "f"}, keys)
 	})
 	t.Run("empty", func(t *testing.T) {
 		args := Args{map[string]interface{}{}}
@@ -68,7 +68,7 @@ func argsGetArgs(t *testing.T) {
 		actual := args.GetArgs()
 		require.NotNil(t, actual)
 		require.Equal(t, expected, actual)
-		require.Len(t, actual,6)
+		require.Len(t, actual, 6)
 	})
 	t.Run("nilIsNil", func(t *testing.T) {
 		args := Args{nil}
@@ -81,17 +81,17 @@ func argsGetBool(t *testing.T) {
 	t.Run("string_1", func(t *testing.T) {
 		actual := args.GetBool("a")
 		require.NotNil(t, actual)
-		require.True(t,  actual)
+		require.True(t, actual)
 	})
 	t.Run("bool", func(t *testing.T) {
 		actual := args.GetBool("b")
 		require.NotNil(t, actual)
-		require.False(t,  actual)
+		require.False(t, actual)
 	})
 	t.Run("int_4", func(t *testing.T) {
 		actual := args.GetBool("c")
 		require.NotNil(t, actual)
-		require.False(t,  actual)
+		require.False(t, actual)
 	})
 	t.Run("string_blank", func(t *testing.T) {
 		actual := args.GetBool("d")
@@ -122,46 +122,46 @@ func argsGetInt(t *testing.T) {
 }
 
 func argsGetList(t *testing.T) {
-	args := Args{map[string]interface{}{"slice": []string{"a","b"},"array": [2]int{1,2},"else": 1}}
+	args := Args{map[string]interface{}{"slice": []string{"a", "b"}, "array": [2]int{1, 2}, "else": 1}}
 	t.Run("array", func(t *testing.T) {
-		a :=args.GetList("array")
-		require.NotNil(t,a)
-		require.Len(t,a,2)
-		require.Equal(t,[]interface{}{1,2},a)
+		a := args.GetList("array")
+		require.NotNil(t, a)
+		require.Len(t, a, 2)
+		require.Equal(t, []interface{}{1, 2}, a)
 	})
 	t.Run("slice", func(t *testing.T) {
-		a:=args.GetList("slice")
-		require.NotNil(t,a)
-		require.Len(t,a,2)
-		require.Equal(t,[]interface{}{"a","b"},a)
+		a := args.GetList("slice")
+		require.NotNil(t, a)
+		require.Len(t, a, 2)
+		require.Equal(t, []interface{}{"a", "b"}, a)
 	})
 	t.Run("else", func(t *testing.T) {
-		a:=args.GetList("else")
-		require.NotNil(t,a)
-		require.Len(t,a,0)
-		require.Equal(t,[]interface{}{},a)
+		a := args.GetList("else")
+		require.NotNil(t, a)
+		require.Len(t, a, 0)
+		require.Equal(t, []interface{}{}, a)
 	})
 	t.Run("???", func(t *testing.T) {
-		a:=args.GetList("???")
-		require.NotNil(t,a)
-		require.Len(t,a,0)
-		require.Equal(t,[]interface{}{},a)
+		a := args.GetList("???")
+		require.NotNil(t, a)
+		require.Len(t, a, 0)
+		require.Equal(t, []interface{}{}, a)
 	})
 }
 
 func argsGetMap(t *testing.T) {
-	args := Args{map[string]interface{}{"test": nil,"map": map[string]interface{}{"a":"a","b":"b"}}}
+	args := Args{map[string]interface{}{"test": nil, "map": map[string]interface{}{"a": "a", "b": "b"}}}
 	t.Run("map", func(t *testing.T) {
 		a := args.GetMap("map")
 		require.NotNil(t, a)
 		require.Len(t, a, 2)
-		require.Equal(t, map[string]interface{}{"a":"a","b":"b"},a)
+		require.Equal(t, map[string]interface{}{"a": "a", "b": "b"}, a)
 	})
 	t.Run("???", func(t *testing.T) {
 		a := args.GetMap("test")
 		require.NotNil(t, a)
 		require.Len(t, a, 0)
-		require.Equal(t, map[string]interface{}{},a)
+		require.Equal(t, map[string]interface{}{}, a)
 	})
 }
 
@@ -186,8 +186,8 @@ func argsSetArg(t *testing.T) {
 	args.SetArg("foo", 1000)
 	args.SetArg("bar", true)
 
-	require.Len(t, args.args,8)
-	require.Equal(t,1000, args.GetInt("foo"))
+	require.Len(t, args.args, 8)
+	require.Equal(t, 1000, args.GetInt("foo"))
 	require.True(t, args.GetBool("bar"))
 }
 
@@ -204,12 +204,12 @@ func newArgs(t *testing.T) {
 func newEmptyArgs(t *testing.T) {
 	arg := NewEmptyArgs()
 	require.NotNil(t, arg.args)
-	require.Len(t, arg.args,0)
+	require.Len(t, arg.args, 0)
 }
 
-func _expected()(res map[string]interface{}){
+func _expected() (res map[string]interface{}) {
 	res = make(map[string]interface{})
-	for k, v:=range expected {
+	for k, v := range expected {
 		res[k] = v
 	}
 	return

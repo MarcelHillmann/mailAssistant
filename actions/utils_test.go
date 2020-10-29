@@ -90,5 +90,5 @@ func createMessage(num uint32, body bool) *imap.Message {
 }
 
 type called struct {
-	login, selected, search, fetch, store, expunge int
+	login, selected, fetch, store int
 }

@@ -11,7 +11,7 @@ func Test0NewClockwork(t *testing.T) {
 }
 
 func Test1StopAllClocks(t *testing.T) {
-	require.Len(t, clocks,1)
+	require.Len(t, clocks, 1)
 	StopAllClocks()
-	require.Len(t, clocks,0)
+	require.Len(t, clocks, 0)
 }

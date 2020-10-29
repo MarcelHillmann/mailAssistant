@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/urfave/cli/v2"
 	"log"
 	cmd "mailAssistant/cmd"
@@ -11,6 +12,7 @@ import (
 var version string
 
 func main() {
+	prometheus.MustRegister(prometheus.NewBuildInfoCollector())
 	app := cli.NewApp()
 	app.Authors = []*cli.Author{
 		{
@@ -26,100 +28,87 @@ func main() {
 		log.Panic(err)
 	}
 	app.Flags = []cli.Flag{
-		&cli.StringFlag{
-			Name:     "configs",
+		&cli.StringFlag{Name: "configs",
 			Value:    "",
 			Usage:    "where to find the configs",
 			EnvVars:  []string{"CONFIG_PATH"},
-			Required: false,
-		},
+			Required: false},
 	}
 
 	app.Commands = []*cli.Command{
-		{
-			Name:    "run",
+		{Name: "run",
 			Aliases: []string{"r"},
 			Usage:   "execute the mailAssistant",
 			Action:  cmd.RunAssistant,
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "zipkin_server",
+					Usage:       "zipkin endpoint, format: 'http(s)://<hostname>:<port>'",
+					Aliases:     []string{"zs"},
+					EnvVars:     []string{"ZIPKIN_SERVER"},
+					DefaultText: "localhost:0"},
+			},
 		},
-		{
-			Name:    "verify",
+		{Name: "verify",
 			Aliases: []string{},
 			Usage:   "verify rules",
 			Action:  cmd.RunConfigCheck,
 			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:     "config",
+				&cli.StringFlag{Name: "config",
 					Usage:    "path to the rules",
-					Required: true,
-				},
+					Required: true},
 			},
 		},
-		{
-			Name:   "test",
+		{Name: "test",
 			Action: testDriver.TestTreiber,
+			Hidden: true,
 			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:     "username",
+				&cli.StringFlag{Name: "username",
 					Usage:    "Username for connection",
-					Required: true,
-				},
-				&cli.StringFlag{
-					Name:     "password",
+					Required: true},
+				&cli.StringFlag{Name: "password",
 					Usage:    "Password for connection",
-					Required: true,
-				},
-				&cli.StringFlag{
-					Name:     "server",
+					Required: true},
+				&cli.StringFlag{Name: "server",
 					Usage:    "server for connection",
-					Required: true,
-				},
-				&cli.PathFlag{
-					Name:     "file",
+					Required: true},
+				&cli.PathFlag{Name: "file",
 					Usage:    "rule to run",
-					Required: true,
-				},
-				&cli.BoolFlag{
-					Name:        "verbose",
-					Required:    false,
-					Hidden:      false,
-					Value:       false,
-				},
+					Required: true},
+				&cli.BoolFlag{Name: "verbose",
+					Required: false,
+					Value:    false},
+				&cli.BoolFlag{Name: "sVerbose",
+					Required: false,
+					Value:    false},
 			},
 		},
 		{
-			Name: "test_allMsg",
+			Name:   "test_allMsg",
 			Action: testDriver.TestDriverAllMsg,
+			Hidden: true,
 			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:     "username",
+				&cli.StringFlag{Name: "username",
 					Usage:    "Username for connection",
-					Required: true,
-				},
-				&cli.StringFlag{
-					Name:     "password",
+					Required: true},
+				&cli.StringFlag{Name: "password",
 					Usage:    "Password for connection",
-					Required: true,
-				},
-				&cli.StringFlag{
-					Name:     "server",
+					Required: true},
+				&cli.StringFlag{Name: "server",
 					Usage:    "server for connection",
-					Required: true,
-				},
-				&cli.PathFlag{
-					Name:     "select",
+					Required: true},
+				&cli.PathFlag{Name: "select",
 					Usage:    "select box",
-					Required: true,
-				},
-				&cli.BoolFlag{
-					Name:        "verbose",
-					Required:    false,
-					Hidden:      false,
-					Value:       false,
-				},
+					Required: true},
+				&cli.BoolFlag{Name: "verbose",
+					Required: false,
+					Hidden:   false,
+					Value:    false},
+				&cli.BoolFlag{Name: "sVerbose",
+					Required: false,
+					Value:    false},
 			},
 		},
 	}
 
-	app.Run(os.Args)
+	_ = app.Run(os.Args)
 }

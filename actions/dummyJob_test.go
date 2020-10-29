@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestDummyJob(t *testing.T){
+func TestDummyJob(t *testing.T) {
 	var wg int32
-	job := Job{log: logging.NewLogger()}
+	job := Job{Logger: logging.NewLogger()}
 
-	newDummy(job,&wg, metricsDummy)
+	newDummy(job, &wg, metricsDummy)
 }

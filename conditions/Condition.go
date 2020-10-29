@@ -1,22 +1,24 @@
 package conditions
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/emersion/go-imap"
 	"log"
 	"mailAssistant/planning"
+	"sort"
 	"strings"
 	"time"
 )
 
 const (
-	stringEmpty = ""
-	stringOr = " or "
-	stringAnd = " and "
-	stringNot = "not "
-	stringFormat = "( %s )"
-    notYetImplemented = "not yet implemented"
-    // CURSOR defines a not query request
+	stringEmpty       = ""
+	stringOr          = " or "
+	stringAnd         = " and "
+	stringNot         = "not "
+	stringFormat      = "( %s )"
+	notYetImplemented = "not yet implemented"
+	// CURSOR defines a not query request
 	CURSOR = "CURSOR"
 )
 
@@ -132,4 +134,195 @@ func allowedYamlKey(m map[interface{}]interface{}) {
 			panic(fmt.Errorf("invalid yaml field: '%s'", key))
 		}
 	}
+}
+
+// MapToString converts a map to a string
+func MapToString(m map[string]string) string {
+	buf := bytes.NewBufferString("")
+	keys := make([]string, 0)
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		buf.WriteString(key)
+		buf.WriteString(": ")
+		buf.WriteString(m[key])
+		buf.WriteString(", ")
+	}
+	s := buf.String()
+	return s[:len(s)-2]
+}
+
+// ToString converts searchCriteria to string
+func ToString(c *imap.SearchCriteria) string {
+	s := searchToString{SearchCriteria: c}
+	return s.String()
+}
+
+var p1d = 24 * time.Hour * -1
+
+type searchToString struct {
+	*imap.SearchCriteria
+	buffer *bytes.Buffer
+}
+
+func (s *searchToString) String() string {
+	s.buffer = bytes.NewBufferString("SearchCriteria {")
+	s.seqNum().uid().time().sent().header().body().text().flags().size().not().or()
+	return strings.TrimSuffix(strings.TrimSuffix(s.buffer.String(), ", "), ",") + "}"
+}
+
+func (s *searchToString) seqNum() *searchToString {
+	if s.SearchCriteria.SeqNum != nil {
+		s.addToBuffer("SeqNum: %s, ", s.SearchCriteria.SeqNum.String())
+	}
+	return s
+}
+
+func (s *searchToString) uid() *searchToString {
+	if s.SearchCriteria.Uid != nil {
+		s.addToBuffer("UID: %s, ", s.SearchCriteria.Uid.String())
+	}
+	return s
+}
+
+func (s *searchToString) time() *searchToString {
+	c := s.SearchCriteria
+	if !c.Since.IsZero() &&
+		!c.Before.IsZero() &&
+		c.Before.Sub(c.Since) == p1d {
+		s.addToBuffer("ON: %s, ", c.Since.String())
+	} else {
+		if !c.Since.IsZero() {
+			s.addToBuffer("SINCE: %s, ", c.Since.String())
+		}
+		if !c.Before.IsZero() {
+			s.addToBuffer("BEFORE: %s, ", c.Before.String())
+		}
+	}
+	return s
+}
+
+func (s *searchToString) sent() *searchToString {
+	c := s.SearchCriteria
+	if !c.SentSince.IsZero() &&
+		!c.SentBefore.IsZero() &&
+		c.SentBefore.Sub(c.SentSince) == p1d {
+		s.addToBuffer("SENTON: %s, ", c.SentSince.String())
+	} else {
+		if !c.SentSince.IsZero() {
+			s.addToBuffer("SENTSINCE: %s, ", c.SentSince.String())
+		}
+		if !c.SentBefore.IsZero() {
+			s.addToBuffer("SENTBEFORE: %s, ", c.SentBefore.String())
+		}
+	}
+	return s
+}
+
+func (s *searchToString) header() *searchToString {
+	keys := make([]string, 0)
+	for key := range s.SearchCriteria.Header {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		switch key {
+		case "Bcc", "Cc", "From", "Subject", "To":
+			s.addToBuffer("%s: ", strings.ToUpper(key))
+		default:
+			s.addToBuffer("HEADER: %#v ", key)
+		}
+		s.addToBuffer("%s ", s.SearchCriteria.Header[key])
+	}
+	return s
+}
+
+func (s *searchToString) size() *searchToString {
+	if s.SearchCriteria.Larger > 0 {
+		s.addToBuffer("LARGER: %d, ", s.SearchCriteria.Larger)
+	}
+	if s.SearchCriteria.Smaller > 0 {
+		s.addToBuffer("SMALLER: %d, ", s.SearchCriteria.Smaller)
+	}
+	return s
+}
+
+func (s *searchToString) body() *searchToString {
+	for _, value := range s.SearchCriteria.Body {
+		s.addToBuffer("BODY: %s, ", value)
+	}
+	return s
+}
+
+func (s *searchToString) text() *searchToString {
+	for _, value := range s.SearchCriteria.Text {
+		s.addToBuffer("TEXT: %s, ", value)
+	}
+	return s
+}
+
+func (s *searchToString) flags() *searchToString {
+	for _, flag := range s.SearchCriteria.WithFlags {
+		switch flag {
+		case imap.AnsweredFlag, imap.DeletedFlag, imap.DraftFlag, imap.FlaggedFlag, imap.RecentFlag, imap.SeenFlag:
+			s.addToBuffer("Flag: %s, ", strings.ToUpper(strings.TrimPrefix(flag, "\\")))
+		default:
+			s.addToBuffer("KEYWORD: %s, ", flag)
+		}
+	}
+	for _, flag := range s.SearchCriteria.WithoutFlags {
+		switch flag {
+		case imap.AnsweredFlag, imap.DeletedFlag, imap.DraftFlag, imap.FlaggedFlag, imap.SeenFlag:
+			s.addToBuffer("UN: %s, ", strings.ToUpper(strings.TrimPrefix(flag, "\\")))
+		case imap.RecentFlag:
+			s.addToBuffer("OLD, ")
+		default:
+			s.addToBuffer("UNKEYWORD: %s, ", flag)
+		}
+	}
+	return s
+}
+
+func (s *searchToString) not() *searchToString {
+	added := false
+	for _, not := range s.SearchCriteria.Not {
+		if !added {
+			s.addToBuffer("NOT[]{ ")
+			added = true
+		}
+		s.addToBuffer((&searchToString{SearchCriteria: not}).String())
+	}
+
+	if added {
+		s.addToBuffer("}NOT[], ")
+	}
+	return s
+}
+
+func (s *searchToString) or() *searchToString {
+	added := false
+	for _, or := range s.SearchCriteria.Or {
+		if !added {
+			s.addToBuffer("OR[]{")
+			added = true
+		}
+		s.addToBuffer(" OR{ ")
+		n := searchToString{SearchCriteria: or[0]}
+		s.addToBuffer(n.String())
+		s.addToBuffer(", ")
+		n = searchToString{SearchCriteria: or[1]}
+		s.addToBuffer(n.String())
+		s.addToBuffer("}OR, ")
+	}
+	s.buffer = bytes.NewBufferString(strings.TrimSuffix(s.buffer.String(), ", ") + " ")
+	if added {
+		s.addToBuffer("}OR[] ")
+	}
+	return s
+}
+
+func (s *searchToString) addToBuffer(format string, a ...interface{}) {
+	_, _ = fmt.Fprintf(s.buffer, format, a...)
 }

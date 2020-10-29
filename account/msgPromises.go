@@ -101,5 +101,5 @@ func (p *MsgPromises) addAll(messages chan *imap.Message) {
 
 // Expunge is sending the expunge command to the IMAP server
 func (p MsgPromises) Expunge() {
-	p.client.Expunge(nil)
+	_ = p.client.Expunge(nil)
 }
