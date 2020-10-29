@@ -139,7 +139,7 @@ func allowedYamlKey(m map[interface{}]interface{}) {
 // MapToString converts a map to a string
 func MapToString(m map[string]string) string {
 	buf := bytes.NewBufferString("")
-	keys := make([]string,0)
+	keys := make([]string, 0)
 	for k := range m {
 		keys = append(keys, k)
 	}
@@ -223,7 +223,7 @@ func (s searchToString) sent() searchToString {
 }
 
 func (s searchToString) header() searchToString {
-	keys := make([]string,0)
+	keys := make([]string, 0)
 	for key := range s.SearchCriteria.Header {
 		keys = append(keys, key)
 	}
