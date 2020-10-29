@@ -56,19 +56,18 @@ pipeline {
 	                        } // withEnv
 	                    } // withCredentials
                     } // script
+                    timeout(10) { // Just in case something goes wrong, pipeline will be killed after a timeout
+                        script {
+                            def qg = waitForQualityGate(false)
+                            if (qg.status != 'OK') {
+                                echo "Pipeline aborted due to quality gate failure: ${qg.status}"
+                                currentBuild.result="UNSTABLE"
+                            } else{
+                                currentBuild.result="SUCCESS"
+                            }
+                        } // script
+                    } // timeout
                 } // withSonarQubeEnv
-                timeout(10) { // Just in case something goes wrong, pipeline will be killed after a timeout
-                    script {
-                        sh 'env'
-                        def qg = waitForQualityGate(false)
-                        if (qg.status != 'OK') {
-                            echo "Pipeline aborted due to quality gate failure: ${qg.status}"
-                            currentBuild.result="UNSTABLE"
-                        } else{
-                            currentBuild.result="SUCCESS"
-                        }
-                    } // script
-                } // timeout
                 // junit allowEmptyResults: true, testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '.sonarqube/test.xml'
             } // steps
         } // stage
