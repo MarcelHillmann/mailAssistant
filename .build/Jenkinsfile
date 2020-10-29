@@ -57,7 +57,6 @@ pipeline {
 	                    } // withCredentials
                     } // script
                 } // withSonarQubeEnv
-                junit allowEmptyResults: true, testDataPublishers: [[$class: 'ClaimTestDataPublisher']], testResults: '.sonarqube/test.xml'
                 timeout(10) { // Just in case something goes wrong, pipeline will be killed after a timeout
                     script {
                         def qg = waitForQualityGate(false)
