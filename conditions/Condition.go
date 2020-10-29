@@ -6,6 +6,7 @@ import (
 	"github.com/emersion/go-imap"
 	"log"
 	"mailAssistant/planning"
+	"sort"
 	"strings"
 	"time"
 )
@@ -138,13 +139,19 @@ func allowedYamlKey(m map[interface{}]interface{}) {
 // MapToString converts a map to a string
 func MapToString(m map[string]string) string {
 	buf := bytes.NewBufferString("")
-	for k, v := range m {
-		buf.WriteString(k)
-		buf.WriteString(": ")
-		buf.WriteString(v)
-		buf.WriteString(",")
+	keys := make([]string,0)
+	for k := range m {
+		keys = append(keys, k)
 	}
-	return buf.String()
+	sort.Strings(keys)
+	for _, key := range keys {
+		buf.WriteString(key)
+		buf.WriteString(": ")
+		buf.WriteString(m[key])
+		buf.WriteString(", ")
+	}
+	s := buf.String()
+	return s[:len(s)-2]
 }
 
 // ToString converts searchCriteria to string
@@ -153,7 +160,7 @@ func ToString(c *imap.SearchCriteria) string {
 	return s.String()
 }
 
-var p1d = 24 * time.Hour
+var p1d = 24 * time.Hour * -1
 
 type searchToString struct {
 	*imap.SearchCriteria
@@ -169,14 +176,14 @@ func (s *searchToString) String() string {
 
 func (s searchToString) seqNum() searchToString {
 	if s.SearchCriteria.SeqNum != nil {
-		s.addToBuffer("SeqNum: %#v, ", s.SearchCriteria.SeqNum)
+		s.addToBuffer("SeqNum: %s, ", s.SearchCriteria.SeqNum.String())
 	}
 	return s
 }
 
 func (s searchToString) uid() searchToString {
 	if s.SearchCriteria.Uid != nil {
-		s.addToBuffer("UID: %#v, ", s.SearchCriteria.Uid)
+		s.addToBuffer("UID: %s, ", s.SearchCriteria.Uid.String())
 	}
 	return s
 }
@@ -216,14 +223,19 @@ func (s searchToString) sent() searchToString {
 }
 
 func (s searchToString) header() searchToString {
-	for key, values := range s.SearchCriteria.Header {
+	keys := make([]string,0)
+	for key := range s.SearchCriteria.Header {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
 		switch key {
 		case "Bcc", "Cc", "From", "Subject", "To":
 			s.addToBuffer("%s: ", strings.ToUpper(key))
 		default:
-			s.addToBuffer("HEADER: %#v", key)
+			s.addToBuffer("HEADER: %#v ", key)
 		}
-		s.addToBuffer("%s", values)
+		s.addToBuffer("%s ", s.SearchCriteria.Header[key])
 	}
 	return s
 }
@@ -275,15 +287,39 @@ func (s searchToString) flags() searchToString {
 }
 
 func (s searchToString) not() searchToString {
+	added := false
 	for _, not := range s.SearchCriteria.Not {
-		s.addToBuffer("NOT: %#v, ", not.Format())
+		if !added {
+			s.addToBuffer("NOT[]{ ")
+			added = true
+		}
+		s.addToBuffer((&searchToString{SearchCriteria: not}).String())
+	}
+
+	if added {
+		s.addToBuffer("}NOT[], ")
 	}
 	return s
 }
 
 func (s searchToString) or() searchToString {
+	added := false
 	for _, or := range s.SearchCriteria.Or {
-		s.addToBuffer("OR: %#v - %#v, ", or[0].Format(), or[1].Format())
+		if !added {
+			s.addToBuffer("OR[]{ ")
+			added = true
+		}
+		s.addToBuffer(" OR{ ")
+		n := searchToString{SearchCriteria: or[0]}
+		s.addToBuffer(n.String())
+		s.addToBuffer(", ")
+		n = searchToString{SearchCriteria: or[1]}
+		s.addToBuffer(n.String())
+		s.addToBuffer("}OR, ")
+	}
+
+	if added {
+		s.addToBuffer("}OR[], ")
 	}
 	return s
 }

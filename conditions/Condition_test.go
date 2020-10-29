@@ -3,6 +3,7 @@ package conditions
 import (
 	"github.com/emersion/go-imap"
 	"github.com/stretchr/testify/require"
+	"net/textproto"
 	"testing"
 	"time"
 )
@@ -21,6 +22,11 @@ func TestCondition(t *testing.T) {
 	})
 	t.Run("allowedYamlKey", conditionAllowedYamlKey)
 	t.Run("validImapKeyword", conditionValidImapKeyword)
+	t.Run("MapToString", conditionMapToString)
+	t.Run("ToString", func(t *testing.T) {
+		t.Run("0", conditionToString0)
+		t.Run("1", conditionToString1)
+	})
 }
 
 func conditionParseYaml(t *testing.T) {
@@ -174,4 +180,98 @@ func conditionValidImapKeyword(t *testing.T) {
 	t.Run("INVALID", func(t *testing.T) {
 		require.False(t, validImapKeyword("XXX"))
 	})
+}
+
+func conditionMapToString(t *testing.T) {
+	m := make(map[string]string)
+	m["a"] = "2"
+	m["b"] = "1"
+	m["c"] = "0"
+
+	str := MapToString(m)
+	require.Equal(t, "a: 2, b: 1, c: 0", str)
+}
+
+func conditionToString0(t *testing.T) {
+	sc := new(imap.SearchCriteria)
+	sc.SeqNum = &imap.SeqSet{[]imap.Seq{{10, 11}}}
+	sc.Uid = &imap.SeqSet{[]imap.Seq{{100, 101}}}
+	sc.Since, _ = time.Parse(time.RFC3339, "2020-10-29T23:08:00Z")
+	sc.Before, _ = time.Parse(time.RFC3339, "2020-10-28T23:08:00Z")
+	sc.SentSince = sc.Since
+	sc.SentBefore = sc.Before
+	sc.Header = textproto.MIMEHeader{}
+	sc.Header.Add("Subject", "xyz")
+	sc.Header.Add("To", "z")
+	sc.Header.Add("From", "x")
+	sc.Header.Add("X", "y")
+	sc.Header.Add("Cc", "0")
+	sc.Header.Add("Bcc", "1")
+	sc.Smaller = 1
+	sc.Larger = 400
+	sc.Body = []string{"Body1", "Body2"}
+	sc.Text = []string{"Text1", "Text2"}
+	sc.WithFlags = []string{imap.SeenFlag, imap.AnsweredFlag, imap.FlaggedFlag, imap.DeletedFlag, imap.DraftFlag, imap.RecentFlag, string(imap.SetFlags), imap.AddFlags, imap.RemoveFlags}
+	sc.WithoutFlags = sc.WithFlags
+	sc.Not = []*imap.SearchCriteria{}
+	sc.Or = [][2]*imap.SearchCriteria{}
+	require.Equal(t, "SearchCriteria {"+
+		"SeqNum: 10:11, UID: 100:101, "+
+		"ON: 2020-10-29 23:08:00 +0000 UTC, "+
+		"SENTON: 2020-10-29 23:08:00 +0000 UTC, "+
+		"BCC: [1] CC: [0] FROM: [x] SUBJECT: [xyz] TO: [z] HEADER: \"X\" [y] "+
+		"BODY: Body1, BODY: Body2, "+
+		"TEXT: Text1, TEXT: Text2, "+
+		"Flag: SEEN, Flag: ANSWERED, Flag: FLAGGED, Flag: DELETED, Flag: DRAFT, Flag: RECENT, KEYWORD: FLAGS, KEYWORD: +FLAGS, KEYWORD: -FLAGS, "+
+		"UN: SEEN, UN: ANSWERED, UN: FLAGGED, UN: DELETED, UN: DRAFT, OLD, UNKEYWORD: FLAGS, UNKEYWORD: +FLAGS, UNKEYWORD: -FLAGS, "+
+		"LARGER: 400, "+
+		"SMALLER: 1, "+
+		"}",
+		ToString(sc))
+}
+
+func conditionToString1(t *testing.T) {
+	sc := new(imap.SearchCriteria)
+	sc.Since, _ = time.Parse(time.RFC3339, "2020-10-29T23:08:00Z")
+	sc.Before, _ = time.Parse(time.RFC3339, "2020-10-27T23:08:00Z")
+	sc.SentSince = sc.Since
+	sc.SentBefore = sc.Before
+	sc.Header = textproto.MIMEHeader{}
+	sc.Header.Add("Subject", "xyz")
+	sc.Header.Add("To", "z")
+	sc.Header.Add("From", "x")
+	sc.Header.Add("X", "y")
+	sc.Header.Add("Cc", "0")
+	sc.Header.Add("Bcc", "1")
+	sc.Smaller = 1
+	sc.Larger = 400
+	sc.Body = []string{"Body3"}
+	sc.Text = []string{"Text3"}
+	sc.WithFlags = []string{imap.SeenFlag, imap.AnsweredFlag, imap.FlaggedFlag, imap.DeletedFlag, imap.DraftFlag, imap.RecentFlag, string(imap.SetFlags), imap.AddFlags, imap.RemoveFlags}
+	sc.WithoutFlags = sc.WithFlags
+	sc.Not = []*imap.SearchCriteria{
+		0: {SeqNum: &imap.SeqSet{Set: []imap.Seq{{20, 21}}}},
+	}
+	sc.Or = [][2]*imap.SearchCriteria{0: {
+		0: {Uid: &imap.SeqSet{Set: []imap.Seq{{30, 31}}}},
+		1: {Uid: &imap.SeqSet{Set: []imap.Seq{{40, 41}}}},
+	}}
+	require.Equal(t, "SearchCriteria {"+
+		"SINCE: 2020-10-29 23:08:00 +0000 UTC, "+
+		"BEFORE: 2020-10-27 23:08:00 +0000 UTC, "+
+		"SENTSINCE: 2020-10-29 23:08:00 +0000 UTC, "+
+		"SENTBEFORE: 2020-10-27 23:08:00 +0000 UTC, "+
+		"BCC: [1] CC: [0] FROM: [x] SUBJECT: [xyz] TO: [z] HEADER: \"X\" [y] "+
+		"BODY: Body3, "+
+		"TEXT: Text3, "+
+		"Flag: SEEN, Flag: ANSWERED, Flag: FLAGGED, Flag: DELETED, Flag: DRAFT, Flag: RECENT, KEYWORD: FLAGS, KEYWORD: +FLAGS, KEYWORD: -FLAGS, "+
+		"UN: SEEN, UN: ANSWERED, UN: FLAGGED, UN: DELETED, UN: DRAFT, OLD, UNKEYWORD: FLAGS, UNKEYWORD: +FLAGS, UNKEYWORD: -FLAGS, "+
+		"LARGER: 400, "+
+		"SMALLER: 1, "+
+		"NOT[]{ SearchCriteria {SeqNum: 20:21, }}NOT[], " +
+		"OR[]{  " +
+			"OR{ SearchCriteria {UID: 30:31, }, SearchCriteria {UID: 40:41, }}OR, " +
+		"}OR[], " +
+		"}",
+		ToString(sc))
 }
