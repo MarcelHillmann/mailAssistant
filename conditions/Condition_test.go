@@ -194,8 +194,8 @@ func conditionMapToString(t *testing.T) {
 
 func conditionToString0(t *testing.T) {
 	sc := new(imap.SearchCriteria)
-	sc.SeqNum = &imap.SeqSet{[]imap.Seq{{10, 11}}}
-	sc.Uid = &imap.SeqSet{[]imap.Seq{{100, 101}}}
+	sc.SeqNum = &imap.SeqSet{Set: []imap.Seq{{Start: 10, Stop: 11}}}
+	sc.Uid = &imap.SeqSet{Set: []imap.Seq{{Start: 100, Stop: 101}}}
 	sc.Since, _ = time.Parse(time.RFC3339, "2020-10-29T23:08:00Z")
 	sc.Before, _ = time.Parse(time.RFC3339, "2020-10-28T23:08:00Z")
 	sc.SentSince = sc.Since
