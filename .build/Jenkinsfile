@@ -52,13 +52,14 @@ pipeline {
 	                               , "GOPROXY=${go_proxy}",]) {
 	                            sh'bash .build/sonar-datacollector.sh'
 	                            archiveArtifacts( allowEmptyArchive: true, artifacts: '.sonarqube/*', excludes: '.gitempty', fingerprint: true)
-                                sh returnStdout: true, script: "sonar-scanner -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins_mailAssistant:${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistant_${BRANCH_NAME}'"
+                                sh returnStdout: true, script: "sonar-scanner -X -Dproject.settings=sonar-project.properties '-Dsonar.projectKey=jenkins_mailAssistant:${BRANCH_NAME}' '-Dsonar.projectName=jenkins_mailAssistant_${BRANCH_NAME}'"
 	                        } // withEnv
 	                    } // withCredentials
                     } // script
                 } // withSonarQubeEnv
                 timeout(10) { // Just in case something goes wrong, pipeline will be killed after a timeout
                     script {
+                        sh 'env'
                         def qg = waitForQualityGate(false)
                         if (qg.status != 'OK') {
                             echo "Pipeline aborted due to quality gate failure: ${qg.status}"
