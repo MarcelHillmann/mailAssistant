@@ -261,12 +261,12 @@ func logger(name, level string, msg []interface{}) {
 		methodName = fcc(methodName)
 	}
 
-	_msg := ""
+	finalMsg := ""
 	for i := 0; i < len(msg); i++ {
-		if _msg != "" {
-			_msg += " "
+		if finalMsg != "" {
+			finalMsg += " "
 		}
-		_msg += fmt.Sprint(msg[i])
+		finalMsg += fmt.Sprint(msg[i])
 	}
-	log.Printf("%s [%s#%s] %s\n", level, name, methodName, _msg)
+	log.Printf("%s [%s#%s] %s\n", level, name, methodName, finalMsg)
 }

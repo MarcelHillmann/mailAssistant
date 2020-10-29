@@ -40,7 +40,7 @@ pipeline {
             } // steps
         } // stage
         stage('Test and analasys') {
-            steps {
+            steps {To
                 withSonarQubeEnv(installationName: 'sonar', credentialsId: 'sonarqube-secret'){
                     script {
                         withCredentials([usernamePassword(credentialsId: 'nexus', passwordVariable: 'nx_pass', usernameVariable: 'nx_user')]) {

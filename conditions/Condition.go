@@ -135,6 +135,7 @@ func allowedYamlKey(m map[interface{}]interface{}) {
 	}
 }
 
+// MapToString converts a map to a string
 func MapToString(m map[string]string) string {
 	buf := bytes.NewBufferString("")
 	for k, v := range m {
@@ -146,88 +147,147 @@ func MapToString(m map[string]string) string {
 	return buf.String()
 }
 
+// ToString converts searchCriteria to string
 func ToString(c *imap.SearchCriteria) string {
-	buffer := bytes.NewBufferString("SearchCriteria {")
+	s := searchToString{SearchCriteria: c}
+	return s.String()
+}
 
-	if c.SeqNum != nil {
-		_, _ = fmt.Fprintf(buffer, "SeqNum: %#v, ", *c.SeqNum)
-	}
-	if c.Uid != nil {
-		_, _ = fmt.Fprintf(buffer, "UID: %#v, ", *c.Uid)
-	}
+var p1d = 24 * time.Hour
 
-	if !c.Since.IsZero() && !c.Before.IsZero() && c.Before.Sub(c.Since) == 24*time.Hour {
-		_, _ = fmt.Fprintf(buffer, "ON: %s, ", c.Since.String())
+type searchToString struct {
+	*imap.SearchCriteria
+	buffer *bytes.Buffer
+}
+
+func (s *searchToString) String() string {
+	s.buffer = bytes.NewBufferString("SearchCriteria {")
+	s.seqNum().uid().time().sent().header().body().text().flags().size().not().or()
+	s.buffer.WriteString("}")
+	return s.buffer.String()
+}
+
+func (s searchToString) seqNum() searchToString {
+	if s.SearchCriteria.SeqNum != nil {
+		s.addToBuffer("SeqNum: %#v, ", s.SearchCriteria.SeqNum)
+	}
+	return s
+}
+
+func (s searchToString) uid() searchToString {
+	if s.SearchCriteria.Uid != nil {
+		s.addToBuffer("UID: %#v, ", s.SearchCriteria.Uid)
+	}
+	return s
+}
+
+func (s searchToString) time() searchToString {
+	c := s.SearchCriteria
+	if !c.Since.IsZero() &&
+		!c.Before.IsZero() &&
+		c.Before.Sub(c.Since) == p1d {
+		s.addToBuffer("ON: %s, ", c.Since.String())
 	} else {
 		if !c.Since.IsZero() {
-			_, _ = fmt.Fprintf(buffer, "SINCE: %s, ", c.Since.String())
+			s.addToBuffer("SINCE: %s, ", c.Since.String())
 		}
 		if !c.Before.IsZero() {
-			_, _ = fmt.Fprintf(buffer, "BEFORE: %s, ", c.Before.String())
+			s.addToBuffer("BEFORE: %s, ", c.Before.String())
 		}
 	}
-	if !c.SentSince.IsZero() && !c.SentBefore.IsZero() && c.SentBefore.Sub(c.SentSince) == 24*time.Hour {
-		_, _ = fmt.Fprintf(buffer, "SENTON: %s, ", c.SentSince.String())
+	return s
+}
+
+func (s searchToString) sent() searchToString {
+	c := s.SearchCriteria
+	if !c.SentSince.IsZero() &&
+		!c.SentBefore.IsZero() &&
+		c.SentBefore.Sub(c.SentSince) == p1d {
+		s.addToBuffer("SENTON: %s, ", c.SentSince.String())
 	} else {
 		if !c.SentSince.IsZero() {
-			_, _ = fmt.Fprintf(buffer, "SENTSINCE: %s, ", c.SentSince.String())
+			s.addToBuffer("SENTSINCE: %s, ", c.SentSince.String())
 		}
 		if !c.SentBefore.IsZero() {
-			_, _ = fmt.Fprintf(buffer, "SENTBEFORE: %s, ", c.SentBefore.String())
+			s.addToBuffer("SENTBEFORE: %s, ", c.SentBefore.String())
 		}
 	}
+	return s
+}
 
-	for key, values := range c.Header {
+func (s searchToString) header() searchToString {
+	for key, values := range s.SearchCriteria.Header {
 		switch key {
 		case "Bcc", "Cc", "From", "Subject", "To":
-			_, _ = fmt.Fprintf(buffer, "%s: ", strings.ToUpper(key))
+			s.addToBuffer("%s: ", strings.ToUpper(key))
 		default:
-			_, _ = fmt.Fprintf(buffer, "HEADER: %#v", key)
+			s.addToBuffer("HEADER: %#v", key)
 		}
-		_, _ = fmt.Fprintf(buffer, "%s", values)
+		s.addToBuffer("%s", values)
 	}
+	return s
+}
 
-	for _, value := range c.Body {
-		_, _ = fmt.Fprintf(buffer, "BODY: %s, ", value)
+func (s searchToString) size() searchToString {
+	if s.SearchCriteria.Larger > 0 {
+		s.addToBuffer("LARGER: %d, ", s.SearchCriteria.Larger)
 	}
-	for _, value := range c.Text {
-		_, _ = fmt.Fprintf(buffer, "TEXT: %s, ", value)
+	if s.SearchCriteria.Smaller > 0 {
+		s.addToBuffer("SMALLER: %d, ", s.SearchCriteria.Smaller)
 	}
+	return s
+}
 
-	for _, flag := range c.WithFlags {
+func (s searchToString) body() searchToString {
+	for _, value := range s.SearchCriteria.Body {
+		s.addToBuffer("BODY: %s, ", value)
+	}
+	return s
+}
+
+func (s searchToString) text() searchToString {
+	for _, value := range s.SearchCriteria.Text {
+		s.addToBuffer("TEXT: %s, ", value)
+	}
+	return s
+}
+
+func (s searchToString) flags() searchToString {
+	for _, flag := range s.SearchCriteria.WithFlags {
 		switch flag {
 		case imap.AnsweredFlag, imap.DeletedFlag, imap.DraftFlag, imap.FlaggedFlag, imap.RecentFlag, imap.SeenFlag:
-			_, _ = fmt.Fprintf(buffer, "Flag: %s, ", strings.ToUpper(strings.TrimPrefix(flag, "\\")))
+			s.addToBuffer("Flag: %s, ", strings.ToUpper(strings.TrimPrefix(flag, "\\")))
 		default:
-			_, _ = fmt.Fprintf(buffer, "KEYWORD: %s, ", flag)
+			s.addToBuffer("KEYWORD: %s, ", flag)
 		}
 	}
-	for _, flag := range c.WithoutFlags {
+	for _, flag := range s.SearchCriteria.WithoutFlags {
 		switch flag {
 		case imap.AnsweredFlag, imap.DeletedFlag, imap.DraftFlag, imap.FlaggedFlag, imap.SeenFlag:
-			_, _ = fmt.Fprintf(buffer, "UN: %s, ", strings.ToUpper(strings.TrimPrefix(flag, "\\")))
+			s.addToBuffer("UN: %s, ", strings.ToUpper(strings.TrimPrefix(flag, "\\")))
 		case imap.RecentFlag:
-			_, _ = fmt.Fprintf(buffer, "OLD, ")
+			s.addToBuffer("OLD, ")
 		default:
-			_, _ = fmt.Fprintf(buffer, "UNKEYWORD: %s, ", flag)
+			s.addToBuffer("UNKEYWORD: %s, ", flag)
 		}
 	}
+	return s
+}
 
-	if c.Larger > 0 {
-		_, _ = fmt.Fprintf(buffer, "LARGER: %d, ", c.Larger)
+func (s searchToString) not() searchToString {
+	for _, not := range s.SearchCriteria.Not {
+		s.addToBuffer("NOT: %#v, ", not.Format())
 	}
-	if c.Smaller > 0 {
-		_, _ = fmt.Fprintf(buffer, "SMALLER: %d, ", c.Smaller)
-	}
+	return s
+}
 
-	for _, not := range c.Not {
-		_, _ = fmt.Fprintf(buffer, "NOT: %#v, ", not.Format())
+func (s searchToString) or() searchToString {
+	for _, or := range s.SearchCriteria.Or {
+		s.addToBuffer("OR: %#v - %#v, ", or[0].Format(), or[1].Format())
 	}
+	return s
+}
 
-	for _, or := range c.Or {
-		_, _ = fmt.Fprintf(buffer, "OR: %#v - %#v, ", or[0].Format(), or[1].Format())
-	}
-
-	buffer.WriteString("}")
-	return buffer.String()
+func (s searchToString) addToBuffer(format string, a ...interface{}) {
+	_, _ = fmt.Fprintf(s.buffer, format, a...)
 }
