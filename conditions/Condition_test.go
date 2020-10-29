@@ -225,8 +225,7 @@ func conditionToString0(t *testing.T) {
 		"Flag: SEEN, Flag: ANSWERED, Flag: FLAGGED, Flag: DELETED, Flag: DRAFT, Flag: RECENT, KEYWORD: FLAGS, KEYWORD: +FLAGS, KEYWORD: -FLAGS, "+
 		"UN: SEEN, UN: ANSWERED, UN: FLAGGED, UN: DELETED, UN: DRAFT, OLD, UNKEYWORD: FLAGS, UNKEYWORD: +FLAGS, UNKEYWORD: -FLAGS, "+
 		"LARGER: 400, "+
-		"SMALLER: 1, "+
-		"}",
+		"SMALLER: 1 }",
 		ToString(sc))
 }
 
@@ -268,10 +267,9 @@ func conditionToString1(t *testing.T) {
 		"UN: SEEN, UN: ANSWERED, UN: FLAGGED, UN: DELETED, UN: DRAFT, OLD, UNKEYWORD: FLAGS, UNKEYWORD: +FLAGS, UNKEYWORD: -FLAGS, "+
 		"LARGER: 400, "+
 		"SMALLER: 1, "+
-		"NOT[]{ SearchCriteria {SeqNum: 20:21, }}NOT[], "+
-		"OR[]{  "+
-		"OR{ SearchCriteria {UID: 30:31, }, SearchCriteria {UID: 40:41, }}OR, "+
-		"}OR[], "+
-		"}",
+		"NOT[]{ SearchCriteria {SeqNum: 20:21 }}NOT[], "+
+		"OR[]{ "+
+		"OR{ SearchCriteria {UID: 30:31 }, SearchCriteria {UID: 40:41 }}OR "+
+		"}OR[] }",
 		ToString(sc))
 }

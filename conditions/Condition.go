@@ -170,25 +170,24 @@ type searchToString struct {
 func (s *searchToString) String() string {
 	s.buffer = bytes.NewBufferString("SearchCriteria {")
 	s.seqNum().uid().time().sent().header().body().text().flags().size().not().or()
-	s.buffer.WriteString("}")
-	return s.buffer.String()
+	return strings.TrimSuffix(strings.TrimSuffix(s.buffer.String(), ", "), ",") + "}"
 }
 
-func (s searchToString) seqNum() searchToString {
+func (s *searchToString) seqNum() *searchToString {
 	if s.SearchCriteria.SeqNum != nil {
 		s.addToBuffer("SeqNum: %s, ", s.SearchCriteria.SeqNum.String())
 	}
 	return s
 }
 
-func (s searchToString) uid() searchToString {
+func (s *searchToString) uid() *searchToString {
 	if s.SearchCriteria.Uid != nil {
 		s.addToBuffer("UID: %s, ", s.SearchCriteria.Uid.String())
 	}
 	return s
 }
 
-func (s searchToString) time() searchToString {
+func (s *searchToString) time() *searchToString {
 	c := s.SearchCriteria
 	if !c.Since.IsZero() &&
 		!c.Before.IsZero() &&
@@ -205,7 +204,7 @@ func (s searchToString) time() searchToString {
 	return s
 }
 
-func (s searchToString) sent() searchToString {
+func (s *searchToString) sent() *searchToString {
 	c := s.SearchCriteria
 	if !c.SentSince.IsZero() &&
 		!c.SentBefore.IsZero() &&
@@ -222,7 +221,7 @@ func (s searchToString) sent() searchToString {
 	return s
 }
 
-func (s searchToString) header() searchToString {
+func (s *searchToString) header() *searchToString {
 	keys := make([]string, 0)
 	for key := range s.SearchCriteria.Header {
 		keys = append(keys, key)
@@ -240,7 +239,7 @@ func (s searchToString) header() searchToString {
 	return s
 }
 
-func (s searchToString) size() searchToString {
+func (s *searchToString) size() *searchToString {
 	if s.SearchCriteria.Larger > 0 {
 		s.addToBuffer("LARGER: %d, ", s.SearchCriteria.Larger)
 	}
@@ -250,21 +249,21 @@ func (s searchToString) size() searchToString {
 	return s
 }
 
-func (s searchToString) body() searchToString {
+func (s *searchToString) body() *searchToString {
 	for _, value := range s.SearchCriteria.Body {
 		s.addToBuffer("BODY: %s, ", value)
 	}
 	return s
 }
 
-func (s searchToString) text() searchToString {
+func (s *searchToString) text() *searchToString {
 	for _, value := range s.SearchCriteria.Text {
 		s.addToBuffer("TEXT: %s, ", value)
 	}
 	return s
 }
 
-func (s searchToString) flags() searchToString {
+func (s *searchToString) flags() *searchToString {
 	for _, flag := range s.SearchCriteria.WithFlags {
 		switch flag {
 		case imap.AnsweredFlag, imap.DeletedFlag, imap.DraftFlag, imap.FlaggedFlag, imap.RecentFlag, imap.SeenFlag:
@@ -286,7 +285,7 @@ func (s searchToString) flags() searchToString {
 	return s
 }
 
-func (s searchToString) not() searchToString {
+func (s *searchToString) not() *searchToString {
 	added := false
 	for _, not := range s.SearchCriteria.Not {
 		if !added {
@@ -302,11 +301,11 @@ func (s searchToString) not() searchToString {
 	return s
 }
 
-func (s searchToString) or() searchToString {
+func (s *searchToString) or() *searchToString {
 	added := false
 	for _, or := range s.SearchCriteria.Or {
 		if !added {
-			s.addToBuffer("OR[]{ ")
+			s.addToBuffer("OR[]{")
 			added = true
 		}
 		s.addToBuffer(" OR{ ")
@@ -317,13 +316,13 @@ func (s searchToString) or() searchToString {
 		s.addToBuffer(n.String())
 		s.addToBuffer("}OR, ")
 	}
-
+	s.buffer = bytes.NewBufferString(strings.TrimSuffix(s.buffer.String(), ", ") + " ")
 	if added {
-		s.addToBuffer("}OR[], ")
+		s.addToBuffer("}OR[] ")
 	}
 	return s
 }
 
-func (s searchToString) addToBuffer(format string, a ...interface{}) {
+func (s *searchToString) addToBuffer(format string, a ...interface{}) {
 	_, _ = fmt.Fprintf(s.buffer, format, a...)
 }
