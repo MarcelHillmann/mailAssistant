@@ -89,31 +89,12 @@ func (j jobMonitoring) favicon(response http.ResponseWriter, _ *http.Request) {
 }
 
 func (j jobMonitoring) execute(response http.ResponseWriter, onlyDisabled, onlyEnabled bool, filter, contentType string, writer func([]jobWrapper, int, int) ([]byte, error)) {
-	keys := make([]string, 0)
-	for key := range jobsCollector {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
 	active, passive := 0, 0
 	jobs := make([]jobWrapper, 0)
-	for _, jobName := range keys {
-		job := jobsCollector[jobName]
-		m := (*job).GetMetric()
-		if m.IsDisabled() {
-			passive++
-		} else {
-			active++
-		}
-
-		if filter != "" && (strings.EqualFold(m.JobName(), filter) || strings.Contains(strings.ToLower(m.JobName()), strings.ToLower(filter))) {
-			jobs = append(jobs, newJobWrapper(m))
-		} else if onlyDisabled && m.IsDisabled() ||
-			onlyEnabled && !m.IsDisabled() ||
-			onlyDisabled == onlyEnabled {
-			jobs = append(jobs, newJobWrapper(m))
-		}
-	}
+	foreachJobSorted(func(m IMetric) {
+		active, passive = incr(m, active, passive)
+		jobs = filterThisJob(jobs, m, filter, onlyDisabled, onlyEnabled)
+	})
 
 	if out, err := writer(jobs, active, passive); err == nil && out == nil {
 		response.WriteHeader(http.StatusInsufficientStorage)
@@ -123,6 +104,37 @@ func (j jobMonitoring) execute(response http.ResponseWriter, onlyDisabled, onlyE
 	} else {
 		response.WriteHeader(http.StatusInternalServerError)
 		_, _ = response.Write([]byte(err.Error()))
+	}
+}
+
+func filterThisJob(jobs []jobWrapper, m IMetric, filter string, disabled bool, enabled bool) (res []jobWrapper) {
+	res = jobs
+	if filter != "" && (strings.EqualFold(m.JobName(), filter) || strings.Contains(strings.ToLower(m.JobName()), strings.ToLower(filter))) {
+		res = append(jobs, newJobWrapper(m))
+	} else if disabled && m.IsDisabled() ||
+		enabled && !m.IsDisabled() ||
+		disabled == enabled {
+		res = append(jobs, newJobWrapper(m))
+	}
+	return
+}
+
+func incr(m IMetric, a, p int) (int, int) {
+	if m.IsDisabled() {
+		return a, p + 1
+	}
+	return a + 1, p
+}
+
+func foreachJobSorted(fcc func(IMetric)) {
+	keys := make([]string, 0)
+	for key := range jobsCollector {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, jobName := range keys {
+		job := jobsCollector[jobName]
+		fcc((*job).GetMetric())
 	}
 }
 
