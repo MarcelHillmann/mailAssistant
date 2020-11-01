@@ -7,7 +7,6 @@ import (
 	"mailAssistant/cntl"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 )
@@ -188,7 +187,7 @@ func accountsImportAccountsParseYamlFailed(t *testing.T) {
 		err := recover()
 		require.NotNil(t, err)
 		e := err.(error).Error()
-		if strings.HasSuffix(e, "ERROR yaml: line ") && strings.HasPrefix(e, ": could not find expected ':'") {
+		if e == "ERROR yaml: line 7: could not find expected ':'" ||  e == "ERROR yaml: line 8: could not find expected ':'" {
 			// passed
 		} else {
 			require.Fail(t, "Invalid error message: %s", e)
